@@ -1,9 +1,12 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, type ChangeEvent } from "react";
 import Papa from "papaparse";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/integrations/supabase/client";
+import { listDatasets } from "@/lib/mmm.functions";
 import {
   parseFile,
   analyzeColumns,
@@ -34,6 +37,11 @@ function UploadPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string>("");
+  const listFn = useServerFn(listDatasets);
+  const { data: dsList, refetch } = useQuery({
+    queryKey: ["datasets"],
+    queryFn: () => listFn(),
+  });
 
   const onFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -50,7 +58,6 @@ function UploadPage() {
       const indep = guessIndependentVariables(cols, dep);
       const granularity = detectGranularity(parsed.rows, dateCol);
 
-      // Coerce dates to ISO strings for CSV serialization
       const rowsForCsv = parsed.rows.map((r) => {
         const out: Record<string, unknown> = {};
         for (const k of parsed.columns) {
@@ -96,6 +103,7 @@ function UploadPage() {
       toast.success("Dataset carregado. Gerando análise...");
       void dep;
       void indep;
+      void refetch();
       navigate({
         to: "/datasets/$id/explore",
         params: { id: ds.id },
@@ -108,8 +116,10 @@ function UploadPage() {
     }
   };
 
+  const datasets = dsList?.datasets ?? [];
+
   return (
-    <div className="p-12 max-w-3xl">
+    <div className="p-12 max-w-5xl">
       <p className="eyebrow">01 — Dados</p>
       <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">
         Suba sua planilha de vendas e gastos
@@ -139,6 +149,48 @@ function UploadPage() {
             </p>
           </div>
         </label>
+      </section>
+
+      <section className="mt-12" aria-labelledby="carregados-heading">
+        <h2 id="carregados-heading" className="eyebrow">Seus dados carregados</h2>
+        {datasets.length === 0 ? (
+          <p className="mt-4 text-sm text-brand-navy/60">Nenhum dataset ainda.</p>
+        ) : (
+          <table className="mt-4 w-full text-sm border-collapse [&_th]:px-4 [&_td]:px-4 [&_th:first-child]:pl-0 [&_td:first-child]:pl-0 [&_th:last-child]:pr-0 [&_td:last-child]:pr-0">
+            <thead>
+              <tr className="border-b hairline-strong">
+                <th className="text-left py-3 eyebrow">Nome</th>
+                <th className="text-left py-3 eyebrow">Granularidade</th>
+                <th className="text-right py-3 eyebrow">Linhas</th>
+                <th className="text-right py-3 eyebrow">Colunas</th>
+                <th className="text-left py-3 eyebrow pl-4">Período</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {datasets.map((d) => (
+                <tr key={d.id} className="border-b hairline hover:bg-brand-creme/50">
+                  <td className="py-4 font-display text-lg text-brand-navy">{d.name}</td>
+                  <td className="py-4 text-brand-navy/70">{d.granularity ?? "—"}</td>
+                  <td className="py-4 text-right font-mono text-xs">{d.n_rows}</td>
+                  <td className="py-4 text-right font-mono text-xs">{d.n_cols}</td>
+                  <td className="py-4 pl-4 text-xs text-brand-navy/70 font-mono">
+                    {d.period_start ?? "?"} → {d.period_end ?? "?"}
+                  </td>
+                  <td className="py-4 text-right">
+                    <Link
+                      to="/datasets/$id/explore"
+                      params={{ id: d.id }}
+                      className="text-xs uppercase tracking-widest border-b border-brand-mustard pb-0.5 text-brand-navy hover:text-brand-purple"
+                    >
+                      Abrir
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </section>
 
       <section className="mt-12" aria-labelledby="como-heading">
