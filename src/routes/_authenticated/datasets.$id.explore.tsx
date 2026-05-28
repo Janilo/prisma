@@ -28,10 +28,10 @@ import type { ColumnInfo } from "@/lib/parse";
 export const Route = createFileRoute("/_authenticated/datasets/$id/explore")({
   head: ({ params }) => ({
     meta: [
-      { title: "Exploração · Prisma" },
-      { name: "description", content: "Leitura automática do dataset: série temporal, correlações, sazonalidade e qualidade de dados antes de rodar o modelo MMM." },
-      { property: "og:title", content: "Exploração de dados no Prisma" },
-      { property: "og:description", content: "Veja série temporal, correlações e sazonalidade do seu dataset antes de configurar o MMM." },
+      { title: "Análise descritiva · Prisma" },
+      { name: "description", content: "Diagnóstico do dataset: série temporal, correlações, sazonalidade e qualidade de dados antes de rodar o modelo MMM." },
+      { property: "og:title", content: "Análise descritiva no Prisma" },
+      { property: "og:description", content: "Veja diagnóstico das colunas, série temporal, correlações e sazonalidade do seu dataset." },
       { property: "og:url", content: `https://prisma.pereirasaraiva.com/datasets/${params.id}/explore` },
       { name: "robots", content: "noindex" },
     ],
@@ -43,6 +43,21 @@ const fmt = (n: number | undefined, d = 2) =>
   n === undefined || !Number.isFinite(n) ? "—" : new Intl.NumberFormat("pt-BR", { maximumFractionDigits: d }).format(n);
 const pct = (n: number | undefined, d = 1) =>
   n === undefined || !Number.isFinite(n) ? "—" : `${(n * 100).toFixed(d)}%`;
+
+function inferUnit(name: string): string {
+  const n = name.toLowerCase();
+  if (/(r\$|brl|reais|gasto|spend|invest|revenue|receita|faturamento|preco|preço|cpm|cpc|cpa)/.test(n)) return "R$";
+  if (/grp/.test(n)) return "GRP";
+  if (/(impress|impressões|impressao)/.test(n)) return "impressões";
+  if (/(click|clique)/.test(n)) return "cliques";
+  if (/(view|visualiza)/.test(n)) return "views";
+  if (/(temp|temperatura)/.test(n)) return "°C";
+  if (/(email|disparo|envio|sms)/.test(n)) return "envios";
+  if (/(unid|qtd|quantidade|vendas|volume|pedido)/.test(n)) return "unidades";
+  if (/(%|pct|taxa|share|conversao|conversão)/.test(n)) return "%";
+  if (/(dia|semana|mes|mês|periodo|período|data)/.test(n)) return "data";
+  return "—";
+}
 
 function ExplorePage() {
   const { id } = Route.useParams();
@@ -103,14 +118,14 @@ function ExplorePage() {
   const insights = insightsQuery.data?.insights;
 
   if (dsQuery.isLoading || !ds) {
-    return <div className="p-12 text-sm text-brand-navy/60">Carregando dataset...</div>;
+    return <div className="mt-12 text-sm text-brand-navy/60">Carregando dataset...</div>;
   }
 
   const goToModel = () => {
     const dep = insights?.suggestedDependent || activeFocus;
     const indep = insights?.suggestedDrivers ?? [];
     navigate({
-      to: "/datasets/$id",
+      to: "/datasets/$id/model",
       params: { id },
       search: {
         dep: dep || undefined,
@@ -121,51 +136,105 @@ function ExplorePage() {
   };
 
   return (
-    <div className="p-12 max-w-7xl space-y-12">
-      {/* Header */}
-      <div>
-        <p className="eyebrow">02 — Exploração</p>
-        <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">
-          {ds.name}
-        </h1>
-        <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-xs uppercase tracking-widest text-brand-navy/60">
-          <span>{ds.n_rows} linhas</span>
-          <span>{ds.n_cols} colunas</span>
-          {ds.granularity && <span>{ds.granularity}</span>}
-          {ds.period_start && ds.period_end && (
-            <span>
-              {ds.period_start} → {ds.period_end}
-            </span>
-          )}
+    <div className="space-y-12 pt-12">
+      {/* Diagnostic table */}
+      <section>
+        <p className="eyebrow">Diagnóstico das colunas</p>
+        <div className="mt-4 border hairline bg-white overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="text-xs uppercase tracking-widest text-brand-gray border-b hairline">
+              <tr>
+                <th className="text-left p-3">Coluna</th>
+                <th className="text-left p-3">Tipo</th>
+                <th className="text-left p-3">Unidade</th>
+                <th className="text-right p-3">Missings</th>
+                <th className="text-right p-3">Únicos</th>
+                <th className="text-right p-3">Min</th>
+                <th className="text-right p-3">Média</th>
+                <th className="text-right p-3">Max</th>
+                <th className="text-right p-3">Outliers</th>
+              </tr>
+            </thead>
+            <tbody>
+              {(ds.columns_json ?? []).map((c) => (
+                <tr key={c.name} className="border-b hairline last:border-0">
+                  <td className="p-3 font-medium text-brand-navy">{c.name}</td>
+                  <td className="p-3">
+                    <span className={
+                      "text-[10px] uppercase tracking-widest px-2 py-0.5 border hairline-strong " +
+                      (c.kind === "number" ? "text-brand-green" : c.kind === "date" ? "text-brand-purple" : "text-brand-gray")
+                    }>{c.kind}</span>
+                  </td>
+                  <td className="p-3 text-brand-navy/70 font-mono text-xs">
+                    {c.kind === "date" ? "data" : c.kind === "number" ? inferUnit(c.name) : "—"}
+                  </td>
+                  <td className="p-3 text-right font-mono text-xs">{c.missing}</td>
+                  <td className="p-3 text-right font-mono text-xs">{c.unique}</td>
+                  <td className="p-3 text-right font-mono text-xs">{c.min !== undefined ? fmt(c.min) : "—"}</td>
+                  <td className="p-3 text-right font-mono text-xs">{c.mean !== undefined ? fmt(c.mean) : "—"}</td>
+                  <td className="p-3 text-right font-mono text-xs">{c.max !== undefined ? fmt(c.max) : "—"}</td>
+                  <td className="p-3 text-right font-mono text-xs">{c.outliers ?? "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
+      </section>
 
-      {/* Focus selector */}
-      <div className="flex items-end justify-between gap-6 border-b hairline pb-4">
-        <div>
-          <label htmlFor="focus-select" className="text-xs uppercase tracking-widest text-brand-gray">
-            Variável de interesse
-          </label>
-          <select
-            id="focus-select"
-            value={activeFocus}
-            onChange={(e) => setFocus(e.target.value)}
-            className="mt-2 bg-transparent border-b hairline-strong text-2xl font-display text-brand-navy focus:outline-none pr-4"
+      {/* Dynamic chart: select variable to visualize over the period */}
+      <section>
+        <div className="flex items-end justify-between gap-6 border-b hairline pb-4">
+          <div>
+            <label htmlFor="focus-select" className="text-xs uppercase tracking-widest text-brand-gray">
+              Variável para visualizar no período
+            </label>
+            <select
+              id="focus-select"
+              value={activeFocus}
+              onChange={(e) => setFocus(e.target.value)}
+              className="mt-2 bg-transparent border-b hairline-strong text-2xl font-display text-brand-navy focus:outline-none pr-4"
+            >
+              {numericCols.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </div>
+          <button
+            onClick={goToModel}
+            className="px-6 py-3 bg-brand-navy text-brand-creme text-sm uppercase tracking-widest hover:bg-brand-navy/90 transition"
           >
-            {numericCols.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
+            Ir para Modelo →
+          </button>
         </div>
-        <button
-          onClick={goToModel}
-          className="px-6 py-3 bg-brand-navy text-brand-creme text-sm uppercase tracking-widest hover:bg-brand-navy/90 transition"
-        >
-          Configurar modelo →
-        </button>
-      </div>
+
+        {summary && summary.timeSeries.length > 0 ? (
+          <>
+            {summary.trend && (
+              <p className="mt-4 text-sm text-brand-navy/70">
+                Variação no período: <strong>{pct(summary.trend.pctChangeOverWindow)}</strong> · inclinação por período: {fmt(summary.trend.slopePerPeriod)}
+              </p>
+            )}
+            <div className="mt-6 border hairline bg-white p-6 h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={summary.timeSeries}>
+                  <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
+                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: "#0a1f44" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "#0a1f44" }} />
+                  <Tooltip contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }} />
+                  <Line type="monotone" dataKey="value" stroke="#0a1f44" strokeWidth={1.5} dot={false} name={activeFocus} />
+                  <Line type="monotone" dataKey="movingAvg" stroke="#c89b3c" strokeWidth={1.5} dot={false} name="Média móvel 4p" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </>
+        ) : (
+          <p className="mt-6 text-sm text-brand-navy/60">
+            {summaryQuery.isLoading ? "Calculando série..." : "Sem série temporal disponível."}
+          </p>
+        )}
+      </section>
 
       {/* AI Summary */}
       <section className="border hairline-strong bg-white p-10">
@@ -216,30 +285,6 @@ function ExplorePage() {
         )}
       </section>
 
-      {/* Time series */}
-      {summary && summary.timeSeries.length > 0 && (
-        <section>
-          <p className="eyebrow">Série temporal · {activeFocus}</p>
-          {summary.trend && (
-            <p className="mt-2 text-sm text-brand-navy/70">
-              Variação no período: <strong>{pct(summary.trend.pctChangeOverWindow)}</strong> · inclinação por período: {fmt(summary.trend.slopePerPeriod)}
-            </p>
-          )}
-          <div className="mt-6 border hairline bg-white p-6 h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={summary.timeSeries}>
-                <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
-                <XAxis dataKey="period" tick={{ fontSize: 10, fill: "#0a1f44" }} />
-                <YAxis tick={{ fontSize: 10, fill: "#0a1f44" }} />
-                <Tooltip contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }} />
-                <Line type="monotone" dataKey="value" stroke="#0a1f44" strokeWidth={1.5} dot={false} name={activeFocus} />
-                <Line type="monotone" dataKey="movingAvg" stroke="#c89b3c" strokeWidth={1.5} dot={false} name="Média móvel 4p" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </section>
-      )}
-
       {/* Correlations */}
       {summary && summary.correlations.length > 0 && (
         <section>
@@ -287,45 +332,6 @@ function ExplorePage() {
                 <Bar dataKey="mean" fill="#0a1f44" />
               </BarChart>
             </ResponsiveContainer>
-          </div>
-        </section>
-      )}
-
-      {/* Columns table */}
-      {summary && (
-        <section>
-          <p className="eyebrow">Qualidade e distribuição</p>
-          <div className="mt-6 border hairline bg-white overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="text-xs uppercase tracking-widest text-brand-gray border-b hairline">
-                <tr>
-                  <th className="text-left p-3">Coluna</th>
-                  <th className="text-left p-3">Tipo</th>
-                  <th className="text-right p-3">Média</th>
-                  <th className="text-right p-3">Mediana</th>
-                  <th className="text-right p-3">Min</th>
-                  <th className="text-right p-3">Max</th>
-                  <th className="text-right p-3">% nulos</th>
-                  <th className="text-right p-3">% zeros</th>
-                  <th className="text-right p-3">Outliers</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summary.columns.map((c) => (
-                  <tr key={c.name} className="border-b hairline last:border-0">
-                    <td className="p-3 font-medium text-brand-navy">{c.name}</td>
-                    <td className="p-3 text-brand-navy/70">{c.kind}</td>
-                    <td className="p-3 text-right">{fmt(c.mean)}</td>
-                    <td className="p-3 text-right">{fmt(c.median)}</td>
-                    <td className="p-3 text-right">{fmt(c.min)}</td>
-                    <td className="p-3 text-right">{fmt(c.max)}</td>
-                    <td className="p-3 text-right">{pct(c.missingPct)}</td>
-                    <td className="p-3 text-right">{pct(c.zeroPct)}</td>
-                    <td className="p-3 text-right">{c.outliers ?? "—"}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </section>
       )}
