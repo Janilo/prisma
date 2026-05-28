@@ -19,6 +19,7 @@ import { Route as AuthenticatedRunsIndexRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDatasetsIndexRouteImport } from './routes/_authenticated/datasets.index'
 import { Route as AuthenticatedRunsIdRouteImport } from './routes/_authenticated/runs.$id'
 import { Route as AuthenticatedDatasetsIdRouteImport } from './routes/_authenticated/datasets.$id'
+import { Route as AuthenticatedDatasetsIdModelRouteImport } from './routes/_authenticated/datasets.$id.model'
 import { Route as AuthenticatedDatasetsIdExploreRouteImport } from './routes/_authenticated/datasets.$id.explore'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
@@ -71,6 +72,12 @@ const AuthenticatedDatasetsIdRoute = AuthenticatedDatasetsIdRouteImport.update({
   path: '/datasets/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedDatasetsIdModelRoute =
+  AuthenticatedDatasetsIdModelRouteImport.update({
+    id: '/model',
+    path: '/model',
+    getParentRoute: () => AuthenticatedDatasetsIdRoute,
+  } as any)
 const AuthenticatedDatasetsIdExploreRoute =
   AuthenticatedDatasetsIdExploreRouteImport.update({
     id: '/explore',
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/datasets/': typeof AuthenticatedDatasetsIndexRoute
   '/runs/': typeof AuthenticatedRunsIndexRoute
   '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
+  '/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,6 +109,7 @@ export interface FileRoutesByTo {
   '/datasets': typeof AuthenticatedDatasetsIndexRoute
   '/runs': typeof AuthenticatedRunsIndexRoute
   '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
+  '/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,6 +124,7 @@ export interface FileRoutesById {
   '/_authenticated/datasets/': typeof AuthenticatedDatasetsIndexRoute
   '/_authenticated/runs/': typeof AuthenticatedRunsIndexRoute
   '/_authenticated/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
+  '/_authenticated/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/datasets/'
     | '/runs/'
     | '/datasets/$id/explore'
+    | '/datasets/$id/model'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/datasets'
     | '/runs'
     | '/datasets/$id/explore'
+    | '/datasets/$id/model'
   id:
     | '__root__'
     | '/'
@@ -154,6 +166,7 @@ export interface FileRouteTypes {
     | '/_authenticated/datasets/'
     | '/_authenticated/runs/'
     | '/_authenticated/datasets/$id/explore'
+    | '/_authenticated/datasets/$id/model'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -235,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDatasetsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/datasets/$id/model': {
+      id: '/_authenticated/datasets/$id/model'
+      path: '/model'
+      fullPath: '/datasets/$id/model'
+      preLoaderRoute: typeof AuthenticatedDatasetsIdModelRouteImport
+      parentRoute: typeof AuthenticatedDatasetsIdRoute
+    }
     '/_authenticated/datasets/$id/explore': {
       id: '/_authenticated/datasets/$id/explore'
       path: '/explore'
@@ -247,11 +267,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedDatasetsIdRouteChildren {
   AuthenticatedDatasetsIdExploreRoute: typeof AuthenticatedDatasetsIdExploreRoute
+  AuthenticatedDatasetsIdModelRoute: typeof AuthenticatedDatasetsIdModelRoute
 }
 
 const AuthenticatedDatasetsIdRouteChildren: AuthenticatedDatasetsIdRouteChildren =
   {
     AuthenticatedDatasetsIdExploreRoute: AuthenticatedDatasetsIdExploreRoute,
+    AuthenticatedDatasetsIdModelRoute: AuthenticatedDatasetsIdModelRoute,
   }
 
 const AuthenticatedDatasetsIdRouteWithChildren =
