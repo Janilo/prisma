@@ -14,7 +14,134 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      datasets: {
+        Row: {
+          columns_json: Json
+          created_at: string
+          granularity: string | null
+          id: string
+          n_cols: number
+          n_rows: number
+          name: string
+          original_filename: string
+          period_end: string | null
+          period_start: string | null
+          storage_path: string
+          user_id: string
+        }
+        Insert: {
+          columns_json?: Json
+          created_at?: string
+          granularity?: string | null
+          id?: string
+          n_cols?: number
+          n_rows?: number
+          name: string
+          original_filename: string
+          period_end?: string | null
+          period_start?: string | null
+          storage_path: string
+          user_id: string
+        }
+        Update: {
+          columns_json?: Json
+          created_at?: string
+          granularity?: string | null
+          id?: string
+          n_cols?: number
+          n_rows?: number
+          name?: string
+          original_filename?: string
+          period_end?: string | null
+          period_start?: string | null
+          storage_path?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      runs: {
+        Row: {
+          contributions_json: Json
+          created_at: string
+          dataset_id: string
+          decomposition_json: Json
+          dep_variable: string | null
+          error_message: string | null
+          finished_at: string | null
+          id: string
+          indep_variables_json: Json
+          metrics_json: Json
+          name: string
+          params_json: Json
+          predicted_json: Json
+          roi_json: Json
+          status: string
+          user_id: string
+        }
+        Insert: {
+          contributions_json?: Json
+          created_at?: string
+          dataset_id: string
+          decomposition_json?: Json
+          dep_variable?: string | null
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          indep_variables_json?: Json
+          metrics_json?: Json
+          name: string
+          params_json?: Json
+          predicted_json?: Json
+          roi_json?: Json
+          status?: string
+          user_id: string
+        }
+        Update: {
+          contributions_json?: Json
+          created_at?: string
+          dataset_id?: string
+          decomposition_json?: Json
+          dep_variable?: string | null
+          error_message?: string | null
+          finished_at?: string | null
+          id?: string
+          indep_variables_json?: Json
+          metrics_json?: Json
+          name?: string
+          params_json?: Json
+          predicted_json?: Json
+          roi_json?: Json
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "runs_dataset_id_fkey"
+            columns: ["dataset_id"]
+            isOneToOne: false
+            referencedRelation: "datasets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
