@@ -64,20 +64,53 @@ function HomePage() {
                 </Link>
               </div>
             </div>
-            <div className="grid grid-cols-3 gap-px bg-brand-navy/10 border hairline">
-              <div className="bg-brand-creme p-6">
-                <p className="font-display text-3xl text-brand-navy">R²</p>
-                <p className="text-[10px] text-brand-gray uppercase tracking-widest mt-2">Ajuste</p>
+            <figure className="bg-brand-creme border hairline p-6 lg:p-8">
+              <figcaption className="flex items-baseline justify-between mb-6">
+                <p className="eyebrow">Contribuição por canal</p>
+                <p className="text-[10px] text-brand-gray uppercase tracking-widest">R$ · últimos 12 meses</p>
+              </figcaption>
+              {(() => {
+                const data = [
+                  { label: "Base", value: 58, color: "var(--color-brand-navy)" },
+                  { label: "Google", value: 14, color: "var(--color-brand-purple)" },
+                  { label: "Meta", value: 11, color: "var(--color-brand-purple)" },
+                  { label: "TV", value: 8, color: "var(--color-brand-mustard)" },
+                  { label: "OOH", value: 5, color: "var(--color-brand-mustard)" },
+                  { label: "Promo", value: 4, color: "var(--color-brand-gray)" },
+                ];
+                const max = Math.max(...data.map((d) => d.value));
+                return (
+                  <div className="space-y-3">
+                    {data.map((d) => (
+                      <div key={d.label} className="flex items-center gap-4">
+                        <span className="w-16 text-[11px] uppercase tracking-widest text-brand-navy/70">{d.label}</span>
+                        <div className="flex-1 h-6 bg-brand-navy/5 relative">
+                          <div
+                            className="h-full"
+                            style={{ width: `${(d.value / max) * 100}%`, background: d.color }}
+                          />
+                        </div>
+                        <span className="w-10 text-right font-display text-sm text-brand-navy tabular-nums">{d.value}%</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })()}
+              <div className="mt-6 pt-4 border-t hairline grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <p className="font-display text-lg text-brand-navy">0.91</p>
+                  <p className="text-[10px] text-brand-gray uppercase tracking-widest mt-1">R²</p>
+                </div>
+                <div>
+                  <p className="font-display text-lg text-brand-navy">3.2x</p>
+                  <p className="text-[10px] text-brand-gray uppercase tracking-widest mt-1">ROI médio</p>
+                </div>
+                <div>
+                  <p className="font-display text-lg text-brand-mustard">42%</p>
+                  <p className="text-[10px] text-brand-gray uppercase tracking-widest mt-1">Incremental</p>
+                </div>
               </div>
-              <div className="bg-brand-creme p-6">
-                <p className="font-display text-3xl text-brand-navy">ROI</p>
-                <p className="text-[10px] text-brand-gray uppercase tracking-widest mt-2">Por canal</p>
-              </div>
-              <div className="bg-brand-creme p-6">
-                <p className="font-display text-3xl text-brand-mustard">★</p>
-                <p className="text-[10px] text-brand-gray uppercase tracking-widest mt-2">Significância</p>
-              </div>
-            </div>
+            </figure>
           </div>
         </section>
         <MethodSection />
