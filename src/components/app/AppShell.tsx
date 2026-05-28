@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 const NAV = [
   { to: "/upload", label: "Upload" },
   { to: "/datasets", label: "Datasets" },
+  { to: "/explore", label: "Análise descritiva" },
   { to: "/runs", label: "Histórico" },
 ] as const;
 
