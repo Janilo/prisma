@@ -6,7 +6,7 @@ import { listDatasets } from "@/lib/mmm.functions";
 const datasetsQuery = (fn: ReturnType<typeof useServerFn<typeof listDatasets>>) =>
   queryOptions({ queryKey: ["datasets"], queryFn: () => fn() });
 
-export const Route = createFileRoute("/_authenticated/datasets")({
+export const Route = createFileRoute("/_authenticated/datasets/")({
   component: DatasetsPage,
 });
 
