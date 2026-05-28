@@ -55,7 +55,7 @@ export function SiteFooter() {
       <div className="border-t hairline">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[10px] uppercase tracking-[0.18em] text-brand-gray">
           <span>Prisma · 2026</span>
-          <span>Marketing Mix Modeling · IA · Ridge + Adstock</span>
+          <span>Marketing Mix Modeling</span>
         </div>
       </div>
     </footer>
