@@ -7,7 +7,25 @@ import { lovable } from "@/integrations/lovable";
 import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 
+const OG_IMAGE = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png";
+
 export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [
+      { title: "Entrar · Prisma" },
+      { name: "description", content: "Acesse o Prisma para rodar Marketing Mix Modeling: suba sua planilha de vendas e gastos e veja contribuição, ROI por canal e decomposição base vs. incremental." },
+      { property: "og:title", content: "Acesse sua conta no Prisma" },
+      { property: "og:description", content: "Entre no Prisma e rode MMM com Ridge, adstock e saturação a partir da sua planilha." },
+      { property: "og:url", content: "https://prisma.pereirasaraiva.com/login" },
+      { property: "og:image", content: OG_IMAGE },
+      { name: "twitter:title", content: "Acesse sua conta no Prisma" },
+      { name: "twitter:description", content: "Entre no Prisma e rode MMM com Ridge, adstock e saturação." },
+      { name: "twitter:image", content: OG_IMAGE },
+    ],
+    links: [
+      { rel: "canonical", href: "https://prisma.pereirasaraiva.com/login" },
+    ],
+  }),
   component: LoginPage,
 });
 
@@ -66,7 +84,7 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-brand-offwhite flex flex-col">
       <SiteHeader />
-      <div className="flex-1 flex">
+      <main className="flex-1 flex">
       {/* Left: brand panel */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 bg-brand-creme p-16 border-r hairline">
         <div>
@@ -170,7 +188,7 @@ function LoginPage() {
           </button>
         </div>
       </div>
-      </div>
+      </main>
       <SiteFooter />
     </div>
   );
