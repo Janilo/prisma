@@ -3,7 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { listRuns } from "@/lib/mmm.functions";
 
-export const Route = createFileRoute("/_authenticated/runs")({
+export const Route = createFileRoute("/_authenticated/runs/")({
   component: RunsPage,
 });
 
