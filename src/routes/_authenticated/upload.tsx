@@ -155,7 +155,8 @@ function UploadPage() {
             <p className="text-xs text-brand-navy/60 mt-2 leading-relaxed">{s.d}</p>
           </div>
         ))}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
