@@ -85,46 +85,9 @@ function LoginPage() {
   return (
     <div className="min-h-screen bg-brand-offwhite flex flex-col">
       <SiteHeader />
-      <main className="flex-1 flex">
-      {/* Left: brand panel */}
-      <div className="hidden lg:flex flex-col justify-between w-1/2 bg-brand-creme p-16 border-r hairline">
-        <div>
-          <p className="eyebrow">Marketing Mix Modeling</p>
-          <h2 className="mt-3 font-display text-2xl italic text-brand-navy">Prisma</h2>
-        </div>
-        <div className="max-w-md space-y-6">
-          <h1 className="font-display text-4xl font-light italic text-brand-navy leading-tight">
-            Decomponha suas vendas no canal que realmente moveu o ponteiro.
-          </h1>
-          <p className="text-sm text-brand-navy/70 leading-relaxed">
-            Você sobe uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação,
-            mostra contribuição em R$, ROI por canal e o quanto é base versus incremental.
-          </p>
-          <div className="grid grid-cols-3 gap-px bg-brand-navy/10 border hairline">
-            <div className="bg-brand-creme p-4">
-              <p className="font-display text-2xl text-brand-navy">R²</p>
-              <p className="text-[10px] text-brand-gray uppercase tracking-widest">Ajuste</p>
-            </div>
-            <div className="bg-brand-creme p-4">
-              <p className="font-display text-2xl text-brand-navy">ROI</p>
-              <p className="text-[10px] text-brand-gray uppercase tracking-widest">Por canal</p>
-            </div>
-            <div className="bg-brand-creme p-4">
-              <p className="font-display text-2xl text-brand-mustard">★</p>
-              <p className="text-[10px] text-brand-gray uppercase tracking-widest">Significância</p>
-            </div>
-          </div>
-        </div>
-        <p className="text-[10px] text-brand-gray uppercase tracking-widest">Prisma · 2026</p>
-      </div>
-
-      {/* Right: auth form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <main className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
-          <span className="font-display text-2xl font-black italic tracking-tighter text-brand-purple lg:hidden">
-            Prisma
-          </span>
-          <p className="eyebrow mt-8">
+          <p className="eyebrow">
             {mode === "signin" ? "Acessar conta" : "Criar conta"}
           </p>
           <h2 className="mt-2 font-display text-2xl text-brand-navy">
@@ -188,9 +151,7 @@ function LoginPage() {
               : "Já tenho conta. Entrar."}
           </button>
         </div>
-      </div>
       </main>
-      <MethodSection />
       <SiteFooter />
     </div>
   );
