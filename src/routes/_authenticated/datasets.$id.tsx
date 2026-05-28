@@ -15,6 +15,16 @@ const search = z.object({
 });
 
 export const Route = createFileRoute("/_authenticated/datasets/$id")({
+  head: ({ params }) => ({
+    meta: [
+      { title: "Dataset · Prisma" },
+      { name: "description", content: "Diagnóstico do dataset e configuração do modelo Marketing Mix Modeling: dependente, explicativas, mídia, adstock e saturação." },
+      { property: "og:title", content: "Configurar modelo MMM no Prisma" },
+      { property: "og:description", content: "Revise colunas detectadas e configure o modelo MMM para este dataset." },
+      { property: "og:url", content: `https://prisma.pereirasaraiva.com/datasets/${params.id}` },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   validateSearch: (s) => search.parse(s),
   component: DatasetPage,
 });
@@ -97,7 +107,7 @@ function DatasetPage() {
 
       {/* Columns diagnostic table */}
       <section className="mt-12">
-        <p className="eyebrow">Colunas detectadas</p>
+        <h2 className="eyebrow">Colunas detectadas</h2>
         <table className="mt-3 w-full text-sm border-collapse">
           <thead>
             <tr className="border-b hairline-strong">
@@ -136,11 +146,12 @@ function DatasetPage() {
       {/* Model config */}
       <section className="mt-16 grid grid-cols-2 gap-12">
         <div className="space-y-6">
-          <p className="eyebrow">03 — Configurar modelo</p>
+          <h2 className="eyebrow">03 — Configurar modelo</h2>
 
           <div>
-            <label className="eyebrow block mb-2">Nome do modelo</label>
+            <label htmlFor="run-name" className="eyebrow block mb-2">Nome do modelo</label>
             <input
+              id="run-name"
               value={runName}
               onChange={(e) => setRunName(e.target.value)}
               className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm"
@@ -148,8 +159,9 @@ function DatasetPage() {
           </div>
 
           <div>
-            <label className="eyebrow block mb-2">Variável dependente (o que explicar)</label>
+            <label htmlFor="dep-select" className="eyebrow block mb-2">Variável dependente (o que explicar)</label>
             <select
+              id="dep-select"
               value={dep}
               onChange={(e) => setDep(e.target.value)}
               className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm"
@@ -159,8 +171,9 @@ function DatasetPage() {
           </div>
 
           <div>
-            <label className="eyebrow block mb-2">Coluna de data (opcional)</label>
+            <label htmlFor="date-select" className="eyebrow block mb-2">Coluna de data (opcional)</label>
             <select
+              id="date-select"
               value={dateCol}
               onChange={(e) => setDateCol(e.target.value)}
               className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm"
@@ -186,7 +199,7 @@ function DatasetPage() {
         </div>
 
         <div>
-          <p className="eyebrow">Variáveis explicativas</p>
+          <h2 className="eyebrow">Variáveis explicativas</h2>
           <p className="text-xs text-brand-navy/60 mt-2 mb-4">
             Marque as colunas que devem explicar a dependente. Marque também as que são <em>mídia</em>{" "}
             (recebem adstock + saturação).

@@ -26,6 +26,16 @@ import type { DatasetSummary } from "@/lib/describe.server";
 import type { ColumnInfo } from "@/lib/parse";
 
 export const Route = createFileRoute("/_authenticated/datasets/$id/explore")({
+  head: ({ params }) => ({
+    meta: [
+      { title: "Exploração · Prisma" },
+      { name: "description", content: "Leitura automática do dataset: série temporal, correlações, sazonalidade e qualidade de dados antes de rodar o modelo MMM." },
+      { property: "og:title", content: "Exploração de dados no Prisma" },
+      { property: "og:description", content: "Veja série temporal, correlações e sazonalidade do seu dataset antes de configurar o MMM." },
+      { property: "og:url", content: `https://prisma.pereirasaraiva.com/datasets/${params.id}/explore` },
+      { name: "robots", content: "noindex" },
+    ],
+  }),
   component: ExplorePage,
 });
 
@@ -133,10 +143,11 @@ function ExplorePage() {
       {/* Focus selector */}
       <div className="flex items-end justify-between gap-6 border-b hairline pb-4">
         <div>
-          <label className="text-xs uppercase tracking-widest text-brand-gray">
+          <label htmlFor="focus-select" className="text-xs uppercase tracking-widest text-brand-gray">
             Variável de interesse
           </label>
           <select
+            id="focus-select"
             value={activeFocus}
             onChange={(e) => setFocus(e.target.value)}
             className="mt-2 bg-transparent border-b hairline-strong text-2xl font-display text-brand-navy focus:outline-none pr-4"
