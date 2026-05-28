@@ -1,0 +1,16 @@
+# Prisma
+
+> Marketing Mix Modeling acessível: suba uma planilha de vendas e gastos e veja o que de fato move suas vendas — com Ridge, adstock, saturação e ROI por canal.
+
+Prisma é um produto da J P Saraiva (Pereira Saraiva) para times de marketing e analytics que querem rodar MMM sem montar pipeline. Você sobe um CSV ou XLSX, o Prisma detecta data, dependente e variáveis explicativas, e devolve contribuição em R$, ROI por canal e decomposição base vs. incremental.
+
+## Pages
+
+- [Início](/): Entrada para o Prisma — leva ao login ou ao upload.
+- [Entrar](/login): Acesso à conta para rodar modelos.
+
+## Optional
+
+- [J P Saraiva](https://pereirasaraiva.com): Site institucional da consultoria.
+- [Cascata](https://cascata.pereirasaraiva.com): Price waterfall analítico, produto irmão.
+- [Lente](https://lente.pereirasaraiva.com): Pesquisa qualitativa assistida por IA, produto irmão.

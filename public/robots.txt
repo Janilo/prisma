@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /upload
+Disallow: /datasets
+Disallow: /runs
+
+Sitemap: https://prisma.pereirasaraiva.com/sitemap.xml

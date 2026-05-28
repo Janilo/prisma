@@ -14,6 +14,19 @@ import {
 } from "@/lib/parse";
 
 export const Route = createFileRoute("/_authenticated/upload")({
+  head: () => ({
+    meta: [
+      { title: "Upload de dados · Prisma" },
+      { name: "description", content: "Suba uma planilha CSV ou XLSX com vendas e gastos por canal. Prisma detecta data, dependente e variáveis explicativas automaticamente." },
+      { property: "og:title", content: "Importação de dados MMM" },
+      { property: "og:description", content: "Suba CSV ou XLSX no Prisma e rode Marketing Mix Modeling sem montar pipeline." },
+      { property: "og:url", content: "https://prisma.pereirasaraiva.com/upload" },
+      { name: "robots", content: "noindex" },
+    ],
+    links: [
+      { rel: "canonical", href: "https://prisma.pereirasaraiva.com/upload" },
+    ],
+  }),
   component: UploadPage,
 });
 
@@ -107,25 +120,30 @@ function UploadPage() {
         variável dependente e candidatos a variáveis explicativas automaticamente.
       </p>
 
-      <label className="mt-12 block border hairline-strong border-dashed bg-white p-12 cursor-pointer hover:bg-brand-creme transition-colors">
-        <input
-          type="file"
-          accept=".csv,.xlsx,.xls"
-          className="hidden"
-          onChange={onFile}
-          disabled={busy}
-        />
-        <div className="text-center space-y-2">
-          <p className="font-display text-2xl text-brand-navy">
-            {busy ? status || "Processando..." : "Selecionar arquivo"}
-          </p>
-          <p className="text-xs text-brand-gray uppercase tracking-widest">
-            CSV ou XLSX · até 10 MB
-          </p>
-        </div>
-      </label>
+      <section className="mt-12" aria-labelledby="suba-heading">
+        <h2 id="suba-heading" className="eyebrow">Suba seus dados</h2>
+        <label className="mt-3 block border hairline-strong border-dashed bg-white p-12 cursor-pointer hover:bg-brand-creme transition-colors">
+          <input
+            type="file"
+            accept=".csv,.xlsx,.xls"
+            className="hidden"
+            onChange={onFile}
+            disabled={busy}
+          />
+          <div className="text-center space-y-2">
+            <p className="font-display text-2xl text-brand-navy">
+              {busy ? status || "Processando..." : "Selecionar arquivo"}
+            </p>
+            <p className="text-xs text-brand-gray uppercase tracking-widest">
+              CSV ou XLSX · até 10 MB
+            </p>
+          </div>
+        </label>
+      </section>
 
-      <div className="mt-12 grid grid-cols-3 gap-px bg-brand-navy/10 border hairline">
+      <section className="mt-12" aria-labelledby="como-heading">
+        <h2 id="como-heading" className="eyebrow">Como funciona</h2>
+        <div className="mt-3 grid grid-cols-3 gap-px bg-brand-navy/10 border hairline">
         {[
           { n: "1", t: "Suba", d: "Planilha com data, vendas e gastos por canal." },
           { n: "2", t: "Diagnostique", d: "Veja colunas detectadas, missings e outliers." },
@@ -137,7 +155,8 @@ function UploadPage() {
             <p className="text-xs text-brand-navy/60 mt-2 leading-relaxed">{s.d}</p>
           </div>
         ))}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
