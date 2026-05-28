@@ -31,7 +31,7 @@ function DatasetsPage() {
           </Link>
         </div>
       ) : (
-        <table className="mt-8 w-full text-sm border-collapse">
+        <table className="mt-8 w-full text-sm border-collapse [&_th]:px-4 [&_td]:px-4 [&_th:first-child]:pl-0 [&_td:first-child]:pl-0 [&_th:last-child]:pr-0 [&_td:last-child]:pr-0">
           <thead>
             <tr className="border-b hairline-strong">
               <th className="text-left py-3 eyebrow">Nome</th>
