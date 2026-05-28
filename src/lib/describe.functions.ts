@@ -117,8 +117,8 @@ export const interpretDataset = createServerFn({ method: "POST" })
     // Reuse cached insights when available and not forced
     if (!data.force && ds.insights_json && ds.summary_json) {
       return {
-        insights: ds.insights_json as DatasetInsights,
-        summary: ds.summary_json as DatasetSummary,
+        insights: ds.insights_json as unknown as DatasetInsights,
+        summary: ds.summary_json as unknown as DatasetSummary,
       };
     }
 
