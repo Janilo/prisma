@@ -71,7 +71,7 @@ function UploadPage() {
           storage_path: storagePath,
           n_rows: parsed.rows.length,
           n_cols: parsed.columns.length,
-          columns_json: cols as unknown as object,
+          columns_json: cols as unknown as never,
           period_start: periods[0] ?? null,
           period_end: periods[periods.length - 1] ?? null,
           granularity,

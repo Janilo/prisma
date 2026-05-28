@@ -29,7 +29,7 @@ function DatasetPage() {
   const { data } = useSuspenseQuery(
     queryOptions({ queryKey: ["dataset", id], queryFn: () => getFn({ data: { id } }) }),
   );
-  const ds = data.dataset as {
+  const ds = data.dataset as unknown as {
     id: string;
     name: string;
     columns_json: ColumnInfo[];
@@ -39,6 +39,7 @@ function DatasetPage() {
     n_rows: number;
     n_cols: number;
   };
+
 
   const cols = ds.columns_json ?? [];
   const numericCols = cols.filter((c) => c.kind === "number").map((c) => c.name);
@@ -52,7 +53,7 @@ function DatasetPage() {
   const [dep, setDep] = useState<string>(sp.dep ?? numericCols[0] ?? "");
   const [dateCol, setDateCol] = useState<string>(sp.date ?? dateCols[0] ?? "");
   const [indep, setIndep] = useState<string[]>(initialIndep);
-  const [media, setMedia] = useState<string[]>(initialIndep.filter((n) => /gasto|spend|media|tv|google|meta|invest/i.test(n)));
+  const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest/i.test(n)));
   const [alpha, setAlpha] = useState(1);
   const [decay, setDecay] = useState(0.5);
   const [satAlpha, setSatAlpha] = useState(1);

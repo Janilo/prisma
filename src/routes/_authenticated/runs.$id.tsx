@@ -43,7 +43,7 @@ function RunPage() {
     queryOptions({ queryKey: ["run", id], queryFn: () => fn({ data: { id } }) }),
   );
 
-  const run = data.run as {
+  const run = data.run as unknown as {
     id: string;
     name: string;
     dep_variable: string;
@@ -55,6 +55,7 @@ function RunPage() {
     params_json: { alpha: number; adstockDecay: number; saturationAlpha: number; mediaVariables: string[] };
     created_at: string;
   };
+
 
   const totals = run.contributions_json ?? [];
   const variables = useMemo(() => totals.filter((t) => t.variable !== "Base (sazonalidade + intercepto)"), [totals]);
