@@ -71,10 +71,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Prisma · Marketing Mix Modeling" },
-      { name: "description", content: "Suba uma planilha e veja o que de fato move suas vendas. MMM com Ridge, decomposição no tempo e ROI por canal." },
-      { property: "og:site_name", content: "Prisma" },
+      { title: "Prisma · O que move suas vendas, por canal" },
+      { name: "description", content: "Suba uma planilha e veja quanto cada canal contribuiu para suas vendas. Decomposição semanal, ROI por variável, modelo estatístico sem código." },
+      { property: "og:title", content: "Prisma · O que move suas vendas, por canal" },
+      { property: "og:description", content: "Suba uma planilha e veja quanto cada canal contribuiu para suas vendas. Decomposição semanal, ROI por variável, modelo estatístico sem código." },
       { property: "og:type", content: "website" },
+      { name: "twitter:title", content: "Prisma · O que move suas vendas, por canal" },
+      { name: "twitter:description", content: "Suba uma planilha e veja quanto cada canal contribuiu para suas vendas. Decomposição semanal, ROI por variável, modelo estatístico sem código." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e60cc451-29fc-44ed-a682-76559e6a33fe/id-preview-c40cb67c--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779935454083.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e60cc451-29fc-44ed-a682-76559e6a33fe/id-preview-c40cb67c--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779935454083.png" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
