@@ -20,6 +20,7 @@ export type Database = {
           created_at: string
           granularity: string | null
           id: string
+          insights_json: Json | null
           n_cols: number
           n_rows: number
           name: string
@@ -27,6 +28,7 @@ export type Database = {
           period_end: string | null
           period_start: string | null
           storage_path: string
+          summary_json: Json | null
           user_id: string
         }
         Insert: {
@@ -34,6 +36,7 @@ export type Database = {
           created_at?: string
           granularity?: string | null
           id?: string
+          insights_json?: Json | null
           n_cols?: number
           n_rows?: number
           name: string
@@ -41,6 +44,7 @@ export type Database = {
           period_end?: string | null
           period_start?: string | null
           storage_path: string
+          summary_json?: Json | null
           user_id: string
         }
         Update: {
@@ -48,6 +52,7 @@ export type Database = {
           created_at?: string
           granularity?: string | null
           id?: string
+          insights_json?: Json | null
           n_cols?: number
           n_rows?: number
           name?: string
@@ -55,6 +60,7 @@ export type Database = {
           period_end?: string | null
           period_start?: string | null
           storage_path?: string
+          summary_json?: Json | null
           user_id?: string
         }
         Relationships: []

@@ -17,6 +17,7 @@ import { Route as AuthenticatedRunsRouteImport } from './routes/_authenticated/r
 import { Route as AuthenticatedDatasetsRouteImport } from './routes/_authenticated/datasets'
 import { Route as AuthenticatedRunsIdRouteImport } from './routes/_authenticated/runs.$id'
 import { Route as AuthenticatedDatasetsIdRouteImport } from './routes/_authenticated/datasets.$id'
+import { Route as AuthenticatedDatasetsIdExploreRouteImport } from './routes/_authenticated/datasets.$id.explore'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -57,6 +58,12 @@ const AuthenticatedDatasetsIdRoute = AuthenticatedDatasetsIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AuthenticatedDatasetsRoute,
 } as any)
+const AuthenticatedDatasetsIdExploreRoute =
+  AuthenticatedDatasetsIdExploreRouteImport.update({
+    id: '/explore',
+    path: '/explore',
+    getParentRoute: () => AuthenticatedDatasetsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -64,8 +71,9 @@ export interface FileRoutesByFullPath {
   '/datasets': typeof AuthenticatedDatasetsRouteWithChildren
   '/runs': typeof AuthenticatedRunsRouteWithChildren
   '/upload': typeof AuthenticatedUploadRoute
-  '/datasets/$id': typeof AuthenticatedDatasetsIdRoute
+  '/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/runs/$id': typeof AuthenticatedRunsIdRoute
+  '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -73,8 +81,9 @@ export interface FileRoutesByTo {
   '/datasets': typeof AuthenticatedDatasetsRouteWithChildren
   '/runs': typeof AuthenticatedRunsRouteWithChildren
   '/upload': typeof AuthenticatedUploadRoute
-  '/datasets/$id': typeof AuthenticatedDatasetsIdRoute
+  '/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/runs/$id': typeof AuthenticatedRunsIdRoute
+  '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -84,8 +93,9 @@ export interface FileRoutesById {
   '/_authenticated/datasets': typeof AuthenticatedDatasetsRouteWithChildren
   '/_authenticated/runs': typeof AuthenticatedRunsRouteWithChildren
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
-  '/_authenticated/datasets/$id': typeof AuthenticatedDatasetsIdRoute
+  '/_authenticated/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/_authenticated/runs/$id': typeof AuthenticatedRunsIdRoute
+  '/_authenticated/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/upload'
     | '/datasets/$id'
     | '/runs/$id'
+    | '/datasets/$id/explore'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/upload'
     | '/datasets/$id'
     | '/runs/$id'
+    | '/datasets/$id/explore'
   id:
     | '__root__'
     | '/'
@@ -116,6 +128,7 @@ export interface FileRouteTypes {
     | '/_authenticated/upload'
     | '/_authenticated/datasets/$id'
     | '/_authenticated/runs/$id'
+    | '/_authenticated/datasets/$id/explore'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -182,15 +195,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDatasetsIdRouteImport
       parentRoute: typeof AuthenticatedDatasetsRoute
     }
+    '/_authenticated/datasets/$id/explore': {
+      id: '/_authenticated/datasets/$id/explore'
+      path: '/explore'
+      fullPath: '/datasets/$id/explore'
+      preLoaderRoute: typeof AuthenticatedDatasetsIdExploreRouteImport
+      parentRoute: typeof AuthenticatedDatasetsIdRoute
+    }
   }
 }
 
+interface AuthenticatedDatasetsIdRouteChildren {
+  AuthenticatedDatasetsIdExploreRoute: typeof AuthenticatedDatasetsIdExploreRoute
+}
+
+const AuthenticatedDatasetsIdRouteChildren: AuthenticatedDatasetsIdRouteChildren =
+  {
+    AuthenticatedDatasetsIdExploreRoute: AuthenticatedDatasetsIdExploreRoute,
+  }
+
+const AuthenticatedDatasetsIdRouteWithChildren =
+  AuthenticatedDatasetsIdRoute._addFileChildren(
+    AuthenticatedDatasetsIdRouteChildren,
+  )
+
 interface AuthenticatedDatasetsRouteChildren {
-  AuthenticatedDatasetsIdRoute: typeof AuthenticatedDatasetsIdRoute
+  AuthenticatedDatasetsIdRoute: typeof AuthenticatedDatasetsIdRouteWithChildren
 }
 
 const AuthenticatedDatasetsRouteChildren: AuthenticatedDatasetsRouteChildren = {
-  AuthenticatedDatasetsIdRoute: AuthenticatedDatasetsIdRoute,
+  AuthenticatedDatasetsIdRoute: AuthenticatedDatasetsIdRouteWithChildren,
 }
 
 const AuthenticatedDatasetsRouteWithChildren =
