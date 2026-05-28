@@ -170,6 +170,8 @@ function LoginPage() {
           </button>
         </div>
       </div>
+      </div>
+      <SiteFooter />
     </div>
   );
 }
