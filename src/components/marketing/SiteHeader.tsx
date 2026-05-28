@@ -6,7 +6,7 @@ export function SiteHeader() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between">
         {/* Wordmark */}
         <a href="/" className="flex items-baseline gap-3 group">
-          <span className="font-display text-2xl text-brand-purple group-hover:opacity-80 transition-opacity">
+          <span className="font-display text-2xl font-black italic tracking-tighter text-brand-purple group-hover:opacity-80 transition-opacity">
             Prisma
           </span>
           <span className="font-sans text-[10px] uppercase tracking-[0.18em] text-brand-gray">
