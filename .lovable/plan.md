@@ -1,77 +1,50 @@
 ## Objetivo
 
-Após o upload, oferecer uma página `/datasets/$id/explore` com análise descritiva visual + interpretação em linguagem natural feita pela Lovable AI, antes de o usuário rodar o modelo.
+Estabelecer consistência visual entre `pereirasaraiva.com` (pai) e o Prisma (filho), começando pelo cabeçalho e rodapé das **páginas de entrada** — `/` e `/login`. As internas autenticadas mantêm o sidebar atual de operação.
 
-## Fluxo
+## Referência (capturada de pereirasaraiva.com)
 
-1. Upload (já existe) → ao concluir, redireciona para `/datasets/$id/explore` (em vez de ir direto para configuração do modelo).
-2. Tela "Explorar dados" mostra gráficos + texto da LLM.
-3. Botão "Configurar modelo →" leva para `/datasets/$id` (configuração já existente).
+**Cabeçalho** — barra horizontal sobre fundo creme (`brand-offwhite`):
+- Esquerda: wordmark serif "J P Saraiva" (Fraunces, peso regular, cor `brand-purple`).
+- Centro/direita: links em caixa-alta, tracking largo, sans — SERVIÇOS · CASES · BLOG · NEWSLETTER · SOBRE · CONTATO.
+- Extrema direita: botão sólido `brand-purple` com texto branco caixa-alta — "AGENDAR →".
+- Hairline inferior dividindo do conteúdo.
 
-## Backend
+**Rodapé** — não exposto na home capturada; será desenhado dentro do mesmo design system (creme, tipografia editorial, hairlines).
 
-**`src/lib/describe.server.ts`** — estatísticas puras em TS:
-- Para cada coluna numérica: min, max, média, mediana, desvio, % nulos, % zeros, skew, top 3 outliers.
-- Série temporal (se houver coluna de data): tendência (slope de regressão linear simples), sazonalidade simples (média por mês/dow), variação MoM.
-- Correlação de Pearson entre a variável dependente candidata e cada independente (matriz de correlação).
-- Auxiliar `summarizeDataset(rows, columns)` → objeto JSON compacto (sem mandar o CSV inteiro para a LLM).
+## Mudanças no Prisma
 
-**`src/lib/describe.functions.ts`** — server fns:
-- `describeDataset({ datasetId, depVariable? })`:
-  - lê CSV do storage (mesma rota do `runMmm`), roda `summarizeDataset`, devolve JSON com:
-    - `overview` (linhas, colunas, granularidade, período)
-    - `columns[]` (stats por coluna)
-    - `timeSeries` (série da variável escolhida, MoM, trend)
-    - `correlations[]` (top correlações com `depVariable`)
-- `interpretDataset({ datasetId, depVariable? })`:
-  - chama `describeDataset` internamente
-  - usa AI SDK + Lovable AI Gateway (`google/gemini-3-flash-preview`) com `Output.object` (Zod) para retornar:
-    - `headline` (1 frase, "aha")
-    - `keyFindings[]` (3–5 bullets em PT-BR, baseados nos números)
-    - `dataQualityWarnings[]` (nulos, outliers, baixa variância, séries muito curtas)
-    - `suggestedDependent`, `suggestedDrivers[]`, `suggestedMedia[]`
-    - `nextStep` (frase curta)
-  - cache: salva o resultado em `datasets.insights_json` (nova coluna) para não regerar a cada visita.
-- Helper de gateway em `src/lib/ai-gateway.server.ts` (criar se não existir, conforme `ai-sdk-lovable-gateway`).
+### 1. Novo componente `src/components/marketing/SiteHeader.tsx`
+Réplica fiel do cabeçalho do pai, adaptada à hierarquia:
+- Wordmark "J P Saraiva" (link para `https://pereirasaraiva.com`) seguido de separador fino e label "· Prisma" em sans/cinza para sinalizar produto-filho.
+- Nav de produtos irmãos linkando para fora: Cascata (`https://cascata.pereirasaraiva.com`), Lente (`https://lente.pereirasaraiva.com`), Prisma (ativo, sem link).
+- Links institucionais do pai (SOBRE, CONTATO) abrindo em `pereirasaraiva.com/sobre` e `/contato`.
+- CTA "AGENDAR →" em `brand-purple` apontando para `pereirasaraiva.com/contato`.
+- Sticky no topo, com hairline inferior.
+- Responsivo: nav vira menu hambúrguer < md.
 
-**Migração:**
-- `alter table public.datasets add column insights_json jsonb;`
-- `alter table public.datasets add column summary_json jsonb;` (cache das estatísticas)
+### 2. Novo componente `src/components/marketing/SiteFooter.tsx`
+Rodapé editorial mínimo coerente com o design system:
+- Faixa superior em três colunas: wordmark + tagline curta · "Outros produtos" (links Cascata, Lente) · "Pereira Saraiva" (links Site, Sobre, Contato).
+- Faixa inferior hairline: "© 2026 Pereira Saraiva · Consultoria independente" à esquerda; "Prisma · Marketing Mix Modeling" à direita.
+- Tipografia: eyebrow para labels, sans para links, `text-brand-gray` para metadados.
 
-## Frontend
+### 3. Aplicação
+- **`src/routes/login.tsx`**: envolver com `<SiteHeader />` no topo e `<SiteFooter />` no rodapé; o painel atual "brand panel" esquerdo continua, mas a wordmark "Prisma" sai dele (passa a viver no header global).
+- **`src/routes/index.tsx`**: continua só redirecionando — não precisa de header (não é página visível).
+- Páginas autenticadas (`_authenticated.tsx` + `AppShell`): **fora de escopo** desta rodada, conforme o pedido "pelo menos na entrada". Mantêm sidebar.
 
-**`src/routes/_authenticated/datasets.$id.explore.tsx`** (nova rota irmã, layout editorial):
-- Header: nome do dataset, granularidade, período, nº linhas/colunas.
-- Seletor de "Variável de interesse" (default: primeira numérica) — controla o que é destacado.
-- Seção **Resumo IA** (card com hairline): `headline` em Fraunces grande + `keyFindings` em bullets + warnings em accent mostarda. Botão "Reanalisar" chama `interpretDataset` de novo.
-- Seção **Série temporal** (recharts LineChart): variável de interesse no tempo, com média móvel 4 períodos.
-- Seção **Distribuição & qualidade** (tabela): por coluna — média, mediana, min/max, % nulos, % zeros, outliers, sparkline.
-- Seção **Correlações**: barra horizontal das top correlações (|r|) com a variável de interesse, cores: positiva marinho, negativa mostarda.
-- Seção **Sazonalidade** (se granularidade mensal/semanal): barras por mês ou dia-da-semana.
-- CTA inferior: "Configurar modelo MMM →" linka para `/datasets/$id` já preenchendo `?dep=...&indep=...&date=...` com as sugestões da LLM.
-
-**Sidebar (`AppShell`)**: adicionar item "Explorar" quando estiver dentro de um dataset (ou apenas atualizar o link de "Datasets" para abrir `explore`).
-
-**Upload (`upload.tsx`)**: trocar o `navigate` pós-upload para `/datasets/$id/explore`.
-
-## Segurança & limites
-
-- `describeDataset` e `interpretDataset` usam `requireSupabaseAuth` + `supabaseAdmin` (mesma maneira que `runMmm`); validação de ownership via `user_id`.
-- Resumo enviado à LLM é JSON compacto (sem PII bruta, sem o CSV inteiro). Limitar a ~6 KB.
-- Tratar erros do gateway (`402`, `429`) e mostrar toast claro.
-- `Output.object` com Zod garante schema válido.
+### 4. Sem mudanças no design system
+Tokens (`brand-purple`, `brand-offwhite`, `brand-creme`, Fraunces, Inter Tight, eyebrow, hairline) já existem em `src/styles.css` e batem com o pai — basta usar.
 
 ## Fora de escopo
 
-- Edição/limpeza interativa dos dados.
-- Geração de PDF do relatório.
-- Comparação entre datasets.
+- Replicar o cabeçalho dentro das telas autenticadas (`/upload`, `/datasets`, `/runs`). Posso fazer numa segunda rodada se quiser.
+- Mudanças no Cascata e no Lente — eles têm seus próprios repos.
+- SSO real entre os 4 domínios (links cruzados são navegação simples).
 
-## Ordem de implementação
+## Pontos a confirmar
 
-1. Migração `insights_json` + `summary_json`.
-2. `ai-gateway.server.ts` + `describe.server.ts` (puro TS, testável).
-3. `describe.functions.ts` com as duas server fns.
-4. Rota `datasets.$id.explore.tsx` com gráficos.
-5. Ajustar upload para redirecionar.
-6. Polir copy PT-BR e o item de navegação.
+1. **Wordmark do header**: prefere "J P Saraiva · Prisma" (assinatura do pai + produto) ou só "Prisma" com um link discreto "← Pereira Saraiva"?
+2. **CTA do header**: aponta para `pereirasaraiva.com/contato` (AGENDAR) ou para `/login` interno do Prisma (ENTRAR)?
+3. **Rodapé**: incluo os 3 produtos irmãos como navegação cruzada explícita ou só o link para o site-mãe?
