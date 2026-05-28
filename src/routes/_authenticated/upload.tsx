@@ -80,15 +80,12 @@ function UploadPage() {
         .single();
       if (insErr) throw insErr;
 
-      toast.success("Dataset carregado.");
+      toast.success("Dataset carregado. Gerando análise...");
+      void dep;
+      void indep;
       navigate({
-        to: "/datasets/$id",
+        to: "/datasets/$id/explore",
         params: { id: ds.id },
-        search: {
-          dep: dep ?? undefined,
-          indep: indep.join(",") || undefined,
-          date: dateCol ?? undefined,
-        },
       });
     } catch (err) {
       console.error(err);
