@@ -32,7 +32,11 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const initialMode: "signin" | "signup" =
+    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("mode") === "signup"
+      ? "signup"
+      : "signin";
+  const [mode, setMode] = useState<"signin" | "signup">(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

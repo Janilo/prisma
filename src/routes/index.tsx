@@ -58,6 +58,7 @@ function HomePage() {
                 </Link>
                 <Link
                   to="/login"
+                  search={{ mode: "signup" }}
                   className="inline-flex items-center border border-brand-navy/20 bg-white text-brand-navy px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-creme"
                 >
                   Criar conta

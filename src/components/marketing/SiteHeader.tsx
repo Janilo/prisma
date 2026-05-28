@@ -23,7 +23,7 @@ export function SiteHeader() {
             Entrar
           </a>
           <a
-            href="/login"
+            href="/login?mode=signup"
             className="inline-flex items-center gap-2 bg-brand-purple text-white px-5 py-2.5 text-xs font-bold uppercase tracking-[0.18em] hover:opacity-90 transition-opacity"
           >
             Criar conta <span aria-hidden>→</span>
