@@ -48,19 +48,14 @@ export function SiteFooter() {
                 Sobre
               </a>
             </li>
-            <li>
-              <a href={`${PARENT}/contato`} className="text-brand-navy hover:text-brand-purple transition-colors">
-                Contato
-              </a>
-            </li>
           </ul>
         </div>
       </div>
 
       <div className="border-t hairline">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-[10px] uppercase tracking-[0.18em] text-brand-gray">
-          <span>© 2026 Pereira Saraiva · Consultoria independente</span>
-          <span>Prisma · Marketing Mix Modeling</span>
+          <span>Prisma · 2026</span>
+          <span>Marketing Mix Modeling · IA · Ridge + Adstock</span>
         </div>
       </div>
     </footer>
