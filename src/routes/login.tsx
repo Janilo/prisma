@@ -4,6 +4,8 @@ import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { SiteHeader } from "@/components/marketing/SiteHeader";
+import { SiteFooter } from "@/components/marketing/SiteFooter";
 
 export const Route = createFileRoute("/login")({
   component: LoginPage,
@@ -62,14 +64,14 @@ function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-offwhite flex">
+    <div className="min-h-screen bg-brand-offwhite flex flex-col">
+      <SiteHeader />
+      <div className="flex-1 flex">
       {/* Left: brand panel */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 bg-brand-creme p-16 border-r hairline">
         <div>
-          <span className="font-display text-3xl font-black italic tracking-tighter text-brand-purple">
-            Prisma
-          </span>
-          <p className="eyebrow mt-2">Marketing Mix Modeling</p>
+          <p className="eyebrow">Marketing Mix Modeling</p>
+          <h2 className="mt-3 font-display text-2xl italic text-brand-navy">Prisma</h2>
         </div>
         <div className="max-w-md space-y-6">
           <h1 className="font-display text-4xl font-light italic text-brand-navy leading-tight">
@@ -168,6 +170,8 @@ function LoginPage() {
           </button>
         </div>
       </div>
+      </div>
+      <SiteFooter />
     </div>
   );
 }
