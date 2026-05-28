@@ -3,15 +3,7 @@ const PARENT = "https://pereirasaraiva.com";
 export function SiteFooter() {
   return (
     <footer className="border-t hairline bg-brand-offwhite">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14 grid gap-12 md:grid-cols-3">
-        <div>
-          <a href={PARENT} className="font-display text-xl text-brand-purple">
-            J P Saraiva
-          </a>
-          <p className="mt-3 text-sm text-brand-navy/70 leading-relaxed max-w-xs">
-            Consultoria independente em pricing, growth e analytics.
-          </p>
-        </div>
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-14 grid gap-12 md:grid-cols-2">
 
         <div>
           <p className="eyebrow mb-4">Outros produtos</p>
