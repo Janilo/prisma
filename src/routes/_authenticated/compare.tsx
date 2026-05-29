@@ -17,7 +17,7 @@ import {
 } from "recharts";
 
 import { getRun } from "@/lib/mmm.functions";
-import type { RunReportData, RunTotals } from "@/components/RunReport";
+import type { RunReportData } from "@/components/RunReport";
 
 const searchSchema = z.object({
   a: z.string().uuid().optional(),
