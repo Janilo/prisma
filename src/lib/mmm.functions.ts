@@ -28,8 +28,10 @@ const RunInput = z.object({
   // TV ~0.6–0.8 (carryover de semanas), Google paid ~0.0–0.2, Meta ~0.2–0.4.
   adstockDecays: z.record(z.string(), z.number().min(0).max(0.95)).optional(),
   saturationAlpha: z.number().min(0.5).max(3).default(1),
+  // Out-of-sample holdout: number of last periods to reserve for validation.
+  // 0 = no holdout (train on all data, only in-sample metrics).
+  holdoutPeriods: z.number().int().min(0).max(200).default(0),
 });
-
 
 function toNumber(v: unknown): number {
   if (typeof v === "number") return Number.isFinite(v) ? v : 0;
