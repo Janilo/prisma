@@ -54,9 +54,19 @@ function ModelPage() {
   const [indep, setIndep] = useState<string[]>(initialIndep);
   const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest/i.test(n)));
   const [alpha, setAlpha] = useState(1);
-  const [decay, setDecay] = useState(0.5);
+  const [decays, setDecays] = useState<Record<string, number>>({});
   const [satAlpha, setSatAlpha] = useState(1);
   const [runName, setRunName] = useState(`Modelo · ${new Date().toLocaleDateString("pt-BR")}`);
+
+  // Suggest a sensible default per channel based on its name (heuristic).
+  const suggestDecay = (name: string): number => {
+    const n = name.toLowerCase();
+    if (/\btv\b|televis|ooh|out.?of.?home|radio|r[aá]dio|print|jornal|revista/.test(n)) return 0.7;
+    if (/google|search|sem|adwords|youtube|yt\b/.test(n)) return 0.1;
+    if (/meta|facebook|insta|tiktok|social|paid.?social/.test(n)) return 0.3;
+    return 0.5;
+  };
+  const decayFor = (name: string) => decays[name] ?? suggestDecay(name);
 
   const toggle = (arr: string[], v: string) =>
     arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
@@ -72,7 +82,8 @@ function ModelPage() {
           mediaVariables: media,
           dateColumn: dateCol || null,
           alpha,
-          adstockDecay: decay,
+          adstockDecay: 0.5,
+          adstockDecays: Object.fromEntries(media.map((m) => [m, decayFor(m)])),
           saturationAlpha: satAlpha,
         },
       }),
@@ -123,11 +134,41 @@ function ModelPage() {
           </select>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <Slider label="Regularização (α)" value={alpha} min={0} max={50} step={0.5} onChange={setAlpha} hint="Maior = mais estável, menos preciso" />
-          <Slider label="Adstock (decay)" value={decay} min={0} max={0.9} step={0.05} onChange={setDecay} hint="Memória da mídia" />
           <Slider label="Saturação (Hill α)" value={satAlpha} min={0.5} max={3} step={0.1} onChange={setSatAlpha} hint="Curva de retorno" />
         </div>
+
+        {media.length > 0 && (
+          <div>
+            <p className="eyebrow mb-2">Adstock por canal (carryover)</p>
+            <p className="text-[10px] text-brand-gray mb-3">
+              Cada canal tem memória diferente. TV/OOH costuma ficar em 0,6–0,8 (efeito dura semanas).
+              Google paid em 0,0–0,2 (efeito quase imediato). Meta/social em 0,2–0,4.
+              Valores iniciais são sugeridos pelo nome — ajuste conforme seu conhecimento do canal.
+            </p>
+            <div className="space-y-3 border hairline-strong bg-white p-3">
+              {media.map((m) => (
+                <div key={m} className="flex items-center gap-3">
+                  <span className="text-xs flex-1 truncate" title={m}>{m}</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={0.9}
+                    step={0.05}
+                    value={decayFor(m)}
+                    onChange={(e) =>
+                      setDecays((d) => ({ ...d, [m]: parseFloat(e.target.value) }))
+                    }
+                    className="flex-1 accent-brand-purple"
+                  />
+                  <span className="font-mono text-xs w-10 text-right">{decayFor(m).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
 
         <button
           disabled={mut.isPending || !dep || indep.length === 0}
