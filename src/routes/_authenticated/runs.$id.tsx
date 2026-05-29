@@ -47,7 +47,12 @@ function RunPage() {
     id: string;
     name: string;
     dep_variable: string;
-    metrics_json: { r2: number; mape: number; rmse: number; n: number; p: number };
+    metrics_json: {
+      r2: number; mape: number; rmse: number; n: number; p: number;
+      holdoutPeriods?: number;
+      train?: { r2: number; mape: number; rmse: number; n: number } | null;
+      holdout?: { n: number; r2: number; mape: number; rmse: number } | null;
+    };
     contributions_json: Totals[];
     roi_json: Totals[];
     decomposition_json: Decomp[];
