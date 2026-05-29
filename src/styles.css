@@ -145,3 +145,19 @@
   from { stroke-dashoffset: 2000; }
   to { stroke-dashoffset: 0; }
 }
+
+/* Print: export run report as PDF via browser dialog */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  html, body { background: #ffffff !important; }
+  .no-print { display: none !important; }
+  nav, aside, header { display: none !important; }
+  main { display: block !important; }
+  .print-root { padding: 0 !important; max-width: none !important; }
+  /* Keep chart colors */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  section { break-inside: avoid; page-break-inside: avoid; }
+  table { break-inside: auto; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  h1, h2 { break-after: avoid; page-break-after: avoid; }
+}
