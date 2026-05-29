@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -244,10 +244,157 @@ function RunPage() {
             </tbody>
           </table>
         </section>
+
       )}
+
+      {rois.length >= 2 && <BudgetSimulator rois={rois} depVariable={run.dep_variable} />}
     </div>
   );
 }
+
+function BudgetSimulator({ rois, depVariable }: { rois: Totals[]; depVariable: string }) {
+  const [deltas, setDeltas] = useState<Record<string, number>>({});
+  const totalSpend = useMemo(() => rois.reduce((a, r) => a + r.spend, 0), [rois]);
+  const totalContribution = useMemo(() => rois.reduce((a, r) => a + r.contribution, 0), [rois]);
+
+  const sim = useMemo(() => {
+    let newSpend = 0;
+    let newContribution = 0;
+    const rows = rois.map((r) => {
+      const pct = deltas[r.variable] ?? 0;
+      const ns = Math.max(0, r.spend * (1 + pct / 100));
+      const nc = (r.roi ?? 0) * ns;
+      newSpend += ns;
+      newContribution += nc;
+      return { ...r, pct, newSpend: ns, newContribution: nc, deltaContribution: nc - r.contribution };
+    });
+    return {
+      rows,
+      newSpend,
+      newContribution,
+      deltaContribution: newContribution - totalContribution,
+      deltaSpend: newSpend - totalSpend,
+    };
+  }, [rois, deltas, totalSpend, totalContribution]);
+
+  const reset = () => setDeltas({});
+
+  return (
+    <section className="mt-16">
+      <p className="eyebrow">Simulador de realocação</p>
+      <h2 className="font-display text-2xl text-brand-navy mt-2">E se eu mover budget entre canais?</h2>
+      <p className="text-xs text-brand-navy/60 mt-2 max-w-2xl">
+        Ajuste o gasto de cada canal em ±% para estimar o impacto em <strong>{depVariable}</strong>.
+        A estimativa multiplica o novo gasto pelo ROI médio observado do canal.
+      </p>
+
+      <div className="mt-6 border hairline-strong bg-white">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b hairline-strong bg-brand-creme">
+              <th className="text-left py-2 px-3 eyebrow">Canal</th>
+              <th className="text-right py-2 px-3 eyebrow">Atual</th>
+              <th className="text-center py-2 px-3 eyebrow w-72">Ajuste</th>
+              <th className="text-right py-2 px-3 eyebrow">Novo gasto</th>
+              <th className="text-right py-2 px-3 eyebrow">Δ contribuição</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sim.rows.map((r) => (
+              <tr key={r.variable} className="border-b hairline">
+                <td className="py-3 px-3 font-medium">
+                  {r.variable}
+                  <span className="ml-2 font-mono text-[10px] text-brand-gray">
+                    ROI {r.roi!.toFixed(2)}×
+                  </span>
+                </td>
+                <td className="py-3 px-3 text-right font-mono text-xs">{fmt(r.spend)}</td>
+                <td className="py-3 px-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="range"
+                      min={-100}
+                      max={100}
+                      step={5}
+                      value={r.pct}
+                      onChange={(e) =>
+                        setDeltas((d) => ({ ...d, [r.variable]: parseFloat(e.target.value) }))
+                      }
+                      className="flex-1 accent-brand-purple"
+                    />
+                    <span
+                      className={`font-mono text-xs w-14 text-right ${
+                        r.pct > 0 ? "text-brand-purple" : r.pct < 0 ? "text-brand-navy/60" : ""
+                      }`}
+                    >
+                      {r.pct > 0 ? "+" : ""}
+                      {r.pct.toFixed(0)}%
+                    </span>
+                  </div>
+                </td>
+                <td className="py-3 px-3 text-right font-mono text-xs">{fmt(r.newSpend)}</td>
+                <td
+                  className={`py-3 px-3 text-right font-mono text-xs ${
+                    r.deltaContribution > 0
+                      ? "text-emerald-700"
+                      : r.deltaContribution < 0
+                      ? "text-red-700"
+                      : ""
+                  }`}
+                >
+                  {r.deltaContribution > 0 ? "+" : ""}
+                  {fmt(r.deltaContribution)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="border-t-2 border-brand-navy/30 bg-brand-creme">
+              <td className="py-3 px-3 eyebrow">Total</td>
+              <td className="py-3 px-3 text-right font-mono text-xs">{fmt(totalSpend)}</td>
+              <td className="py-3 px-3 text-right font-mono text-xs">
+                Δ gasto:{" "}
+                <span className={sim.deltaSpend > 0 ? "text-brand-purple" : sim.deltaSpend < 0 ? "text-brand-navy/60" : ""}>
+                  {sim.deltaSpend > 0 ? "+" : ""}
+                  {fmt(sim.deltaSpend)}
+                </span>
+              </td>
+              <td className="py-3 px-3 text-right font-mono text-xs">{fmt(sim.newSpend)}</td>
+              <td
+                className={`py-3 px-3 text-right font-display text-xl ${
+                  sim.deltaContribution > 0
+                    ? "text-emerald-700"
+                    : sim.deltaContribution < 0
+                    ? "text-red-700"
+                    : "text-brand-navy"
+                }`}
+              >
+                {sim.deltaContribution > 0 ? "+" : ""}
+                {fmt(sim.deltaContribution)}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div className="mt-4 flex items-center justify-between">
+        <button
+          onClick={reset}
+          className="text-xs uppercase tracking-widest text-brand-navy/60 hover:text-brand-navy"
+        >
+          Zerar ajustes
+        </button>
+        <p className="text-[11px] text-brand-navy/60 max-w-xl text-right">
+          <strong className="text-brand-navy">Aviso.</strong> O modelo aplicou saturação de Hill no ajuste,
+          então o ROI marginal cai conforme o canal cresce. Esta simulação usa ROI <em>médio</em> —
+          é confiável para realocações pequenas (±15–25%) e otimista para aumentos grandes em um único canal.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+
 
 function Metric({ label, value, hint }: { label: string; value: string; hint: string }) {
   return (
