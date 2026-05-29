@@ -73,190 +73,250 @@ function parseCSV(text: string): { columns: string[]; rows: Record<string, unkno
   return { columns, rows };
 }
 
+type RunInputType = z.infer<typeof RunInput>;
+
+// Walks the parent_dataset_id chain forward to find the newest version
+// (linear chain assumption — fork tolerated, picks highest version on each step).
+async function findLatestVersionId(datasetId: string, userId: string): Promise<{ id: string; version: number }> {
+  let current = datasetId;
+  let version = 1;
+  // Read current version once
+  const { data: head } = await supabaseAdmin
+    .from("datasets")
+    .select("version")
+    .eq("id", current)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (head?.version) version = head.version;
+  for (let i = 0; i < 50; i++) {
+    const { data: child } = await supabaseAdmin
+      .from("datasets")
+      .select("id, version")
+      .eq("parent_dataset_id", current)
+      .eq("user_id", userId)
+      .order("version", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!child) return { id: current, version };
+    current = child.id;
+    version = child.version;
+  }
+  return { id: current, version };
+}
+
+// Core MMM execution — shared between runMmm and rerunOnLatestVersion.
+async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: string }> {
+  // Fetch dataset (verify ownership)
+  const { data: ds, error: dsErr } = await supabaseAdmin
+    .from("datasets")
+    .select("*")
+    .eq("id", data.datasetId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (dsErr || !ds) throw new Error("Dataset não encontrado.");
+
+  const { data: blob, error: dlErr } = await supabaseAdmin.storage
+    .from("datasets")
+    .download(ds.storage_path);
+  if (dlErr || !blob) throw new Error("Não consegui ler o arquivo do dataset.");
+  const text = await blob.text();
+  const { rows } = parseCSV(text);
+
+  if (rows.length < 8) throw new Error("Poucas linhas para rodar o modelo (mínimo 8).");
+
+  const y = rows.map((r) => toNumber(r[data.depVariable]));
+  const featureNames: string[] = [];
+  const rawColumns: number[][] = [];
+  for (const col of data.indepVariables) {
+    const arr = rows.map((r) => toNumber(r[col]));
+    rawColumns.push(arr);
+    featureNames.push(col);
+  }
+
+  const mediaSet = new Set(data.mediaVariables);
+
+  const transformedColumns: number[][] = rawColumns.map((arr, idx) => {
+    const name = featureNames[idx];
+    if (!mediaSet.has(name)) return arr;
+    const decay = data.adstockDecays?.[name] ?? data.adstockDecay;
+    const ad = adstock(arr, decay);
+    const med = median(ad) || 1;
+    return hill(ad, data.saturationAlpha, med);
+  });
+
+  const n = rows.length;
+  const p = transformedColumns.length;
+  const X: Matrix = Array.from({ length: n }, (_, i) =>
+    transformedColumns.map((col) => col[i])
+  );
+
+  const fit = ridgeFit({ X, y, alpha: data.alpha, featureNames });
+
+  const k = Math.min(data.holdoutPeriods, Math.max(0, n - Math.max(8, p + 2)));
+  let holdout: { n: number; r2: number; mape: number; rmse: number; labels: string[]; actual: number[]; predicted: number[] } | null = null;
+  let trainMetrics: { r2: number; mape: number; rmse: number; n: number } | null = null;
+  if (k > 0) {
+    const nTrain = n - k;
+    const Xtr = X.slice(0, nTrain);
+    const ytr = y.slice(0, nTrain);
+    const Xte = X.slice(nTrain);
+    const yte = y.slice(nTrain);
+    const fitTr = ridgeFit({ X: Xtr, y: ytr, alpha: data.alpha, featureNames });
+    const yPredTr = fitTr.yPred;
+    const yPredTe = Xte.map((row) => {
+      let s = fitTr.intercept;
+      for (let j = 0; j < p; j++) s += fitTr.beta[j] * row[j];
+      return s;
+    });
+    trainMetrics = { r2: r2(ytr, yPredTr), mape: mape(ytr, yPredTr), rmse: rmse(ytr, yPredTr), n: nTrain };
+    holdout = { n: k, r2: r2(yte, yPredTe), mape: mape(yte, yPredTe), rmse: rmse(yte, yPredTe), labels: [], actual: yte, predicted: yPredTe };
+  }
+
+  let labels: string[] = [];
+  if (data.dateColumn) {
+    labels = rows.map((r) => {
+      const v = r[data.dateColumn as string];
+      const d = new Date(String(v));
+      return isNaN(d.getTime()) ? String(v ?? "") : d.toISOString().slice(0, 10);
+    });
+  } else {
+    labels = rows.map((_, i) => `t${i + 1}`);
+  }
+
+  const decomposition = labels.map((label, i) => {
+    const entry: Record<string, number | string> = { period: label, base: fit.intercept };
+    for (let j = 0; j < p; j++) entry[featureNames[j]] = fit.contributions[i][j];
+    entry.actual = y[i];
+    entry.predicted = fit.yPred[i];
+    return entry;
+  });
+
+  const totals: { variable: string; contribution: number; share: number; pValue: number; zStat: number; isMedia: boolean; spend: number; roi: number | null }[] = [];
+  const sumPredicted = fit.yPred.reduce((a, b) => a + b, 0) || 1;
+  const baseTotal = fit.intercept * n;
+  totals.push({ variable: "Base (sazonalidade + intercepto)", contribution: baseTotal, share: baseTotal / sumPredicted, pValue: 0, zStat: 0, isMedia: false, spend: 0, roi: null });
+  for (let j = 0; j < p; j++) {
+    const name = featureNames[j];
+    const contrib = fit.contributions.reduce((a, row) => a + row[j], 0);
+    const spend = mediaSet.has(name) ? rawColumns[j].reduce((a, b) => a + b, 0) : 0;
+    totals.push({
+      variable: name,
+      contribution: contrib,
+      share: contrib / sumPredicted,
+      pValue: fit.pValues[j],
+      zStat: fit.zStats[j],
+      isMedia: mediaSet.has(name),
+      spend,
+      roi: spend > 0 ? contrib / spend : null,
+    });
+  }
+
+  if (holdout) holdout.labels = labels.slice(n - holdout.n);
+
+  const metrics = {
+    r2: r2(y, fit.yPred),
+    mape: mape(y, fit.yPred),
+    rmse: rmse(y, fit.yPred),
+    n,
+    p,
+    holdoutPeriods: k,
+    train: trainMetrics,
+    holdout: holdout ? { n: holdout.n, r2: holdout.r2, mape: holdout.mape, rmse: holdout.rmse } : null,
+  };
+
+  const { data: runRow, error: insErr } = await supabaseAdmin
+    .from("runs")
+    .insert({
+      user_id: userId,
+      dataset_id: data.datasetId,
+      name: data.name,
+      status: "done",
+      dep_variable: data.depVariable,
+      indep_variables_json: data.indepVariables,
+      params_json: {
+        alpha: data.alpha,
+        adstockDecay: data.adstockDecay,
+        adstockDecays: data.adstockDecays ?? null,
+        saturationAlpha: data.saturationAlpha,
+        mediaVariables: data.mediaVariables,
+        dateColumn: data.dateColumn,
+        holdoutPeriods: k,
+      },
+      metrics_json: metrics,
+      contributions_json: totals,
+      roi_json: totals.filter((t) => t.isMedia),
+      decomposition_json: decomposition,
+      predicted_json: {
+        labels,
+        actual: y,
+        predicted: fit.yPred,
+        holdout: holdout
+          ? { labels: holdout.labels, actual: holdout.actual, predicted: holdout.predicted }
+          : null,
+      },
+      finished_at: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
+  if (insErr || !runRow) throw new Error(insErr?.message ?? "Falha ao salvar run.");
+  return { runId: runRow.id as string };
+}
+
 export const runMmm = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => RunInput.parse(input))
+  .handler(async ({ data, context }) => executeMmm(data, context.userId));
+
+// Re-execute an existing run against the newest version of its dataset.
+// Keeps the original run intact; creates a fresh run with the same parameters.
+export const rerunOnLatestVersion = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ runId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { userId } = context;
-
-    // Fetch dataset (verify ownership)
-    const { data: ds, error: dsErr } = await supabaseAdmin
-      .from("datasets")
+    const { data: run, error: runErr } = await supabaseAdmin
+      .from("runs")
       .select("*")
-      .eq("id", data.datasetId)
+      .eq("id", data.runId)
       .eq("user_id", userId)
       .maybeSingle();
-    if (dsErr || !ds) throw new Error("Dataset não encontrado.");
-
-    // Download CSV from storage
-    const { data: blob, error: dlErr } = await supabaseAdmin.storage
-      .from("datasets")
-      .download(ds.storage_path);
-    if (dlErr || !blob) throw new Error("Não consegui ler o arquivo do dataset.");
-    const text = await blob.text();
-    const { rows } = parseCSV(text);
-
-    if (rows.length < 8) throw new Error("Poucas linhas para rodar o modelo (mínimo 8).");
-
-    // Build y
-    const y = rows.map((r) => toNumber(r[data.depVariable]));
-    // Build raw X
-    const featureNames: string[] = [];
-    const rawColumns: number[][] = [];
-    for (const col of data.indepVariables) {
-      const arr = rows.map((r) => toNumber(r[col]));
-      rawColumns.push(arr);
-      featureNames.push(col);
+    if (runErr || !run) throw new Error("Run não encontrado.");
+    const latest = await findLatestVersionId(run.dataset_id, userId);
+    if (latest.id === run.dataset_id) {
+      throw new Error("Este run já está na versão mais nova do dataset.");
     }
-
-    const mediaSet = new Set(data.mediaVariables);
-
-    // Apply adstock + saturation to media columns (per-channel decay when provided)
-    const transformedColumns: number[][] = rawColumns.map((arr, idx) => {
-      const name = featureNames[idx];
-      if (!mediaSet.has(name)) return arr;
-      const decay = data.adstockDecays?.[name] ?? data.adstockDecay;
-      const ad = adstock(arr, decay);
-      const med = median(ad) || 1;
-      return hill(ad, data.saturationAlpha, med);
-    });
-
-    // Assemble X (n × p)
-    const n = rows.length;
-    const p = transformedColumns.length;
-    const X: Matrix = Array.from({ length: n }, (_, i) =>
-      transformedColumns.map((col) => col[i])
-    );
-
-    // Fit Ridge on full data for attribution/decomposition
-    const fit = ridgeFit({ X, y, alpha: data.alpha, featureNames });
-
-    // Out-of-sample holdout validation: refit on train-only, evaluate on the last k periods.
-    const k = Math.min(data.holdoutPeriods, Math.max(0, n - Math.max(8, p + 2)));
-    let holdout: { n: number; r2: number; mape: number; rmse: number; labels: string[]; actual: number[]; predicted: number[] } | null = null;
-    let trainMetrics: { r2: number; mape: number; rmse: number; n: number } | null = null;
-    if (k > 0) {
-      const nTrain = n - k;
-      const Xtr = X.slice(0, nTrain);
-      const ytr = y.slice(0, nTrain);
-      const Xte = X.slice(nTrain);
-      const yte = y.slice(nTrain);
-      const fitTr = ridgeFit({ X: Xtr, y: ytr, alpha: data.alpha, featureNames });
-      const yPredTr = fitTr.yPred;
-      const yPredTe = Xte.map((row) => {
-        let s = fitTr.intercept;
-        for (let j = 0; j < p; j++) s += fitTr.beta[j] * row[j];
-        return s;
-      });
-      trainMetrics = { r2: r2(ytr, yPredTr), mape: mape(ytr, yPredTr), rmse: rmse(ytr, yPredTr), n: nTrain };
-      holdout = {
-        n: k,
-        r2: r2(yte, yPredTe),
-        mape: mape(yte, yPredTe),
-        rmse: rmse(yte, yPredTe),
-        labels: [],
-        actual: yte,
-        predicted: yPredTe,
-      };
-    }
-
-    // Build date/index labels
-    let labels: string[] = [];
-    if (data.dateColumn) {
-      labels = rows.map((r) => {
-        const v = r[data.dateColumn as string];
-        const d = new Date(String(v));
-        return isNaN(d.getTime()) ? String(v ?? "") : d.toISOString().slice(0, 10);
-      });
-    } else {
-      labels = rows.map((_, i) => `t${i + 1}`);
-    }
-
-    // Decomposition: per-period stacked contributions { period, base, [feature]: value, total }
-    const decomposition = labels.map((label, i) => {
-      const entry: Record<string, number | string> = { period: label, base: fit.intercept };
-      for (let j = 0; j < p; j++) {
-        entry[featureNames[j]] = fit.contributions[i][j];
-      }
-      entry.actual = y[i];
-      entry.predicted = fit.yPred[i];
-      return entry;
-    });
-
-    // Total contribution per feature (and ROI for media)
-    const totals: { variable: string; contribution: number; share: number; pValue: number; zStat: number; isMedia: boolean; spend: number; roi: number | null }[] = [];
-    const sumPredicted = fit.yPred.reduce((a, b) => a + b, 0) || 1;
-    const baseTotal = fit.intercept * n;
-    totals.push({ variable: "Base (sazonalidade + intercepto)", contribution: baseTotal, share: baseTotal / sumPredicted, pValue: 0, zStat: 0, isMedia: false, spend: 0, roi: null });
-    for (let j = 0; j < p; j++) {
-      const name = featureNames[j];
-      const contrib = fit.contributions.reduce((a, row) => a + row[j], 0);
-      const spend = mediaSet.has(name) ? rawColumns[j].reduce((a, b) => a + b, 0) : 0;
-      totals.push({
-        variable: name,
-        contribution: contrib,
-        share: contrib / sumPredicted,
-        pValue: fit.pValues[j],
-        zStat: fit.zStats[j],
-        isMedia: mediaSet.has(name),
-        spend,
-        roi: spend > 0 ? contrib / spend : null,
-      });
-    }
-
-    if (holdout) holdout.labels = labels.slice(n - holdout.n);
-
-    const metrics = {
-      r2: r2(y, fit.yPred),
-      mape: mape(y, fit.yPred),
-      rmse: rmse(y, fit.yPred),
-      n,
-      p,
-      holdoutPeriods: k,
-      train: trainMetrics,
-      holdout: holdout
-        ? { n: holdout.n, r2: holdout.r2, mape: holdout.mape, rmse: holdout.rmse }
-        : null,
+    const params = (run.params_json ?? {}) as {
+      alpha?: number;
+      adstockDecay?: number;
+      adstockDecays?: Record<string, number> | null;
+      saturationAlpha?: number;
+      mediaVariables?: string[];
+      dateColumn?: string | null;
+      holdoutPeriods?: number;
     };
+    const input: RunInputType = RunInput.parse({
+      datasetId: latest.id,
+      name: `${run.name} · v${latest.version}`,
+      depVariable: run.dep_variable,
+      indepVariables: run.indep_variables_json,
+      mediaVariables: params.mediaVariables ?? [],
+      dateColumn: params.dateColumn ?? null,
+      alpha: params.alpha ?? 1,
+      adstockDecay: params.adstockDecay ?? 0.5,
+      adstockDecays: params.adstockDecays ?? undefined,
+      saturationAlpha: params.saturationAlpha ?? 1,
+      holdoutPeriods: params.holdoutPeriods ?? 0,
+    });
+    return executeMmm(input, userId);
+  });
 
-    // Persist run
-    const { data: runRow, error: insErr } = await supabaseAdmin
-      .from("runs")
-      .insert({
-        user_id: userId,
-        dataset_id: data.datasetId,
-        name: data.name,
-        status: "done",
-        dep_variable: data.depVariable,
-        indep_variables_json: data.indepVariables,
-        params_json: {
-          alpha: data.alpha,
-          adstockDecay: data.adstockDecay,
-          adstockDecays: data.adstockDecays ?? null,
-          saturationAlpha: data.saturationAlpha,
-          mediaVariables: data.mediaVariables,
-          dateColumn: data.dateColumn,
-          holdoutPeriods: k,
-        },
-        metrics_json: metrics,
-        contributions_json: totals,
-        roi_json: totals.filter((t) => t.isMedia),
-        decomposition_json: decomposition,
-        predicted_json: {
-          labels,
-          actual: y,
-          predicted: fit.yPred,
-          holdout: holdout
-            ? { labels: holdout.labels, actual: holdout.actual, predicted: holdout.predicted }
-            : null,
-        },
-        finished_at: new Date().toISOString(),
-      })
-      .select("id")
-      .single();
-    if (insErr || !runRow) throw new Error(insErr?.message ?? "Falha ao salvar run.");
-
-    return { runId: runRow.id as string };
+// Returns id + version of the latest dataset in a chain. Used by the Run page
+// to show "Re-executar na versão mais nova" only when there IS a newer version.
+export const getLatestDatasetVersion = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ datasetId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    return findLatestVersionId(data.datasetId, context.userId);
   });
 
 // List datasets for the current user
@@ -266,7 +326,7 @@ export const listDatasets = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("datasets")
-      .select("id, name, original_filename, n_rows, n_cols, granularity, period_start, period_end, created_at")
+      .select("id, name, original_filename, n_rows, n_cols, granularity, period_start, period_end, created_at, parent_dataset_id, version")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return { datasets: data ?? [] };
@@ -284,6 +344,7 @@ export const listRuns = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return { runs: data ?? [] };
   });
+
 
 // Get a single run
 export const getRun = createServerFn({ method: "POST" })

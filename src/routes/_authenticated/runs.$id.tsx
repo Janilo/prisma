@@ -1,10 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { useSuspenseQuery, useQuery, useMutation, queryOptions, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { getRun } from "@/lib/mmm.functions";
+import { getRun, getLatestDatasetVersion, rerunOnLatestVersion } from "@/lib/mmm.functions";
 import { RunReport, type RunReportData } from "@/components/RunReport";
 
 export const Route = createFileRoute("/_authenticated/runs/$id")({
@@ -19,8 +19,60 @@ function RunPage() {
   );
 
   const run = data.run as unknown as RunReportData;
+  const datasetId = (data.run as { dataset_id?: string }).dataset_id;
 
-  return <RunReport run={run} header={<ShareButton runId={id} />} />;
+  return (
+    <RunReport
+      run={run}
+      header={
+        <div className="space-y-4">
+          {datasetId && <RerunOnLatest runId={id} datasetId={datasetId} />}
+          <ShareButton runId={id} />
+        </div>
+      }
+    />
+  );
+}
+
+function RerunOnLatest({ runId, datasetId }: { runId: string; datasetId: string }) {
+  const latestFn = useServerFn(getLatestDatasetVersion);
+  const rerunFn = useServerFn(rerunOnLatestVersion);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  const { data: latest } = useQuery({
+    queryKey: ["latest-dataset", datasetId],
+    queryFn: () => latestFn({ data: { datasetId } }),
+  });
+
+  const mutation = useMutation({
+    mutationFn: () => rerunFn({ data: { runId } }),
+    onSuccess: (res) => {
+      toast.success("Run criado na versão mais nova do dataset.");
+      void qc.invalidateQueries({ queryKey: ["runs"] });
+      navigate({ to: "/runs/$id", params: { id: res.runId } });
+    },
+    onError: (err) =>
+      toast.error(err instanceof Error ? err.message : "Falha ao re-executar."),
+  });
+
+  if (!latest || latest.id === datasetId) return null;
+
+  return (
+    <div className="border hairline-strong bg-brand-creme p-4 flex items-center justify-between gap-4 flex-wrap">
+      <p className="text-xs text-brand-navy/80">
+        Existe uma <strong>versão mais nova</strong> deste dataset (v{latest.version}). Re-execute o
+        mesmo modelo nela para comparar como os resultados mudam com os dados atualizados.
+      </p>
+      <button
+        onClick={() => mutation.mutate()}
+        disabled={mutation.isPending}
+        className="text-xs uppercase tracking-widest bg-brand-navy text-white px-4 py-2 hover:bg-brand-purple disabled:opacity-50"
+      >
+        {mutation.isPending ? "Rodando..." : `Re-executar na v${latest.version}`}
+      </button>
+    </div>
+  );
 }
 
 function ShareButton({ runId }: { runId: string }) {
