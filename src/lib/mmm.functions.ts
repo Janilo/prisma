@@ -284,7 +284,7 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     const name = featureNames[j];
     const contrib = fit.contributions.reduce((a, row) => a + row[j], 0);
     const isMedia = mediaSet.has(name);
-    const spend = isMedia ? rawColumns[j].reduce((a, b) => a + b, 0) : 0;
+    const spend = isMedia ? channelSpendTotal(name, rawColumns[j]) : 0;
 
     let curve: CurvePoint[] | undefined;
     if (isMedia && channelMeta[name]) {
