@@ -2,6 +2,14 @@ import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { PrismaShell } from "@/components/prisma/PrismaShell";
 
+function AuthenticatedLayout() {
+  return (
+    <PrismaShell>
+      <Outlet />
+    </PrismaShell>
+  );
+}
+
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async ({ location }) => {
     if (typeof window === "undefined") return;
@@ -10,9 +18,5 @@ export const Route = createFileRoute("/_authenticated")({
       throw redirect({ to: "/login", search: { redirect: location.href } });
     }
   },
-  component: () => (
-    <PrismaShell>
-      <Outlet />
-    </PrismaShell>
-  ),
+  component: AuthenticatedLayout,
 });
