@@ -180,6 +180,46 @@ function ModelPage() {
           </div>
         )}
 
+        {media.length > 0 && (
+          <div>
+            <p className="eyebrow mb-2">Base de investimento (para ROI)</p>
+            <p className="text-[10px] text-brand-gray mb-3">
+              Se o canal está em <strong>unidades de execução</strong> (GRP, impressões, cliques),
+              aponte qual coluna tem o <strong>investimento real (R$)</strong> daquele canal.
+              O ROI será calculado sobre esse investimento. Deixe em branco se a própria
+              coluna do canal já estiver em reais.
+            </p>
+            <div className="space-y-2 border hairline-strong bg-white p-3">
+              {media.map((m) => {
+                const costOptions = numericCols.filter((n) => n !== m && n !== dep);
+                return (
+                  <div key={m} className="flex items-center gap-3">
+                    <span className="text-xs flex-1 truncate" title={m}>{m}</span>
+                    <select
+                      value={spendBasis[m] ?? ""}
+                      onChange={(e) =>
+                        setSpendBasis((s) => {
+                          const next = { ...s };
+                          if (e.target.value) next[m] = e.target.value;
+                          else delete next[m];
+                          return next;
+                        })
+                      }
+                      className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+                    >
+                      <option value="">— mesma coluna (já em R$) —</option>
+                      {costOptions.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+
         <div>
           <label htmlFor="holdout-input" className="eyebrow block mb-2">
             Validação out-of-sample (últimos N períodos)
