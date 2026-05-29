@@ -171,6 +171,26 @@ function ModelPage() {
           </div>
         )}
 
+        <div>
+          <label htmlFor="holdout-input" className="eyebrow block mb-2">
+            Validação out-of-sample (últimos N períodos)
+          </label>
+          <input
+            id="holdout-input"
+            type="number"
+            min={0}
+            max={Math.max(0, numericCols.length > 0 ? 100 : 0)}
+            step={1}
+            value={holdout}
+            onChange={(e) => setHoldout(Math.max(0, Math.floor(Number(e.target.value) || 0)))}
+            className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm font-mono"
+          />
+          <p className="text-[10px] text-brand-gray mt-1">
+            0 = treinar em tudo (só métricas in-sample). Com N{">"}0, o modelo treina nos primeiros
+            períodos e prevê os últimos N — assim você vê se o R²/MAPE se sustentam fora da amostra.
+            Padrão recomendado: 10–20% das observações (ex.: 8–12 semanas).
+          </p>
+        </div>
 
         <button
           disabled={mut.isPending || !dep || indep.length === 0}
