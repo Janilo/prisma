@@ -86,6 +86,7 @@ function ModelPage() {
           adstockDecay: 0.5,
           adstockDecays: Object.fromEntries(media.map((m) => [m, decayFor(m)])),
           saturationAlpha: satAlpha,
+          holdoutPeriods: holdout,
         },
       }),
     onSuccess: (r) => {
