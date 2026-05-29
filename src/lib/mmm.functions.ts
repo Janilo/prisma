@@ -135,14 +135,19 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
 
   const mediaSet = new Set(data.mediaVariables);
 
+  // Cache per-channel transform metadata so we can later rebuild response curves.
+  const channelMeta: Record<string, { decay: number; k: number; rawSeries: number[]; featureIdx: number }> = {};
+
   const transformedColumns: number[][] = rawColumns.map((arr, idx) => {
     const name = featureNames[idx];
     if (!mediaSet.has(name)) return arr;
     const decay = data.adstockDecays?.[name] ?? data.adstockDecay;
     const ad = adstock(arr, decay);
     const med = median(ad) || 1;
+    channelMeta[name] = { decay, k: med, rawSeries: arr, featureIdx: idx };
     return hill(ad, data.saturationAlpha, med);
   });
+
 
   const n = rows.length;
   const p = transformedColumns.length;
