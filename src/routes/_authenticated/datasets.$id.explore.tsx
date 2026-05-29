@@ -68,6 +68,9 @@ function ExplorePage() {
   const getFn = useServerFn(getDataset);
   const describeFn = useServerFn(describeDataset);
   const interpretFn = useServerFn(interpretDataset);
+  const cppFn = useServerFn(computeUnitCosts);
+  const updateCostsFn = useServerFn(updateUnitCosts);
+
 
   const dsQuery = useQuery({
     queryKey: ["dataset", id],
