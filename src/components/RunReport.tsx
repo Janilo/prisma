@@ -84,24 +84,40 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
 
   const metrics = run.metrics_json;
 
-  return (
-    <div className="p-12 max-w-7xl">
-      <p className="eyebrow">Resultado</p>
-      <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">{run.name}</h1>
-      <p className="mt-3 text-xs text-brand-navy/60 font-mono">
-        Alvo: {run.dep_variable} · α={run.params_json.alpha} · saturação={run.params_json.saturationAlpha} · {new Date(run.created_at).toLocaleString("pt-BR")}
-      </p>
-      {run.params_json.adstockDecays && Object.keys(run.params_json.adstockDecays).length > 0 ? (
-        <p className="mt-1 text-xs text-brand-navy/60 font-mono">
-          Adstock por canal: {Object.entries(run.params_json.adstockDecays).map(([k, v]) => `${k}=${v}`).join(" · ")}
-        </p>
-      ) : (
-        <p className="mt-1 text-xs text-brand-navy/60 font-mono">
-          Adstock (global): {run.params_json.adstockDecay}
-        </p>
-      )}
+  const handlePrint = () => {
+    if (typeof window !== "undefined") window.print();
+  };
 
-      {header ? <div className="mt-6">{header}</div> : null}
+  return (
+    <div className="p-12 max-w-7xl print-root">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="eyebrow">Resultado</p>
+          <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">{run.name}</h1>
+          <p className="mt-3 text-xs text-brand-navy/60 font-mono">
+            Alvo: {run.dep_variable} · α={run.params_json.alpha} · saturação={run.params_json.saturationAlpha} · {new Date(run.created_at).toLocaleString("pt-BR")}
+          </p>
+          {run.params_json.adstockDecays && Object.keys(run.params_json.adstockDecays).length > 0 ? (
+            <p className="mt-1 text-xs text-brand-navy/60 font-mono">
+              Adstock por canal: {Object.entries(run.params_json.adstockDecays).map(([k, v]) => `${k}=${v}`).join(" · ")}
+            </p>
+          ) : (
+            <p className="mt-1 text-xs text-brand-navy/60 font-mono">
+              Adstock (global): {run.params_json.adstockDecay}
+            </p>
+          )}
+        </div>
+        <button
+          onClick={handlePrint}
+          className="no-print shrink-0 text-xs uppercase tracking-widest border border-brand-navy/30 px-4 py-2 hover:bg-brand-navy hover:text-white transition-colors"
+          title="Abre o diálogo de impressão — escolha 'Salvar como PDF'"
+        >
+          Exportar PDF
+        </button>
+      </div>
+
+      {header ? <div className="mt-6 no-print">{header}</div> : null}
+
 
       <section className="mt-12 grid grid-cols-4 gap-px bg-brand-navy/10 border hairline">
         <Metric label="R² (in-sample)" value={(metrics.r2 * 100).toFixed(1) + "%"} hint="Variação explicada no conjunto de treino completo. Sozinho pode esconder overfit." />
