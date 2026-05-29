@@ -31,6 +31,11 @@ const RunInput = z.object({
   // Out-of-sample holdout: number of last periods to reserve for validation.
   // 0 = no holdout (train on all data, only in-sample metrics).
   holdoutPeriods: z.number().int().min(0).max(200).default(0),
+  // For channels measured in execution units (e.g. GRPs), map the channel column to the
+  // column that holds the actual investment. When provided, ROI uses the investment sum
+  // instead of summing the execution-unit values.
+  spendBasis: z.record(z.string(), z.string()).optional(),
+
 });
 
 function toNumber(v: unknown): number {
@@ -134,6 +139,18 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
   }
 
   const mediaSet = new Set(data.mediaVariables);
+  const spendBasis = data.spendBasis ?? {};
+
+  // Resolve real spend per media channel: use mapped investment column when present,
+  // otherwise sum the channel column itself (channels already expressed in money).
+  function channelSpendTotal(name: string, fallbackArr: number[]): number {
+    const costCol = spendBasis[name];
+    if (costCol) {
+      return rows.reduce((acc, r) => acc + toNumber(r[costCol]), 0);
+    }
+    return fallbackArr.reduce((a, b) => a + b, 0);
+  }
+
 
   // Cache per-channel transform metadata so we can later rebuild response curves.
   const channelMeta: Record<string, { decay: number; k: number; rawSeries: number[]; featureIdx: number }> = {};
@@ -172,7 +189,7 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
   const contribSamples: number[][] = Array.from({ length: p }, () => []);
   const roiSamples: number[][] = Array.from({ length: p }, () => []);
   const channelSpends = featureNames.map((name, j) =>
-    mediaSet.has(name) ? rawColumns[j].reduce((a, b) => a + b, 0) : 0
+    mediaSet.has(name) ? channelSpendTotal(name, rawColumns[j]) : 0
   );
   for (let b = 0; b < B; b++) {
     const yb = new Array<number>(n);
@@ -267,7 +284,7 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     const name = featureNames[j];
     const contrib = fit.contributions.reduce((a, row) => a + row[j], 0);
     const isMedia = mediaSet.has(name);
-    const spend = isMedia ? rawColumns[j].reduce((a, b) => a + b, 0) : 0;
+    const spend = isMedia ? channelSpendTotal(name, rawColumns[j]) : 0;
 
     let curve: CurvePoint[] | undefined;
     if (isMedia && channelMeta[name]) {
@@ -328,6 +345,8 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
         alpha: data.alpha,
         adstockDecay: data.adstockDecay,
         adstockDecays: data.adstockDecays ?? null,
+        spendBasis: data.spendBasis ?? null,
+
         saturationAlpha: data.saturationAlpha,
         mediaVariables: data.mediaVariables,
         dateColumn: data.dateColumn,
@@ -384,6 +403,7 @@ export const rerunOnLatestVersion = createServerFn({ method: "POST" })
       mediaVariables?: string[];
       dateColumn?: string | null;
       holdoutPeriods?: number;
+      spendBasis?: Record<string, string> | null;
     };
     const input: RunInputType = RunInput.parse({
       datasetId: latest.id,
@@ -397,7 +417,10 @@ export const rerunOnLatestVersion = createServerFn({ method: "POST" })
       adstockDecays: params.adstockDecays ?? undefined,
       saturationAlpha: params.saturationAlpha ?? 1,
       holdoutPeriods: params.holdoutPeriods ?? 0,
+      spendBasis: params.spendBasis ?? undefined,
     });
+
+
     return executeMmm(input, userId);
   });
 
@@ -485,3 +508,24 @@ export const getDataset = createServerFn({ method: "POST" })
     if (error || !ds) throw new Error("Dataset não encontrado.");
     return { dataset: ds };
   });
+
+// Save the dataset's "execution unit -> investment column" mapping.
+// Used by Explore to compute CPP and by Model to derive ROI on real spend.
+export const updateUnitCosts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({
+      id: z.string().uuid(),
+      mappings: z.record(z.string().min(1).max(200), z.string().min(1).max(200)),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { error } = await supabase
+      .from("datasets")
+      .update({ unit_costs_json: data.mappings })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+

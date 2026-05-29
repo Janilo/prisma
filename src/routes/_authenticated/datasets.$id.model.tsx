@@ -38,6 +38,7 @@ function ModelPage() {
   );
   const ds = data.dataset as unknown as {
     columns_json: ColumnInfo[];
+    unit_costs_json?: Record<string, string> | null;
   };
 
   const cols = ds.columns_json ?? [];
@@ -52,12 +53,16 @@ function ModelPage() {
   const [dep, setDep] = useState<string>(sp.dep ?? numericCols[0] ?? "");
   const [dateCol, setDateCol] = useState<string>(sp.date ?? dateCols[0] ?? "");
   const [indep, setIndep] = useState<string[]>(initialIndep);
-  const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest/i.test(n)));
+  const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest|grp/i.test(n)));
   const [alpha, setAlpha] = useState(1);
   const [decays, setDecays] = useState<Record<string, number>>({});
   const [satAlpha, setSatAlpha] = useState(1);
   const [holdout, setHoldout] = useState(0);
   const [runName, setRunName] = useState(`Modelo · ${new Date().toLocaleDateString("pt-BR")}`);
+  // Per-channel mapping: channel column (e.g. GRP TV) -> investment column ($ TV).
+  // Seeded from the dataset's saved mapping; user can adjust per run.
+  const [spendBasis, setSpendBasis] = useState<Record<string, string>>(ds.unit_costs_json ?? {});
+
 
   // Suggest a sensible default per channel based on its name (heuristic).
   const suggestDecay = (name: string): number => {
@@ -87,6 +92,10 @@ function ModelPage() {
           adstockDecays: Object.fromEntries(media.map((m) => [m, decayFor(m)])),
           saturationAlpha: satAlpha,
           holdoutPeriods: holdout,
+          spendBasis: Object.fromEntries(
+            Object.entries(spendBasis).filter(([ch, cost]) => media.includes(ch) && !!cost),
+          ),
+
         },
       }),
     onSuccess: (r) => {
@@ -170,6 +179,46 @@ function ModelPage() {
             </div>
           </div>
         )}
+
+        {media.length > 0 && (
+          <div>
+            <p className="eyebrow mb-2">Base de investimento (para ROI)</p>
+            <p className="text-[10px] text-brand-gray mb-3">
+              Se o canal está em <strong>unidades de execução</strong> (GRP, impressões, cliques),
+              aponte qual coluna tem o <strong>investimento real (R$)</strong> daquele canal.
+              O ROI será calculado sobre esse investimento. Deixe em branco se a própria
+              coluna do canal já estiver em reais.
+            </p>
+            <div className="space-y-2 border hairline-strong bg-white p-3">
+              {media.map((m) => {
+                const costOptions = numericCols.filter((n) => n !== m && n !== dep);
+                return (
+                  <div key={m} className="flex items-center gap-3">
+                    <span className="text-xs flex-1 truncate" title={m}>{m}</span>
+                    <select
+                      value={spendBasis[m] ?? ""}
+                      onChange={(e) =>
+                        setSpendBasis((s) => {
+                          const next = { ...s };
+                          if (e.target.value) next[m] = e.target.value;
+                          else delete next[m];
+                          return next;
+                        })
+                      }
+                      className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+                    >
+                      <option value="">— mesma coluna (já em R$) —</option>
+                      {costOptions.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
 
         <div>
           <label htmlFor="holdout-input" className="eyebrow block mb-2">
