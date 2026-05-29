@@ -2,15 +2,15 @@ const PARENT = "https://pereirasaraiva.com";
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 bg-brand-offwhite border-b hairline">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between">
+    <header className="sticky top-0 z-40 bg-brand-offwhite/80 backdrop-blur supports-[backdrop-filter]:bg-brand-offwhite/70 border-b hairline">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-5 flex items-center justify-between">
         {/* Wordmark */}
         <div className="flex items-center gap-4">
           <a href="/" className="group">
             <img
               src="/prisma-assets/wordmark-prisma.svg"
               alt="Prisma"
-              className="h-7 w-auto group-hover:opacity-80 transition-opacity"
+              className="h-6 w-auto md:h-7 group-hover:opacity-80 transition-opacity"
             />
           </a>
           <a href={PARENT} target="_blank" rel="noopener noreferrer" className="hidden sm:inline font-sans text-[10px] uppercase tracking-[0.18em] text-brand-gray hover:opacity-70 transition-opacity">
