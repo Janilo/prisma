@@ -47,7 +47,12 @@ function RunPage() {
     id: string;
     name: string;
     dep_variable: string;
-    metrics_json: { r2: number; mape: number; rmse: number; n: number; p: number };
+    metrics_json: {
+      r2: number; mape: number; rmse: number; n: number; p: number;
+      holdoutPeriods?: number;
+      train?: { r2: number; mape: number; rmse: number; n: number } | null;
+      holdout?: { n: number; r2: number; mape: number; rmse: number } | null;
+    };
     contributions_json: Totals[];
     roi_json: Totals[];
     decomposition_json: Decomp[];
@@ -93,11 +98,27 @@ function RunPage() {
 
       {/* Quality metrics */}
       <section className="mt-12 grid grid-cols-4 gap-px bg-brand-navy/10 border hairline">
-        <Metric label="R²" value={(metrics.r2 * 100).toFixed(1) + "%"} hint="Quanto da variação foi explicada. Acima de 70% costuma ser bom." />
-        <Metric label="MAPE" value={(metrics.mape * 100).toFixed(1) + "%"} hint="Erro percentual médio. Quanto menor, mais preciso. Abaixo de 15% é forte." />
-        <Metric label="RMSE" value={fmt(metrics.rmse)} hint="Erro absoluto típico, na mesma unidade da variável." />
+        <Metric label="R² (in-sample)" value={(metrics.r2 * 100).toFixed(1) + "%"} hint="Variação explicada no conjunto de treino completo. Sozinho pode esconder overfit." />
+        <Metric label="MAPE (in-sample)" value={(metrics.mape * 100).toFixed(1) + "%"} hint="Erro percentual médio no treino." />
+        <Metric label="RMSE (in-sample)" value={fmt(metrics.rmse)} hint="Erro absoluto típico no treino." />
         <Metric label="n / p" value={`${metrics.n} / ${metrics.p}`} hint="Períodos observados / variáveis no modelo." />
       </section>
+
+      {metrics.holdout && metrics.train ? (
+        <section className="mt-6">
+          <p className="eyebrow">Validação out-of-sample (últimos {metrics.holdout.n} períodos)</p>
+          <p className="text-xs text-brand-navy/60 mt-2 mb-3 max-w-xl">
+            Modelo treinado nos primeiros {metrics.train.n} períodos e avaliado nos últimos {metrics.holdout.n}, que ele nunca viu.
+            Se as métricas caem muito, o R² in-sample é otimismo (overfit). Se ficam próximas, o modelo generaliza bem.
+          </p>
+          <div className="grid grid-cols-3 gap-px bg-brand-navy/10 border hairline">
+            <Metric label="R² (holdout)" value={(metrics.holdout.r2 * 100).toFixed(1) + "%"} hint={`Treino: ${(metrics.train.r2 * 100).toFixed(1)}%`} />
+            <Metric label="MAPE (holdout)" value={(metrics.holdout.mape * 100).toFixed(1) + "%"} hint={`Treino: ${(metrics.train.mape * 100).toFixed(1)}%`} />
+            <Metric label="RMSE (holdout)" value={fmt(metrics.holdout.rmse)} hint={`Treino: ${fmt(metrics.train.rmse)}`} />
+          </div>
+        </section>
+      ) : null}
+
 
       {/* Decomposition over time */}
       <section className="mt-16">

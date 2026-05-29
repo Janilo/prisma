@@ -28,8 +28,10 @@ const RunInput = z.object({
   // TV ~0.6–0.8 (carryover de semanas), Google paid ~0.0–0.2, Meta ~0.2–0.4.
   adstockDecays: z.record(z.string(), z.number().min(0).max(0.95)).optional(),
   saturationAlpha: z.number().min(0.5).max(3).default(1),
+  // Out-of-sample holdout: number of last periods to reserve for validation.
+  // 0 = no holdout (train on all data, only in-sample metrics).
+  holdoutPeriods: z.number().int().min(0).max(200).default(0),
 });
-
 
 function toNumber(v: unknown): number {
   if (typeof v === "number") return Number.isFinite(v) ? v : 0;
@@ -126,8 +128,37 @@ export const runMmm = createServerFn({ method: "POST" })
       transformedColumns.map((col) => col[i])
     );
 
-    // Fit Ridge
+    // Fit Ridge on full data for attribution/decomposition
     const fit = ridgeFit({ X, y, alpha: data.alpha, featureNames });
+
+    // Out-of-sample holdout validation: refit on train-only, evaluate on the last k periods.
+    const k = Math.min(data.holdoutPeriods, Math.max(0, n - Math.max(8, p + 2)));
+    let holdout: { n: number; r2: number; mape: number; rmse: number; labels: string[]; actual: number[]; predicted: number[] } | null = null;
+    let trainMetrics: { r2: number; mape: number; rmse: number; n: number } | null = null;
+    if (k > 0) {
+      const nTrain = n - k;
+      const Xtr = X.slice(0, nTrain);
+      const ytr = y.slice(0, nTrain);
+      const Xte = X.slice(nTrain);
+      const yte = y.slice(nTrain);
+      const fitTr = ridgeFit({ X: Xtr, y: ytr, alpha: data.alpha, featureNames });
+      const yPredTr = fitTr.yPred;
+      const yPredTe = Xte.map((row) => {
+        let s = fitTr.intercept;
+        for (let j = 0; j < p; j++) s += fitTr.beta[j] * row[j];
+        return s;
+      });
+      trainMetrics = { r2: r2(ytr, yPredTr), mape: mape(ytr, yPredTr), rmse: rmse(ytr, yPredTr), n: nTrain };
+      holdout = {
+        n: k,
+        r2: r2(yte, yPredTe),
+        mape: mape(yte, yPredTe),
+        rmse: rmse(yte, yPredTe),
+        labels: [],
+        actual: yte,
+        predicted: yPredTe,
+      };
+    }
 
     // Build date/index labels
     let labels: string[] = [];
@@ -173,12 +204,19 @@ export const runMmm = createServerFn({ method: "POST" })
       });
     }
 
+    if (holdout) holdout.labels = labels.slice(n - holdout.n);
+
     const metrics = {
       r2: r2(y, fit.yPred),
       mape: mape(y, fit.yPred),
       rmse: rmse(y, fit.yPred),
       n,
       p,
+      holdoutPeriods: k,
+      train: trainMetrics,
+      holdout: holdout
+        ? { n: holdout.n, r2: holdout.r2, mape: holdout.mape, rmse: holdout.rmse }
+        : null,
     };
 
     // Persist run
@@ -198,12 +236,20 @@ export const runMmm = createServerFn({ method: "POST" })
           saturationAlpha: data.saturationAlpha,
           mediaVariables: data.mediaVariables,
           dateColumn: data.dateColumn,
+          holdoutPeriods: k,
         },
         metrics_json: metrics,
         contributions_json: totals,
         roi_json: totals.filter((t) => t.isMedia),
         decomposition_json: decomposition,
-        predicted_json: { labels, actual: y, predicted: fit.yPred },
+        predicted_json: {
+          labels,
+          actual: y,
+          predicted: fit.yPred,
+          holdout: holdout
+            ? { labels: holdout.labels, actual: holdout.actual, predicted: holdout.predicted }
+            : null,
+        },
         finished_at: new Date().toISOString(),
       })
       .select("id")
