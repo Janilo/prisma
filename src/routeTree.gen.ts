@@ -10,12 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DemoRouteImport } from './routes/demo'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
-import { Route as AuthenticatedMethodologyRouteImport } from './routes/_authenticated/methodology'
 import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
 import { Route as AuthenticatedCompareRouteImport } from './routes/_authenticated/compare'
 import { Route as AuthenticatedRunsIndexRouteImport } from './routes/_authenticated/runs.index'
@@ -35,6 +35,11 @@ import { Route as AuthenticatedDatasetsIdExploreRouteImport } from './routes/_au
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MethodologyRoute = MethodologyRouteImport.update({
+  id: '/methodology',
+  path: '/methodology',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -61,12 +66,6 @@ const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
   path: '/upload',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedMethodologyRoute =
-  AuthenticatedMethodologyRouteImport.update({
-    id: '/methodology',
-    path: '/methodology',
-    getParentRoute: () => AuthenticatedRoute,
-  } as any)
 const AuthenticatedExploreRoute = AuthenticatedExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
@@ -155,10 +154,10 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/demo': typeof DemoRoute
   '/login': typeof LoginRoute
+  '/methodology': typeof MethodologyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/compare': typeof AuthenticatedCompareRoute
   '/explore': typeof AuthenticatedExploreRoute
-  '/methodology': typeof AuthenticatedMethodologyRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/results/decomp': typeof AuthenticatedResultsDecompRoute
@@ -178,10 +177,10 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/demo': typeof DemoRoute
   '/login': typeof LoginRoute
+  '/methodology': typeof MethodologyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/compare': typeof AuthenticatedCompareRoute
   '/explore': typeof AuthenticatedExploreRoute
-  '/methodology': typeof AuthenticatedMethodologyRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/results/decomp': typeof AuthenticatedResultsDecompRoute
   '/results/optimizer': typeof AuthenticatedResultsOptimizerRoute
@@ -202,10 +201,10 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/demo': typeof DemoRoute
   '/login': typeof LoginRoute
+  '/methodology': typeof MethodologyRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/compare': typeof AuthenticatedCompareRoute
   '/_authenticated/explore': typeof AuthenticatedExploreRoute
-  '/_authenticated/methodology': typeof AuthenticatedMethodologyRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/_authenticated/results/decomp': typeof AuthenticatedResultsDecompRoute
@@ -227,10 +226,10 @@ export interface FileRouteTypes {
     | '/'
     | '/demo'
     | '/login'
+    | '/methodology'
     | '/sitemap.xml'
     | '/compare'
     | '/explore'
-    | '/methodology'
     | '/upload'
     | '/datasets/$id'
     | '/results/decomp'
@@ -250,10 +249,10 @@ export interface FileRouteTypes {
     | '/'
     | '/demo'
     | '/login'
+    | '/methodology'
     | '/sitemap.xml'
     | '/compare'
     | '/explore'
-    | '/methodology'
     | '/upload'
     | '/results/decomp'
     | '/results/optimizer'
@@ -273,10 +272,10 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/demo'
     | '/login'
+    | '/methodology'
     | '/sitemap.xml'
     | '/_authenticated/compare'
     | '/_authenticated/explore'
-    | '/_authenticated/methodology'
     | '/_authenticated/upload'
     | '/_authenticated/datasets/$id'
     | '/_authenticated/results/decomp'
@@ -298,6 +297,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   DemoRoute: typeof DemoRoute
   LoginRoute: typeof LoginRoute
+  MethodologyRoute: typeof MethodologyRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ShareRunsIdRoute: typeof ShareRunsIdRoute
 }
@@ -309,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/methodology': {
+      id: '/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof MethodologyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -344,13 +351,6 @@ declare module '@tanstack/react-router' {
       path: '/upload'
       fullPath: '/upload'
       preLoaderRoute: typeof AuthenticatedUploadRouteImport
-      parentRoute: typeof AuthenticatedRoute
-    }
-    '/_authenticated/methodology': {
-      id: '/_authenticated/methodology'
-      path: '/methodology'
-      fullPath: '/methodology'
-      preLoaderRoute: typeof AuthenticatedMethodologyRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/explore': {
@@ -482,7 +482,6 @@ const AuthenticatedDatasetsIdRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedCompareRoute: typeof AuthenticatedCompareRoute
   AuthenticatedExploreRoute: typeof AuthenticatedExploreRoute
-  AuthenticatedMethodologyRoute: typeof AuthenticatedMethodologyRoute
   AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedDatasetsIdRoute: typeof AuthenticatedDatasetsIdRouteWithChildren
   AuthenticatedResultsDecompRoute: typeof AuthenticatedResultsDecompRoute
@@ -498,7 +497,6 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCompareRoute: AuthenticatedCompareRoute,
   AuthenticatedExploreRoute: AuthenticatedExploreRoute,
-  AuthenticatedMethodologyRoute: AuthenticatedMethodologyRoute,
   AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedDatasetsIdRoute: AuthenticatedDatasetsIdRouteWithChildren,
   AuthenticatedResultsDecompRoute: AuthenticatedResultsDecompRoute,
@@ -520,9 +518,20 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   DemoRoute: DemoRoute,
   LoginRoute: LoginRoute,
+  MethodologyRoute: MethodologyRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ShareRunsIdRoute: ShareRunsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
