@@ -245,7 +245,20 @@ function UploadPage() {
             </p>
           </div>
         </label>
+        <div className="mt-4 flex items-center gap-3 text-xs text-brand-navy/70">
+          <span>Sem CSV em mãos?</span>
+          <button
+            type="button"
+            onClick={onLoadExample}
+            disabled={busy}
+            className="uppercase tracking-widest border border-brand-navy/30 px-3 py-1.5 hover:bg-brand-navy hover:text-white transition-colors disabled:opacity-40"
+          >
+            Carregar dataset de exemplo
+          </button>
+          <span className="text-brand-gray">50 semanas · 3 canais · sintético</span>
+        </div>
       </section>
+
 
       <section className="mt-12" aria-labelledby="carregados-heading">
         <h2 id="carregados-heading" className="eyebrow">Seus dados carregados</h2>
