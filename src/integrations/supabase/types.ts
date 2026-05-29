@@ -25,11 +25,13 @@ export type Database = {
           n_rows: number
           name: string
           original_filename: string
+          parent_dataset_id: string | null
           period_end: string | null
           period_start: string | null
           storage_path: string
           summary_json: Json | null
           user_id: string
+          version: number
         }
         Insert: {
           columns_json?: Json
@@ -41,11 +43,13 @@ export type Database = {
           n_rows?: number
           name: string
           original_filename: string
+          parent_dataset_id?: string | null
           period_end?: string | null
           period_start?: string | null
           storage_path: string
           summary_json?: Json | null
           user_id: string
+          version?: number
         }
         Update: {
           columns_json?: Json
@@ -57,11 +61,13 @@ export type Database = {
           n_rows?: number
           name?: string
           original_filename?: string
+          parent_dataset_id?: string | null
           period_end?: string | null
           period_start?: string | null
           storage_path?: string
           summary_json?: Json | null
           user_id?: string
+          version?: number
         }
         Relationships: []
       }
