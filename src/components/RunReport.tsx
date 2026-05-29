@@ -372,6 +372,13 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                   <td className="py-3 text-right font-mono text-xs">{fmt(r.contribution)}</td>
                   <td className="py-3 text-right">
                     <span className="font-display text-xl text-brand-navy">{r.roi!.toFixed(2)}×</span>
+                    {r.roiLow != null && r.roiHigh != null && (
+                      <div className="text-[10px] text-brand-navy/50 mt-0.5 font-mono">
+                        IC 90%: {r.roiLow.toFixed(2)}× — {r.roiHigh.toFixed(2)}×
+                      </div>
+                    )}
+                  </td>
+
                   </td>
                 </tr>
               ))}
