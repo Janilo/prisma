@@ -99,23 +99,22 @@ function DemoPage() {
       <SiteHeader />
       <main className="flex-1">
         {/* Demo banner */}
-        <div className="bg-brand-mustard/15 border-b hairline">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-4 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <span className="text-[10px] uppercase tracking-widest bg-brand-navy text-brand-creme px-2 py-1">
-                Demo
+        <div className="border-b hairline bg-brand-mustard/10">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-2.5 flex flex-wrap items-center justify-between gap-4 text-xs">
+            <div className="flex items-center gap-2 text-brand-navy">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-navy/60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-navy" />
               </span>
-              <p className="text-sm text-brand-navy/80">
-                Dataset de exemplo: 50 semanas de receita + 3 canais (Google, Meta, TV).
-                Tudo aqui é fictício e roda direto do seu navegador.
-              </p>
+              <span className="font-mono uppercase tracking-wider">Demo-ready</span>
+              <span className="text-brand-navy/60 hidden sm:inline">· dataset de exemplo: 50 semanas de receita + 3 canais (Google, Meta, TV)</span>
             </div>
             <Link
               to="/login"
               search={{ mode: "signup" }}
-              className="inline-flex items-center bg-brand-navy text-white px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple"
+              className="rounded-sm border border-brand-navy/40 bg-transparent px-2.5 py-1 font-medium text-brand-navy hover:bg-brand-navy hover:text-brand-creme transition-colors"
             >
-              Rodar com meus dados
+              Rodar com meus dados →
             </Link>
           </div>
         </div>
@@ -288,13 +287,7 @@ function DemoPage() {
                 search={{ mode: "signup" }}
                 className="inline-flex items-center bg-brand-navy text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple"
               >
-                Criar conta
-              </Link>
-              <Link
-                to="/login"
-                className="inline-flex items-center border border-brand-navy/20 bg-white text-brand-navy px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-creme"
-              >
-                Entrar
+                Rodar com meus dados
               </Link>
             </div>
           </section>
