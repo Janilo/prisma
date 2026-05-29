@@ -33,6 +33,41 @@ export const Route = createFileRoute("/_authenticated/upload")({
   component: UploadPage,
 });
 
+function buildSampleCsv(): { csv: string; filename: string; nRows: number; nCols: number; periodStart: string; periodEnd: string } {
+  const N = 50;
+  let s = 42 >>> 0;
+  const rand = () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 0xffffffff;
+  };
+  const rows: Record<string, string | number>[] = [];
+  const start = new Date("2024-01-01").getTime();
+  for (let i = 0; i < N; i++) {
+    const d = new Date(start + i * 7 * 86400000).toISOString().slice(0, 10);
+    const season = 1 + 0.25 * Math.sin((i / N) * Math.PI * 2);
+    const google = Math.round((12000 + 4000 * Math.sin(i / 6) + (rand() - 0.5) * 3000) * season);
+    const meta = Math.round((8000 + 3000 * Math.cos(i / 5) + (rand() - 0.5) * 2500) * season);
+    const burst = Math.floor(i / 4) % 3 === 0 ? 1 : 0.15;
+    const tv = Math.round((30000 * burst + (rand() - 0.5) * 4000) * season);
+    // revenue with adstock-like memory + saturation approximated
+    const trend = i * 400;
+    const seasonY = 20000 * Math.sin((i / N) * Math.PI * 4);
+    const mediaY = 3.2 * google + 2.1 * meta + 1.4 * tv;
+    const noise = (rand() - 0.5) * 12000;
+    const revenue = Math.max(0, Math.round(180000 + trend + seasonY + mediaY + noise));
+    rows.push({ data: d, receita: revenue, google_ads: google, meta_ads: meta, tv_aberta: tv });
+  }
+  const csv = Papa.unparse(rows, { columns: ["data", "receita", "google_ads", "meta_ads", "tv_aberta"] });
+  return {
+    csv,
+    filename: "exemplo-mmm-50-semanas.csv",
+    nRows: N,
+    nCols: 5,
+    periodStart: String(rows[0].data),
+    periodEnd: String(rows[N - 1].data),
+  };
+}
+
 function UploadPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
@@ -42,6 +77,49 @@ function UploadPage() {
     queryKey: ["datasets"],
     queryFn: () => listFn(),
   });
+
+  const ingestCsv = async (csv: string, filename: string) => {
+    setStatus("Analisando colunas...");
+    const parsed = Papa.parse<Record<string, unknown>>(csv, { header: true, dynamicTyping: true, skipEmptyLines: true });
+    const columns = parsed.meta.fields ?? [];
+    const cols = analyzeColumns(parsed.data, columns);
+    const dateCol = detectDateColumn(cols);
+    const granularity = detectGranularity(parsed.data, dateCol);
+
+    setStatus("Enviando para o backend...");
+    const { data: userData } = await supabase.auth.getUser();
+    const uid = userData.user!.id;
+    const storagePath = `${uid}/${Date.now()}-${filename.replace(/[^\w.-]/g, "_")}`;
+    const { error: upErr } = await supabase.storage
+      .from("datasets")
+      .upload(storagePath, new Blob([csv], { type: "text/csv" }), { upsert: false });
+    if (upErr) throw upErr;
+
+    const periods = dateCol
+      ? parsed.data.map((r) => String(r[dateCol] ?? "")).filter(Boolean).sort()
+      : [];
+
+    const { data: ds, error: insErr } = await supabase
+      .from("datasets")
+      .insert({
+        user_id: uid,
+        name: filename.replace(/\.[^.]+$/, ""),
+        original_filename: filename,
+        storage_path: storagePath,
+        n_rows: parsed.data.length,
+        n_cols: columns.length,
+        columns_json: cols as unknown as never,
+        period_start: periods[0] ?? null,
+        period_end: periods[periods.length - 1] ?? null,
+        granularity,
+      })
+      .select("id")
+      .single();
+    if (insErr) throw insErr;
+
+    void refetch();
+    return ds.id as string;
+  };
 
   const onFile = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -116,7 +194,25 @@ function UploadPage() {
     }
   };
 
+  const onLoadExample = async () => {
+    setBusy(true);
+    setStatus("Gerando dataset de exemplo...");
+    try {
+      const sample = buildSampleCsv();
+      const id = await ingestCsv(sample.csv, sample.filename);
+      toast.success("Exemplo carregado. Explore os dados sintéticos.");
+      navigate({ to: "/datasets/$id/explore", params: { id } });
+    } catch (err) {
+      console.error(err);
+      toast.error(err instanceof Error ? err.message : "Falha ao carregar exemplo.");
+      setBusy(false);
+      setStatus("");
+    }
+  };
+
   const datasets = dsList?.datasets ?? [];
+
+
 
   return (
     <div className="p-12 max-w-5xl">
