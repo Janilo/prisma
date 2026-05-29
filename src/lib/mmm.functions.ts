@@ -420,7 +420,7 @@ export const rerunOnLatestVersion = createServerFn({ method: "POST" })
       spendBasis: params.spendBasis ?? undefined,
     });
 
-    });
+
     return executeMmm(input, userId);
   });
 
