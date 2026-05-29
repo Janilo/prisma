@@ -56,6 +56,7 @@ function ModelPage() {
   const [alpha, setAlpha] = useState(1);
   const [decays, setDecays] = useState<Record<string, number>>({});
   const [satAlpha, setSatAlpha] = useState(1);
+  const [holdout, setHoldout] = useState(0);
   const [runName, setRunName] = useState(`Modelo · ${new Date().toLocaleDateString("pt-BR")}`);
 
   // Suggest a sensible default per channel based on its name (heuristic).
