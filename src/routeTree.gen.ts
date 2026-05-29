@@ -24,6 +24,7 @@ import { Route as ShareRunsIdRouteImport } from './routes/share.runs.$id'
 import { Route as AuthenticatedRunsIdRouteImport } from './routes/_authenticated/runs.$id'
 import { Route as AuthenticatedResultsRoiRouteImport } from './routes/_authenticated/results.roi'
 import { Route as AuthenticatedResultsResponseRouteImport } from './routes/_authenticated/results.response'
+import { Route as AuthenticatedResultsOptimizerRouteImport } from './routes/_authenticated/results.optimizer'
 import { Route as AuthenticatedResultsDecompRouteImport } from './routes/_authenticated/results.decomp'
 import { Route as AuthenticatedDatasetsIdRouteImport } from './routes/_authenticated/datasets.$id'
 import { Route as AuthenticatedDatasetsIdIndexRouteImport } from './routes/_authenticated/datasets.$id.index'
@@ -107,6 +108,12 @@ const AuthenticatedResultsResponseRoute =
     path: '/results/response',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedResultsOptimizerRoute =
+  AuthenticatedResultsOptimizerRouteImport.update({
+    id: '/results/optimizer',
+    path: '/results/optimizer',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedResultsDecompRoute =
   AuthenticatedResultsDecompRouteImport.update({
     id: '/results/decomp',
@@ -148,6 +155,7 @@ export interface FileRoutesByFullPath {
   '/upload': typeof AuthenticatedUploadRoute
   '/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/results/decomp': typeof AuthenticatedResultsDecompRoute
+  '/results/optimizer': typeof AuthenticatedResultsOptimizerRoute
   '/results/response': typeof AuthenticatedResultsResponseRoute
   '/results/roi': typeof AuthenticatedResultsRoiRoute
   '/runs/$id': typeof AuthenticatedRunsIdRoute
@@ -168,6 +176,7 @@ export interface FileRoutesByTo {
   '/methodology': typeof AuthenticatedMethodologyRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/results/decomp': typeof AuthenticatedResultsDecompRoute
+  '/results/optimizer': typeof AuthenticatedResultsOptimizerRoute
   '/results/response': typeof AuthenticatedResultsResponseRoute
   '/results/roi': typeof AuthenticatedResultsRoiRoute
   '/runs/$id': typeof AuthenticatedRunsIdRoute
@@ -191,6 +200,7 @@ export interface FileRoutesById {
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/_authenticated/results/decomp': typeof AuthenticatedResultsDecompRoute
+  '/_authenticated/results/optimizer': typeof AuthenticatedResultsOptimizerRoute
   '/_authenticated/results/response': typeof AuthenticatedResultsResponseRoute
   '/_authenticated/results/roi': typeof AuthenticatedResultsRoiRoute
   '/_authenticated/runs/$id': typeof AuthenticatedRunsIdRoute
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/upload'
     | '/datasets/$id'
     | '/results/decomp'
+    | '/results/optimizer'
     | '/results/response'
     | '/results/roi'
     | '/runs/$id'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/methodology'
     | '/upload'
     | '/results/decomp'
+    | '/results/optimizer'
     | '/results/response'
     | '/results/roi'
     | '/runs/$id'
@@ -256,6 +268,7 @@ export interface FileRouteTypes {
     | '/_authenticated/upload'
     | '/_authenticated/datasets/$id'
     | '/_authenticated/results/decomp'
+    | '/_authenticated/results/optimizer'
     | '/_authenticated/results/response'
     | '/_authenticated/results/roi'
     | '/_authenticated/runs/$id'
@@ -383,6 +396,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedResultsResponseRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/results/optimizer': {
+      id: '/_authenticated/results/optimizer'
+      path: '/results/optimizer'
+      fullPath: '/results/optimizer'
+      preLoaderRoute: typeof AuthenticatedResultsOptimizerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/results/decomp': {
       id: '/_authenticated/results/decomp'
       path: '/results/decomp'
@@ -446,6 +466,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedDatasetsIdRoute: typeof AuthenticatedDatasetsIdRouteWithChildren
   AuthenticatedResultsDecompRoute: typeof AuthenticatedResultsDecompRoute
+  AuthenticatedResultsOptimizerRoute: typeof AuthenticatedResultsOptimizerRoute
   AuthenticatedResultsResponseRoute: typeof AuthenticatedResultsResponseRoute
   AuthenticatedResultsRoiRoute: typeof AuthenticatedResultsRoiRoute
   AuthenticatedRunsIdRoute: typeof AuthenticatedRunsIdRoute
@@ -460,6 +481,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedDatasetsIdRoute: AuthenticatedDatasetsIdRouteWithChildren,
   AuthenticatedResultsDecompRoute: AuthenticatedResultsDecompRoute,
+  AuthenticatedResultsOptimizerRoute: AuthenticatedResultsOptimizerRoute,
   AuthenticatedResultsResponseRoute: AuthenticatedResultsResponseRoute,
   AuthenticatedResultsRoiRoute: AuthenticatedResultsRoiRoute,
   AuthenticatedRunsIdRoute: AuthenticatedRunsIdRoute,
