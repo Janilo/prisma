@@ -252,6 +252,8 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
   type Total = {
     variable: string; contribution: number; share: number; pValue: number; zStat: number;
     isMedia: boolean; spend: number; roi: number | null; curve?: CurvePoint[];
+    contribLow?: number; contribHigh?: number;
+    roiLow?: number | null; roiHigh?: number | null;
   };
   const totals: Total[] = [];
   const sumPredicted = fit.yPred.reduce((a, b) => a + b, 0) || 1;
@@ -290,9 +292,14 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
       isMedia,
       spend,
       roi: spend > 0 ? contrib / spend : null,
+      contribLow: contribCI[j].low,
+      contribHigh: contribCI[j].high,
+      roiLow: roiCI[j]?.low ?? null,
+      roiHigh: roiCI[j]?.high ?? null,
       ...(curve ? { curve } : {}),
     });
   }
+
 
 
   if (holdout) holdout.labels = labels.slice(n - holdout.n);
