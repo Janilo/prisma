@@ -346,5 +346,3 @@ function fmt(n: number): string {
   return n.toFixed(1);
 }
 
-// Silence unused import in type-only flow
-export type _Unused = RunTotals;
