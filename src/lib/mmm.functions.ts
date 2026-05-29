@@ -139,6 +139,18 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
   }
 
   const mediaSet = new Set(data.mediaVariables);
+  const spendBasis = data.spendBasis ?? {};
+
+  // Resolve real spend per media channel: use mapped investment column when present,
+  // otherwise sum the channel column itself (channels already expressed in money).
+  function channelSpendTotal(name: string, fallbackArr: number[]): number {
+    const costCol = spendBasis[name];
+    if (costCol) {
+      return rows.reduce((acc, r) => acc + toNumber(r[costCol]), 0);
+    }
+    return fallbackArr.reduce((a, b) => a + b, 0);
+  }
+
 
   // Cache per-channel transform metadata so we can later rebuild response curves.
   const channelMeta: Record<string, { decay: number; k: number; rawSeries: number[]; featureIdx: number }> = {};
