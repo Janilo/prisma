@@ -82,7 +82,30 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
     [run.predicted_json],
   );
 
+  const residuals = useMemo(() => {
+    const { labels, actual, predicted } = run.predicted_json;
+    const raw = actual.map((a, i) => a - predicted[i]);
+    const mean = raw.reduce((s, v) => s + v, 0) / (raw.length || 1);
+    const variance = raw.reduce((s, v) => s + (v - mean) ** 2, 0) / (raw.length > 1 ? raw.length - 1 : 1);
+    const sd = Math.sqrt(variance) || 1;
+    return labels.map((l, i) => {
+      const r = raw[i];
+      const z = (r - mean) / sd;
+      return {
+        period: l,
+        residual: r,
+        z,
+        actual: actual[i],
+        predicted: predicted[i],
+        outlier: Math.abs(z) >= 2.5,
+      };
+    });
+  }, [run.predicted_json]);
+
+  const outliers = useMemo(() => residuals.filter((r) => r.outlier), [residuals]);
+
   const metrics = run.metrics_json;
+
 
   const handlePrint = () => {
     if (typeof window !== "undefined") window.print();
