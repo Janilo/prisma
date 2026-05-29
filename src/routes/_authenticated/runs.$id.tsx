@@ -52,7 +52,7 @@ function RunPage() {
     roi_json: Totals[];
     decomposition_json: Decomp[];
     predicted_json: { labels: string[]; actual: number[]; predicted: number[] };
-    params_json: { alpha: number; adstockDecay: number; saturationAlpha: number; mediaVariables: string[] };
+    params_json: { alpha: number; adstockDecay: number; adstockDecays?: Record<string, number> | null; saturationAlpha: number; mediaVariables: string[] };
     created_at: string;
   };
 
