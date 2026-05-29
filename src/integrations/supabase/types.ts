@@ -30,6 +30,7 @@ export type Database = {
           period_start: string | null
           storage_path: string
           summary_json: Json | null
+          unit_costs_json: Json
           user_id: string
           version: number
         }
@@ -48,6 +49,7 @@ export type Database = {
           period_start?: string | null
           storage_path: string
           summary_json?: Json | null
+          unit_costs_json?: Json
           user_id: string
           version?: number
         }
@@ -66,6 +68,7 @@ export type Database = {
           period_start?: string | null
           storage_path?: string
           summary_json?: Json | null
+          unit_costs_json?: Json
           user_id?: string
           version?: number
         }
