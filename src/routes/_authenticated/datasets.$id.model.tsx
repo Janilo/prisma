@@ -92,6 +92,10 @@ function ModelPage() {
           adstockDecays: Object.fromEntries(media.map((m) => [m, decayFor(m)])),
           saturationAlpha: satAlpha,
           holdoutPeriods: holdout,
+          spendBasis: Object.fromEntries(
+            Object.entries(spendBasis).filter(([ch, cost]) => media.includes(ch) && !!cost),
+          ),
+
         },
       }),
     onSuccess: (r) => {
