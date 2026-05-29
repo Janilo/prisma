@@ -244,7 +244,7 @@ function RunPage() {
             </tbody>
           </table>
         </section>
-        </section>
+
       )}
 
       {rois.length >= 2 && <BudgetSimulator rois={rois} depVariable={run.dep_variable} />}
