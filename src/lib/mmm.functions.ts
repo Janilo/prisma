@@ -236,6 +236,7 @@ export const runMmm = createServerFn({ method: "POST" })
           saturationAlpha: data.saturationAlpha,
           mediaVariables: data.mediaVariables,
           dateColumn: data.dateColumn,
+          holdoutPeriods: k,
         },
         metrics_json: metrics,
         contributions_json: totals,
