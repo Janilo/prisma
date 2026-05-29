@@ -316,7 +316,15 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                     {t.variable}
                     {t.isMedia && <span className="ml-2 text-[10px] uppercase tracking-widest text-brand-mustard">mídia</span>}
                   </td>
-                  <td className="py-3 text-right font-mono text-xs">{fmt(t.contribution)}</td>
+                  <td className="py-3 text-right font-mono text-xs">
+                    {fmt(t.contribution)}
+                    {t.contribLow != null && t.contribHigh != null && !t.variable.startsWith("Base") && (
+                      <div className="text-[10px] text-brand-navy/50 mt-0.5">
+                        IC 90%: {fmt(t.contribLow)} — {fmt(t.contribHigh)}
+                      </div>
+                    )}
+                  </td>
+
                   <td className="py-3 text-right">
                     <div className="inline-flex items-center gap-2">
                       <div className="w-24 h-1 bg-brand-navy/10 relative">
