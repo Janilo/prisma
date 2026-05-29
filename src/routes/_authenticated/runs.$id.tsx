@@ -79,8 +79,17 @@ function RunPage() {
       <p className="eyebrow">Resultado</p>
       <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">{run.name}</h1>
       <p className="mt-3 text-xs text-brand-navy/60 font-mono">
-        Alvo: {run.dep_variable} · α={run.params_json.alpha} · adstock={run.params_json.adstockDecay} · saturação={run.params_json.saturationAlpha} · {new Date(run.created_at).toLocaleString("pt-BR")}
+        Alvo: {run.dep_variable} · α={run.params_json.alpha} · saturação={run.params_json.saturationAlpha} · {new Date(run.created_at).toLocaleString("pt-BR")}
       </p>
+      {run.params_json.adstockDecays && Object.keys(run.params_json.adstockDecays).length > 0 ? (
+        <p className="mt-1 text-xs text-brand-navy/60 font-mono">
+          Adstock por canal: {Object.entries(run.params_json.adstockDecays).map(([k, v]) => `${k}=${v}`).join(" · ")}
+        </p>
+      ) : (
+        <p className="mt-1 text-xs text-brand-navy/60 font-mono">
+          Adstock (global): {run.params_json.adstockDecay}
+        </p>
+      )}
 
       {/* Quality metrics */}
       <section className="mt-12 grid grid-cols-4 gap-px bg-brand-navy/10 border hairline">
