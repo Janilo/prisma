@@ -72,12 +72,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Prisma · O que move suas vendas, por canal" },
-      { name: "description", content: "Suba uma planilha e veja quanto cada canal contribuiu para suas vendas. Decomposição semanal, ROI por variável, modelo estatístico sem código." },
+      { name: "description", content: "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI." },
       { property: "og:title", content: "Prisma · O que move suas vendas, por canal" },
-      { property: "og:description", content: "Suba uma planilha e veja quanto cada canal contribuiu para suas vendas. Decomposição semanal, ROI por variável, modelo estatístico sem código." },
+      { property: "og:description", content: "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI." },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "Prisma · O que move suas vendas, por canal" },
-      { name: "twitter:description", content: "Suba uma planilha e veja quanto cada canal contribuiu para suas vendas. Decomposição semanal, ROI por variável, modelo estatístico sem código." },
+      { name: "twitter:description", content: "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e60cc451-29fc-44ed-a682-76559e6a33fe/id-preview-c40cb67c--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779935454083.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e60cc451-29fc-44ed-a682-76559e6a33fe/id-preview-c40cb67c--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779935454083.png" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -85,6 +85,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap",
+      },
     ],
     scripts: [
       {
