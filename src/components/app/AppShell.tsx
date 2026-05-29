@@ -6,6 +6,7 @@ const NAV = [
   { to: "/upload", label: "Upload" },
   { to: "/explore", label: "Análise descritiva" },
   { to: "/runs", label: "Resultados" },
+  { to: "/methodology", label: "Metodologia" },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
