@@ -35,25 +35,27 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Brand tokens — repointed to Prisma palette */
-  --color-brand-purple: #33268C;   /* indigo-deep */
-  --color-brand-navy: #1C1547;     /* abyss — dark surface / primary text */
-  --color-brand-green: #2EA86B;    /* lift green */
-  --color-brand-mustard: #7A5CF0;  /* violet — CTA accent */
-  --color-brand-creme: #ECEAFB;    /* indigo-soft warm bg */
-  --color-brand-offwhite: #F7F6FC; /* cool offwhite */
-  --color-brand-stone: #D8D4F0;    /* rule color */
-  --color-brand-gray: #6B6585;     /* muted text */
-  --color-brand-ink: #241A5C;      /* indigo-ink */
-  --color-brand-white: #ffffff;
+  /* Brand tokens — rebind direto aos primitives do DS Prisma (src/styles/prisma.css) */
+  --color-brand-purple: var(--prisma-indigo);        /* #4A37B5 — brand primary */
+  --color-brand-purple-deep: var(--prisma-indigo-deep); /* #33268C — hover/press */
+  --color-brand-navy: var(--prisma-abyss);           /* #1C1547 */
+  --color-brand-green: var(--prisma-lift);           /* #2E9E5E */
+  --color-brand-mustard: var(--prisma-violet);       /* #7A5CF0 — violet accent */
+  --color-brand-creme: var(--prisma-indigo-soft);    /* #ECEAFB */
+  --color-brand-offwhite: var(--prisma-paper);       /* #F7F6FB */
+  --color-brand-stone: var(--prisma-stone);          /* #D7D4E2 */
+  --color-brand-gray: var(--prisma-mute);            /* #726E89 */
+  --color-brand-ink: var(--prisma-indigo-ink);       /* #241A5C */
+  --color-brand-white: var(--prisma-white);
 
-  /* Data viz palette — Prisma spectrum */
-  --color-viz-1: #6B4FE0;
-  --color-viz-2: #2D7BE0;
-  --color-viz-3: #0E97A8;
-  --color-viz-4: #4FA23E;
-  --color-viz-5: #E0A21E;
-  --color-viz-6: #C2562F;
+  /* Data viz palette — espectro Prisma (ch-1..ch-6) */
+  --color-viz-1: var(--prisma-ch-1);
+  --color-viz-2: var(--prisma-ch-2);
+  --color-viz-3: var(--prisma-ch-3);
+  --color-viz-4: var(--prisma-ch-4);
+  --color-viz-5: var(--prisma-ch-5);
+  --color-viz-6: var(--prisma-ch-6);
+
 
 
   --font-display: "Fraunces", "Source Serif 4", Georgia, serif;
