@@ -19,6 +19,12 @@ export function SiteHeader() {
         {/* Right actions */}
         <nav className="flex items-center gap-6">
           <a
+            href="/methodology"
+            className="text-xs font-bold uppercase tracking-[0.18em] text-brand-navy/70 hover:text-brand-navy transition-colors"
+          >
+            Metodologia
+          </a>
+          <a
             href="/login"
             className="text-xs font-bold uppercase tracking-[0.18em] text-brand-navy/70 hover:text-brand-navy transition-colors"
           >
