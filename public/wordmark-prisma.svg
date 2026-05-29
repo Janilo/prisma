@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 44" role="img" aria-label="Prisma">
+  <g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M3 22 H17"></path>
+    <path d="M26 7 L44 38 H8 Z"></path>
+  </g>
+  <g stroke-width="2" stroke-linecap="round">
+    <path d="M35 22 L64 10" stroke="#6B4FE0"></path>
+    <path d="M35.5 22 L66 16" stroke="#2D7BE0"></path>
+    <path d="M36 22 L67 22" stroke="#0E97A8"></path>
+    <path d="M35.5 22 L66 28" stroke="#4FA23E"></path>
+    <path d="M35 22 L64 34" stroke="#E0A21E"></path>
+  </g>
+  <text x="78" y="31" font-family="Inter Tight, Inter, system-ui, sans-serif" font-weight="700" font-size="25" letter-spacing="-0.02em" fill="currentColor">prisma</text>
+</svg>
