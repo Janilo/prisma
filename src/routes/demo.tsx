@@ -39,7 +39,7 @@ export const Route = createFileRoute("/demo")({
   component: DemoPage,
 });
 
-const SERIES_COLORS = ["#0F2940", "#4A1942", "#2E5D4F", "#C9A227", "#7B5BA8"];
+const SERIES_COLORS = ["#6B4FE0", "#2D7BE0", "#0E97A8", "#E0A21E", "#4FA23E"];
 
 type Totals = {
   variable: string;
@@ -142,10 +142,10 @@ function DemoPage() {
             <div className="mt-6 border hairline-strong bg-white p-4 h-96">
               <ResponsiveContainer>
                 <AreaChart data={run.decomposition_json}>
-                  <CartesianGrid stroke="#0F294015" />
+                  <CartesianGrid stroke="#D7D4E2" />
                   <XAxis dataKey="period" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
-                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: "1px solid #0F294020", borderRadius: 0 }} />
+                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: "1px solid #D7D4E2", borderRadius: 0 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   <Area type="monotone" dataKey="base" stackId="1" stroke="#94908a" fill="#94908a" name="Base" fillOpacity={0.5} />
                   {variableNames.map((name, i) => (
@@ -164,13 +164,13 @@ function DemoPage() {
             <div className="mt-6 border hairline-strong bg-white p-4 h-80">
               <ResponsiveContainer>
                 <LineChart data={predData}>
-                  <CartesianGrid stroke="#0F294015" />
+                  <CartesianGrid stroke="#D7D4E2" />
                   <XAxis dataKey="period" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
-                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: "1px solid #0F294020", borderRadius: 0 }} />
+                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: "1px solid #D7D4E2", borderRadius: 0 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="Real" stroke="#0F2940" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="Predito" stroke="#C9A227" strokeWidth={2} strokeDasharray="4 3" dot={false} />
+                  <Line type="monotone" dataKey="Real" stroke="#6B4FE0" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="Predito" stroke="#E0A21E" strokeWidth={2} strokeDasharray="4 3" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
