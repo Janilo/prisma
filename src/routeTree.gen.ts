@@ -19,9 +19,14 @@ import { Route as AuthenticatedMethodologyRouteImport } from './routes/_authenti
 import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
 import { Route as AuthenticatedCompareRouteImport } from './routes/_authenticated/compare'
 import { Route as AuthenticatedRunsIndexRouteImport } from './routes/_authenticated/runs.index'
+import { Route as AuthenticatedResultsIndexRouteImport } from './routes/_authenticated/results.index'
 import { Route as AuthenticatedDatasetsIndexRouteImport } from './routes/_authenticated/datasets.index'
 import { Route as ShareRunsIdRouteImport } from './routes/share.runs.$id'
 import { Route as AuthenticatedRunsIdRouteImport } from './routes/_authenticated/runs.$id'
+import { Route as AuthenticatedResultsRoiRouteImport } from './routes/_authenticated/results.roi'
+import { Route as AuthenticatedResultsResponseRouteImport } from './routes/_authenticated/results.response'
+import { Route as AuthenticatedResultsOptimizerRouteImport } from './routes/_authenticated/results.optimizer'
+import { Route as AuthenticatedResultsDecompRouteImport } from './routes/_authenticated/results.decomp'
 import { Route as AuthenticatedDatasetsIdRouteImport } from './routes/_authenticated/datasets.$id'
 import { Route as AuthenticatedDatasetsIdIndexRouteImport } from './routes/_authenticated/datasets.$id.index'
 import { Route as AuthenticatedDatasetsIdModelRouteImport } from './routes/_authenticated/datasets.$id.model'
@@ -77,6 +82,12 @@ const AuthenticatedRunsIndexRoute = AuthenticatedRunsIndexRouteImport.update({
   path: '/runs/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedResultsIndexRoute =
+  AuthenticatedResultsIndexRouteImport.update({
+    id: '/results/',
+    path: '/results/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDatasetsIndexRoute =
   AuthenticatedDatasetsIndexRouteImport.update({
     id: '/datasets/',
@@ -93,6 +104,29 @@ const AuthenticatedRunsIdRoute = AuthenticatedRunsIdRouteImport.update({
   path: '/runs/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedResultsRoiRoute = AuthenticatedResultsRoiRouteImport.update({
+  id: '/results/roi',
+  path: '/results/roi',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedResultsResponseRoute =
+  AuthenticatedResultsResponseRouteImport.update({
+    id: '/results/response',
+    path: '/results/response',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedResultsOptimizerRoute =
+  AuthenticatedResultsOptimizerRouteImport.update({
+    id: '/results/optimizer',
+    path: '/results/optimizer',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedResultsDecompRoute =
+  AuthenticatedResultsDecompRouteImport.update({
+    id: '/results/decomp',
+    path: '/results/decomp',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDatasetsIdRoute = AuthenticatedDatasetsIdRouteImport.update({
   id: '/datasets/$id',
   path: '/datasets/$id',
@@ -127,9 +161,14 @@ export interface FileRoutesByFullPath {
   '/methodology': typeof AuthenticatedMethodologyRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
+  '/results/decomp': typeof AuthenticatedResultsDecompRoute
+  '/results/optimizer': typeof AuthenticatedResultsOptimizerRoute
+  '/results/response': typeof AuthenticatedResultsResponseRoute
+  '/results/roi': typeof AuthenticatedResultsRoiRoute
   '/runs/$id': typeof AuthenticatedRunsIdRoute
   '/share/runs/$id': typeof ShareRunsIdRoute
   '/datasets/': typeof AuthenticatedDatasetsIndexRoute
+  '/results/': typeof AuthenticatedResultsIndexRoute
   '/runs/': typeof AuthenticatedRunsIndexRoute
   '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
   '/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
@@ -144,9 +183,14 @@ export interface FileRoutesByTo {
   '/explore': typeof AuthenticatedExploreRoute
   '/methodology': typeof AuthenticatedMethodologyRoute
   '/upload': typeof AuthenticatedUploadRoute
+  '/results/decomp': typeof AuthenticatedResultsDecompRoute
+  '/results/optimizer': typeof AuthenticatedResultsOptimizerRoute
+  '/results/response': typeof AuthenticatedResultsResponseRoute
+  '/results/roi': typeof AuthenticatedResultsRoiRoute
   '/runs/$id': typeof AuthenticatedRunsIdRoute
   '/share/runs/$id': typeof ShareRunsIdRoute
   '/datasets': typeof AuthenticatedDatasetsIndexRoute
+  '/results': typeof AuthenticatedResultsIndexRoute
   '/runs': typeof AuthenticatedRunsIndexRoute
   '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
   '/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
@@ -164,9 +208,14 @@ export interface FileRoutesById {
   '/_authenticated/methodology': typeof AuthenticatedMethodologyRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
+  '/_authenticated/results/decomp': typeof AuthenticatedResultsDecompRoute
+  '/_authenticated/results/optimizer': typeof AuthenticatedResultsOptimizerRoute
+  '/_authenticated/results/response': typeof AuthenticatedResultsResponseRoute
+  '/_authenticated/results/roi': typeof AuthenticatedResultsRoiRoute
   '/_authenticated/runs/$id': typeof AuthenticatedRunsIdRoute
   '/share/runs/$id': typeof ShareRunsIdRoute
   '/_authenticated/datasets/': typeof AuthenticatedDatasetsIndexRoute
+  '/_authenticated/results/': typeof AuthenticatedResultsIndexRoute
   '/_authenticated/runs/': typeof AuthenticatedRunsIndexRoute
   '/_authenticated/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
   '/_authenticated/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
@@ -184,9 +233,14 @@ export interface FileRouteTypes {
     | '/methodology'
     | '/upload'
     | '/datasets/$id'
+    | '/results/decomp'
+    | '/results/optimizer'
+    | '/results/response'
+    | '/results/roi'
     | '/runs/$id'
     | '/share/runs/$id'
     | '/datasets/'
+    | '/results/'
     | '/runs/'
     | '/datasets/$id/explore'
     | '/datasets/$id/model'
@@ -201,9 +255,14 @@ export interface FileRouteTypes {
     | '/explore'
     | '/methodology'
     | '/upload'
+    | '/results/decomp'
+    | '/results/optimizer'
+    | '/results/response'
+    | '/results/roi'
     | '/runs/$id'
     | '/share/runs/$id'
     | '/datasets'
+    | '/results'
     | '/runs'
     | '/datasets/$id/explore'
     | '/datasets/$id/model'
@@ -220,9 +279,14 @@ export interface FileRouteTypes {
     | '/_authenticated/methodology'
     | '/_authenticated/upload'
     | '/_authenticated/datasets/$id'
+    | '/_authenticated/results/decomp'
+    | '/_authenticated/results/optimizer'
+    | '/_authenticated/results/response'
+    | '/_authenticated/results/roi'
     | '/_authenticated/runs/$id'
     | '/share/runs/$id'
     | '/_authenticated/datasets/'
+    | '/_authenticated/results/'
     | '/_authenticated/runs/'
     | '/_authenticated/datasets/$id/explore'
     | '/_authenticated/datasets/$id/model'
@@ -310,6 +374,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRunsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/results/': {
+      id: '/_authenticated/results/'
+      path: '/results'
+      fullPath: '/results/'
+      preLoaderRoute: typeof AuthenticatedResultsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/datasets/': {
       id: '/_authenticated/datasets/'
       path: '/datasets'
@@ -329,6 +400,34 @@ declare module '@tanstack/react-router' {
       path: '/runs/$id'
       fullPath: '/runs/$id'
       preLoaderRoute: typeof AuthenticatedRunsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/results/roi': {
+      id: '/_authenticated/results/roi'
+      path: '/results/roi'
+      fullPath: '/results/roi'
+      preLoaderRoute: typeof AuthenticatedResultsRoiRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/results/response': {
+      id: '/_authenticated/results/response'
+      path: '/results/response'
+      fullPath: '/results/response'
+      preLoaderRoute: typeof AuthenticatedResultsResponseRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/results/optimizer': {
+      id: '/_authenticated/results/optimizer'
+      path: '/results/optimizer'
+      fullPath: '/results/optimizer'
+      preLoaderRoute: typeof AuthenticatedResultsOptimizerRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/results/decomp': {
+      id: '/_authenticated/results/decomp'
+      path: '/results/decomp'
+      fullPath: '/results/decomp'
+      preLoaderRoute: typeof AuthenticatedResultsDecompRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/datasets/$id': {
@@ -386,8 +485,13 @@ interface AuthenticatedRouteChildren {
   AuthenticatedMethodologyRoute: typeof AuthenticatedMethodologyRoute
   AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedDatasetsIdRoute: typeof AuthenticatedDatasetsIdRouteWithChildren
+  AuthenticatedResultsDecompRoute: typeof AuthenticatedResultsDecompRoute
+  AuthenticatedResultsOptimizerRoute: typeof AuthenticatedResultsOptimizerRoute
+  AuthenticatedResultsResponseRoute: typeof AuthenticatedResultsResponseRoute
+  AuthenticatedResultsRoiRoute: typeof AuthenticatedResultsRoiRoute
   AuthenticatedRunsIdRoute: typeof AuthenticatedRunsIdRoute
   AuthenticatedDatasetsIndexRoute: typeof AuthenticatedDatasetsIndexRoute
+  AuthenticatedResultsIndexRoute: typeof AuthenticatedResultsIndexRoute
   AuthenticatedRunsIndexRoute: typeof AuthenticatedRunsIndexRoute
 }
 
@@ -397,8 +501,13 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedMethodologyRoute: AuthenticatedMethodologyRoute,
   AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedDatasetsIdRoute: AuthenticatedDatasetsIdRouteWithChildren,
+  AuthenticatedResultsDecompRoute: AuthenticatedResultsDecompRoute,
+  AuthenticatedResultsOptimizerRoute: AuthenticatedResultsOptimizerRoute,
+  AuthenticatedResultsResponseRoute: AuthenticatedResultsResponseRoute,
+  AuthenticatedResultsRoiRoute: AuthenticatedResultsRoiRoute,
   AuthenticatedRunsIdRoute: AuthenticatedRunsIdRoute,
   AuthenticatedDatasetsIndexRoute: AuthenticatedDatasetsIndexRoute,
+  AuthenticatedResultsIndexRoute: AuthenticatedResultsIndexRoute,
   AuthenticatedRunsIndexRoute: AuthenticatedRunsIndexRoute,
 }
 
@@ -417,13 +526,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
