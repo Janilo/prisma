@@ -5,14 +5,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Fraunces local + Inter Tight + JetBrains Mono via Google */
-@font-face {
-  font-family: "Fraunces";
-  src: url("/src/assets/fonts/Fraunces.ttf") format("truetype-variations");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+/* Fraunces, Inter Tight, JetBrains Mono são declarados em src/styles/prisma.css. */
 
 @theme inline {
   --color-background: var(--background);
@@ -92,27 +85,9 @@
 
 
 
-.dark {
-  --background: oklch(0.18 0.02 250);
-  --foreground: oklch(0.97 0.005 84);
-  --card: oklch(0.22 0.02 250);
-  --card-foreground: oklch(0.97 0.005 84);
-  --popover: oklch(0.22 0.02 250);
-  --popover-foreground: oklch(0.97 0.005 84);
-  --primary: oklch(0.97 0.005 84);
-  --primary-foreground: oklch(0.22 0.02 250);
-  --secondary: oklch(0.27 0.02 250);
-  --secondary-foreground: oklch(0.97 0.005 84);
-  --muted: oklch(0.27 0.02 250);
-  --muted-foreground: oklch(0.7 0.01 70);
-  --accent: oklch(0.27 0.02 250);
-  --accent-foreground: oklch(0.97 0.005 84);
-  --destructive: oklch(0.6 0.2 22);
-  --destructive-foreground: oklch(0.97 0.005 84);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.55 0.03 250);
-}
+/* Prisma é light-only por enquanto — dashboards analíticos rodam em light.
+   Quando dark for prioridade, definir [data-theme="dark"] em prisma.css
+   rebindando os --prisma-* neutros, e rebindar aqui via var(--prisma-*). */
 
 @layer base {
   * { border-color: var(--color-border); }
