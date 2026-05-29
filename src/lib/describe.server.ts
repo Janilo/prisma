@@ -380,7 +380,6 @@ function choleskyInverseLocal(A: number[][]): number[][] {
   return inv;
 }
 
-}
 
 // Compact JSON for sending to the LLM (no sparklines, no full series).
 export function compactForLlm(s: DatasetSummary) {
