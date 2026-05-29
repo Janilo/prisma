@@ -23,7 +23,7 @@ function ExplorePage() {
   return (
     <div className="p-12 max-w-5xl">
       <p className="eyebrow">Análise descritiva</p>
-      <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
         Escolha um dataset para explorar
       </h1>
 
@@ -46,7 +46,7 @@ function ExplorePage() {
                 params={{ id: d.id }}
                 className="flex items-center justify-between py-4 hover:bg-brand-creme/50 px-2"
               >
-                <span className="font-display text-lg text-brand-navy">{d.name}</span>
+                <span className="font-medium text-brand-navy">{d.name}</span>
                 <span className="text-xs text-brand-gray font-mono">
                   {d.n_rows} linhas · {d.n_cols} colunas
                 </span>

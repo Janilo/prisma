@@ -41,7 +41,7 @@ function DatasetLayout() {
     <div className="p-12 max-w-7xl">
       <div>
         <p className="eyebrow">Dataset</p>
-        <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">{ds.name}</h1>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">{ds.name}</h1>
         <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-xs uppercase tracking-widest text-brand-navy/60">
           <span>{ds.n_rows} linhas</span>
           <span>{ds.n_cols} colunas</span>

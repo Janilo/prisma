@@ -211,7 +211,7 @@ function UploadPage() {
   return (
     <div className="p-12 max-w-5xl">
       <p className="eyebrow">01 — Dados</p>
-      <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
         Suba sua planilha de vendas e gastos
       </h1>
       <p className="mt-4 text-sm text-brand-navy/70 max-w-xl">
@@ -231,7 +231,7 @@ function UploadPage() {
             disabled={busy}
           />
           <div className="text-center space-y-2">
-            <p className="font-display text-2xl text-brand-navy">
+            <p className="text-xl font-semibold text-brand-navy">
               {busy ? status || "Processando..." : "Selecionar arquivo"}
             </p>
             <p className="text-xs text-brand-gray uppercase tracking-widest">
@@ -276,7 +276,7 @@ function UploadPage() {
                 const baseName = d.name.replace(/ · v\d+$/, "");
                 return (
                   <tr key={d.id} className="border-b hairline hover:bg-brand-creme/50">
-                    <td className="py-4 font-display text-lg text-brand-navy">
+                    <td className="py-4 font-semibold text-brand-navy">
                       {d.name}
                       {(d.version > 1 || hasNewer) && (
                         <span className="ml-2 text-[10px] font-mono uppercase tracking-widest text-brand-mustard align-middle">
@@ -350,8 +350,8 @@ function UploadPage() {
           { n: "3", t: "Rode", d: "Ridge + adstock + Hill. ROI por canal sai do outro lado." },
         ].map((s) => (
           <div key={s.n} className="bg-brand-creme p-6">
-            <p className="font-display text-xs text-brand-mustard">{s.n}</p>
-            <p className="font-display text-lg text-brand-navy mt-1">{s.t}</p>
+            <p className="text-xs font-bold text-brand-mustard uppercase tracking-widest">{s.n}</p>
+            <p className="text-base font-semibold text-brand-navy mt-1">{s.t}</p>
             <p className="text-xs text-brand-navy/60 mt-2 leading-relaxed">{s.d}</p>
           </div>
         ))}
