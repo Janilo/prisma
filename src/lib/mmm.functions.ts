@@ -508,3 +508,24 @@ export const getDataset = createServerFn({ method: "POST" })
     if (error || !ds) throw new Error("Dataset não encontrado.");
     return { dataset: ds };
   });
+
+// Save the dataset's "execution unit -> investment column" mapping.
+// Used by Explore to compute CPP and by Model to derive ROI on real spend.
+export const updateUnitCosts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({
+      id: z.string().uuid(),
+      mappings: z.record(z.string().min(1).max(200), z.string().min(1).max(200)),
+    }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabase } = context;
+    const { error } = await supabase
+      .from("datasets")
+      .update({ unit_costs_json: data.mappings })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
