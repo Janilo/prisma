@@ -22,7 +22,12 @@ export type RunTotals = {
   spend: number;
   roi: number | null;
   curve?: { spend: number; contribution: number }[];
+  contribLow?: number;
+  contribHigh?: number;
+  roiLow?: number | null;
+  roiHigh?: number | null;
 };
+
 
 
 export type RunDecomp = Record<string, number | string> & {
@@ -295,7 +300,8 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
           <thead>
             <tr className="border-b hairline-strong">
               <th className="text-left py-2 eyebrow">Variável</th>
-              <th className="text-right py-2 eyebrow">Contribuição</th>
+              <th className="text-right py-2 eyebrow">Contribuição (IC 90%)</th>
+
               <th className="text-right py-2 eyebrow">Participação</th>
               <th className="text-right py-2 eyebrow">Significância (p)</th>
               <th className="text-left py-2 pl-4 eyebrow">Confiança</th>
@@ -311,7 +317,15 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                     {t.variable}
                     {t.isMedia && <span className="ml-2 text-[10px] uppercase tracking-widest text-brand-mustard">mídia</span>}
                   </td>
-                  <td className="py-3 text-right font-mono text-xs">{fmt(t.contribution)}</td>
+                  <td className="py-3 text-right font-mono text-xs">
+                    {fmt(t.contribution)}
+                    {t.contribLow != null && t.contribHigh != null && !t.variable.startsWith("Base") && (
+                      <div className="text-[10px] text-brand-navy/50 mt-0.5">
+                        IC 90%: {fmt(t.contribLow)} — {fmt(t.contribHigh)}
+                      </div>
+                    )}
+                  </td>
+
                   <td className="py-3 text-right">
                     <div className="inline-flex items-center gap-2">
                       <div className="w-24 h-1 bg-brand-navy/10 relative">
@@ -335,6 +349,11 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
           estrelas como um <em>ranking de robustez</em>, não como teste de hipótese formal.
           Para inferência rigorosa, rode o modelo novamente com <strong>α = 0</strong> (OLS
           puro, sem regularização) — os p-values dessa rodada são válidos no sentido clássico.
+          Os <strong>intervalos de confiança a 90%</strong> vêm de <em>residual bootstrap</em>
+          com 200 reamostragens: reembaralhamos os resíduos do ajuste, refazemos a Ridge e
+          coletamos a distribuição de contribuição e ROI. Esses ICs <em>são</em> robustos à
+          regularização e capturam a incerteza real do modelo.
+
         </p>
       </section>
 
@@ -359,7 +378,14 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                   <td className="py-3 text-right font-mono text-xs">{fmt(r.contribution)}</td>
                   <td className="py-3 text-right">
                     <span className="font-display text-xl text-brand-navy">{r.roi!.toFixed(2)}×</span>
+                    {r.roiLow != null && r.roiHigh != null && (
+                      <div className="text-[10px] text-brand-navy/50 mt-0.5 font-mono">
+                        IC 90%: {r.roiLow.toFixed(2)}× — {r.roiHigh.toFixed(2)}×
+                      </div>
+                    )}
                   </td>
+
+
                 </tr>
               ))}
             </tbody>
