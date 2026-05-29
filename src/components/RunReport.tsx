@@ -11,6 +11,9 @@ import {
   AreaChart,
   Legend,
 } from "recharts";
+import { CHANNEL_COLORS, CHART_GRID, BASELINE, INDIGO, VIOLET, CHANNEL_COLORS as C } from "@/lib/prisma-tokens";
+
+const SAT_AMBER = "#E0A21E"; // = CHANNEL_COLORS[4]; alias for outlier highlight
 
 export type RunTotals = {
   variable: string;
@@ -61,7 +64,7 @@ export type RunReportData = {
   created_at: string;
 };
 
-const SERIES_COLORS = ["#6B4FE0", "#2D7BE0", "#0E97A8", "#E0A21E", "#4FA23E", "#C2562F", "#B8B4D8", "#7A5CF0"];
+const SERIES_COLORS = [...CHANNEL_COLORS, BASELINE, VIOLET];
 
 export function RunReport({ run, header }: { run: RunReportData; header?: React.ReactNode }) {
   const totals = run.contributions_json ?? [];
@@ -181,12 +184,12 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
         <div className="mt-6 border hairline-strong bg-white p-4 h-96">
           <ResponsiveContainer>
             <AreaChart data={run.decomposition_json}>
-              <CartesianGrid stroke="#D7D4E2" />
+              <CartesianGrid stroke={CHART_GRID} />
               <XAxis dataKey="period" tick={{ fontSize: 10, fontFamily: "Inter Tight" }} />
               <YAxis tick={{ fontSize: 10, fontFamily: "Inter Tight" }} tickFormatter={fmt} />
-              <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, fontFamily: "Inter Tight", border: "1px solid #D7D4E2", borderRadius: 0 }} />
+              <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, fontFamily: "Inter Tight", border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
               <Legend wrapperStyle={{ fontSize: 11, fontFamily: "Inter Tight" }} />
-              <Area type="monotone" dataKey="base" stackId="1" stroke="#94908a" fill="#94908a" name="Base" fillOpacity={0.5} />
+              <Area type="monotone" dataKey="base" stackId="1" stroke={BASELINE} fill={BASELINE} name="Base" fillOpacity={0.5} />
               {variableNames.map((name, i) => (
                 <Area key={name} type="monotone" dataKey={name} stackId="1" stroke={SERIES_COLORS[i % SERIES_COLORS.length]} fill={SERIES_COLORS[i % SERIES_COLORS.length]} fillOpacity={0.7} />
               ))}
@@ -201,13 +204,13 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
         <div className="mt-6 border hairline-strong bg-white p-4 h-80">
           <ResponsiveContainer>
             <LineChart data={predData}>
-              <CartesianGrid stroke="#D7D4E2" />
+            <CartesianGrid stroke={CHART_GRID} />
               <XAxis dataKey="period" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
-              <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: "1px solid #D7D4E2", borderRadius: 0 }} />
+              <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Line type="monotone" dataKey="Real" stroke="#6B4FE0" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="Predito" stroke="#E0A21E" strokeWidth={2} strokeDasharray="4 3" dot={false} />
+              <Line type="monotone" dataKey="Real" stroke={C[0]} strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="Predito" stroke={SAT_AMBER} strokeWidth={2} strokeDasharray="4 3" dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -225,17 +228,17 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
         <div className="mt-6 border hairline-strong bg-white p-4 h-72">
           <ResponsiveContainer>
             <LineChart data={residuals}>
-              <CartesianGrid stroke="#D7D4E2" />
+              <CartesianGrid stroke={CHART_GRID} />
               <XAxis dataKey="period" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
               <Tooltip
                 formatter={(v: number, name: string) => name === "z" ? v.toFixed(2) : fmt(v)}
-                contentStyle={{ fontSize: 12, border: "1px solid #D7D4E2", borderRadius: 0 }}
+                contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }}
               />
               <Line
                 type="monotone"
                 dataKey="residual"
-                stroke="#6B4FE0"
+                stroke={C[0]}
                 strokeWidth={1.5}
                 name="Resíduo"
                 dot={(props: { cx?: number; cy?: number; payload?: { outlier?: boolean; period?: string } }) => {
@@ -243,7 +246,7 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                   if (!payload?.outlier || cx == null || cy == null) {
                     return <g key={payload?.period ?? `${cx}-${cy}`} />;
                   }
-                  return <circle key={payload.period} cx={cx} cy={cy} r={4} fill="#E0A21E" stroke="#6B4FE0" strokeWidth={1} />;
+                  return <circle key={payload.period} cx={cx} cy={cy} r={4} fill={SAT_AMBER} stroke={C[0]} strokeWidth={1} />;
                 }}
               />
             </LineChart>
@@ -429,7 +432,7 @@ function ResponseCurves({ channels }: { channels: RunTotals[] }) {
               <div className="h-56 mt-3">
                 <ResponsiveContainer>
                   <LineChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
-                    <CartesianGrid stroke="#D7D4E2" />
+                  <CartesianGrid stroke={CHART_GRID} />
                     <XAxis
                       dataKey="spend"
                       type="number"
@@ -441,7 +444,7 @@ function ResponseCurves({ channels }: { channels: RunTotals[] }) {
                     <Tooltip
                       formatter={(v: number) => fmt(v)}
                       labelFormatter={(v: number) => `Investimento: ${fmt(v)}`}
-                      contentStyle={{ fontSize: 12, border: "1px solid #D7D4E2", borderRadius: 0 }}
+                      contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }}
                     />
                     <Line
                       type="monotone"
@@ -453,7 +456,7 @@ function ResponseCurves({ channels }: { channels: RunTotals[] }) {
                         if (cx == null || cy == null || !payload) return <g key={`${cx}-${cy}`} />;
                         const isCurrent = Math.abs(payload.spend - c.spend) < c.spend * 0.06;
                         if (!isCurrent) return <g key={payload.spend} />;
-                        return <circle key={payload.spend} cx={cx} cy={cy} r={5} fill="#E0A21E" stroke="#6B4FE0" strokeWidth={1.5} />;
+                        return <circle key={payload.spend} cx={cx} cy={cy} r={5} fill={SAT_AMBER} stroke={INDIGO} strokeWidth={1.5} />;
                       }}
                     />
                   </LineChart>

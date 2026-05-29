@@ -55,11 +55,11 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
               <path d="M26 7 L44 38 H8 Z" />
             </g>
             <g strokeWidth="2.4" strokeLinecap="round">
-              <path d="M35 22 L64 10" stroke="#8A6CFF" />
-              <path d="M35.5 22 L66 16" stroke="#4D93F0" />
-              <path d="M36 22 L67 22" stroke="#2BB6C4" />
-              <path d="M35.5 22 L66 28" stroke="#6FC257" />
-              <path d="M35 22 L64 34" stroke="#F0B53A" />
+              <path d="M35 22 L64 10" stroke="#6B4FE0" /> {/* ch-1 */}
+              <path d="M35.5 22 L66 16" stroke="#2D7BE0" /> {/* ch-2 */}
+              <path d="M36 22 L67 22" stroke="#0E97A8" /> {/* ch-3 */}
+              <path d="M35.5 22 L66 28" stroke="#4FA23E" /> {/* ch-4 */}
+              <path d="M35 22 L64 34" stroke="#E0A21E" /> {/* ch-5 */}
             </g>
             <text x="78" y="31" fontFamily="Inter Tight, sans-serif" fontWeight="700" fontSize="25" letterSpacing="-0.02em" fill="currentColor">
               prisma

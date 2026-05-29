@@ -39,7 +39,10 @@ export const Route = createFileRoute("/demo")({
   component: DemoPage,
 });
 
-const SERIES_COLORS = ["#6B4FE0", "#2D7BE0", "#0E97A8", "#E0A21E", "#4FA23E"];
+import { CHANNEL_COLORS, BASELINE, CHART_GRID } from "@/lib/prisma-tokens";
+
+const SERIES_COLORS = CHANNEL_COLORS.slice(0, 5);
+const SAT_AMBER = CHANNEL_COLORS[4];
 
 type Totals = {
   variable: string;
@@ -142,12 +145,12 @@ function DemoPage() {
             <div className="mt-6 border hairline-strong bg-white p-4 h-96">
               <ResponsiveContainer>
                 <AreaChart data={run.decomposition_json}>
-                  <CartesianGrid stroke="#D7D4E2" />
+                  <CartesianGrid stroke={CHART_GRID} />
                   <XAxis dataKey="period" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
-                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: "1px solid #D7D4E2", borderRadius: 0 }} />
+                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Area type="monotone" dataKey="base" stackId="1" stroke="#94908a" fill="#94908a" name="Base" fillOpacity={0.5} />
+                  <Area type="monotone" dataKey="base" stackId="1" stroke={BASELINE} fill={BASELINE} name="Base" fillOpacity={0.5} />
                   {variableNames.map((name, i) => (
                     <Area key={name} type="monotone" dataKey={name} stackId="1" stroke={SERIES_COLORS[i % SERIES_COLORS.length]} fill={SERIES_COLORS[i % SERIES_COLORS.length]} fillOpacity={0.7} />
                   ))}
@@ -164,13 +167,13 @@ function DemoPage() {
             <div className="mt-6 border hairline-strong bg-white p-4 h-80">
               <ResponsiveContainer>
                 <LineChart data={predData}>
-                  <CartesianGrid stroke="#D7D4E2" />
+                  <CartesianGrid stroke={CHART_GRID} />
                   <XAxis dataKey="period" tick={{ fontSize: 10 }} />
                   <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
-                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: "1px solid #D7D4E2", borderRadius: 0 }} />
+                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="Real" stroke="#6B4FE0" strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="Predito" stroke="#E0A21E" strokeWidth={2} strokeDasharray="4 3" dot={false} />
+                  <Line type="monotone" dataKey="Real" stroke={CHANNEL_COLORS[0]} strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="Predito" stroke={SAT_AMBER} strokeWidth={2} strokeDasharray="4 3" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
