@@ -124,6 +124,37 @@ function ExplorePage() {
   const summary = summaryQuery.data?.summary;
   const insights = insightsQuery.data?.insights;
 
+  const cppQuery = useQuery({
+    queryKey: ["dataset-cpp", id, ds?.unit_costs_json],
+    queryFn: () => cppFn({ data: { datasetId: id } }),
+    enabled: Boolean(ds && ds.unit_costs_json && Object.keys(ds.unit_costs_json).length > 0),
+  });
+
+  const [newUnit, setNewUnit] = useState("");
+  const [newCost, setNewCost] = useState("");
+  const saveMappings = useMutation({
+    mutationFn: (mappings: Record<string, string>) =>
+      updateCostsFn({ data: { id, mappings } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["dataset", id] });
+      qc.invalidateQueries({ queryKey: ["dataset-cpp", id] });
+      toast.success("Mapeamento salvo.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha ao salvar."),
+  });
+  const currentMappings = ds?.unit_costs_json ?? {};
+  const removeMapping = (unit: string) => {
+    const next = { ...currentMappings };
+    delete next[unit];
+    saveMappings.mutate(next);
+  };
+  const addMapping = () => {
+    if (!newUnit || !newCost || newUnit === newCost) return;
+    saveMappings.mutate({ ...currentMappings, [newUnit]: newCost });
+    setNewUnit(""); setNewCost("");
+  };
+
+
   if (dsQuery.isLoading || !ds) {
     return <div className="mt-12 text-sm text-brand-navy/60">Carregando dataset...</div>;
   }
