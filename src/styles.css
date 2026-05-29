@@ -111,15 +111,17 @@
 @layer base {
   * { border-color: var(--color-border); }
   html, body {
-    background-color: var(--color-brand-offwhite);
-    color: var(--color-brand-navy);
-    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--jps-body), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: color-mix(in oklab, #c9a227 30%, transparent);
+    background: color-mix(in oklab, #4A37B5 25%, transparent);
+    color: #fff;
   }
+
 }
 
 @layer utilities {
