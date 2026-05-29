@@ -403,6 +403,7 @@ export const rerunOnLatestVersion = createServerFn({ method: "POST" })
       mediaVariables?: string[];
       dateColumn?: string | null;
       holdoutPeriods?: number;
+      spendBasis?: Record<string, string> | null;
     };
     const input: RunInputType = RunInput.parse({
       datasetId: latest.id,
@@ -416,6 +417,9 @@ export const rerunOnLatestVersion = createServerFn({ method: "POST" })
       adstockDecays: params.adstockDecays ?? undefined,
       saturationAlpha: params.saturationAlpha ?? 1,
       holdoutPeriods: params.holdoutPeriods ?? 0,
+      spendBasis: params.spendBasis ?? undefined,
+    });
+
     });
     return executeMmm(input, userId);
   });
