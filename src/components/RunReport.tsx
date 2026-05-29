@@ -300,7 +300,8 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
           <thead>
             <tr className="border-b hairline-strong">
               <th className="text-left py-2 eyebrow">Variável</th>
-              <th className="text-right py-2 eyebrow">Contribuição</th>
+              <th className="text-right py-2 eyebrow">Contribuição (IC 90%)</th>
+
               <th className="text-right py-2 eyebrow">Participação</th>
               <th className="text-right py-2 eyebrow">Significância (p)</th>
               <th className="text-left py-2 pl-4 eyebrow">Confiança</th>
