@@ -174,7 +174,17 @@ function RunPage() {
             })}
           </tbody>
         </table>
+        <p className="mt-4 text-[11px] text-brand-navy/60 leading-relaxed max-w-3xl">
+          <strong className="text-brand-navy">Nota metodológica.</strong> Os p-values acima
+          são <em>aproximações</em>. O Ridge encolhe coeficientes em direção a zero, o que
+          enviesa a inferência clássica: usamos a variância residual do ajuste com a matriz
+          (X′X + αI)⁻¹, prática comum mas que <em>subestima</em> a incerteza real. Trate as
+          estrelas como um <em>ranking de robustez</em>, não como teste de hipótese formal.
+          Para inferência rigorosa, rode o modelo novamente com <strong>α = 0</strong> (OLS
+          puro, sem regularização) — os p-values dessa rodada são válidos no sentido clássico.
+        </p>
       </section>
+
 
       {/* ROI */}
       {rois.length > 0 && (
