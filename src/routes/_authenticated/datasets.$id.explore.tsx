@@ -323,7 +323,91 @@ function ExplorePage() {
         )}
       </section>
 
+      {/* Cost per execution unit (CPP) */}
+      <section>
+        <p className="eyebrow">Custo por unidade de execução</p>
+        <p className="mt-2 text-sm text-brand-navy/70 max-w-2xl">
+          Quando um canal está em unidades de execução (GRP, impressões, cliques), aponte qual coluna
+          carrega o investimento (R$). O custo por unidade (CPP) entra na análise exploratória e o
+          ROI dos modelos passa a usar o investimento real.
+        </p>
+
+        <div className="mt-6 border hairline bg-white p-4 space-y-3">
+          {Object.entries(currentMappings).length === 0 && (
+            <p className="text-xs text-brand-navy/60">Nenhum mapeamento configurado.</p>
+          )}
+          {Object.entries(currentMappings).map(([unit, cost]) => (
+            <div key={unit} className="flex items-center gap-3 text-sm">
+              <span className="font-mono">{unit}</span>
+              <span className="text-brand-gray text-xs">→</span>
+              <span className="font-mono">{cost}</span>
+              <button
+                onClick={() => removeMapping(unit)}
+                className="ml-auto text-[10px] uppercase tracking-widest text-brand-navy/60 hover:text-brand-navy"
+              >
+                Remover
+              </button>
+            </div>
+          ))}
+          <div className="flex items-center gap-2 pt-3 border-t hairline">
+            <select
+              value={newUnit}
+              onChange={(e) => setNewUnit(e.target.value)}
+              className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+            >
+              <option value="">— coluna em unidades de execução —</option>
+              {numericCols.filter((n) => !currentMappings[n]).map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+            <span className="text-brand-gray text-xs">→</span>
+            <select
+              value={newCost}
+              onChange={(e) => setNewCost(e.target.value)}
+              className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+            >
+              <option value="">— coluna de investimento (R$) —</option>
+              {numericCols.filter((n) => n !== newUnit).map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+            <button
+              onClick={addMapping}
+              disabled={!newUnit || !newCost || saveMappings.isPending}
+              className="px-3 py-1 text-[10px] uppercase tracking-widest bg-brand-navy text-white disabled:opacity-40"
+            >
+              Adicionar
+            </button>
+          </div>
+        </div>
+
+        {cppQuery.data && cppQuery.data.series.length > 0 && (
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {cppQuery.data.series.map((s) => (
+              <div key={s.unitColumn} className="border hairline bg-white p-4">
+                <p className="eyebrow">CPP · {s.unitColumn}</p>
+                <p className="text-xs text-brand-navy/60 mt-1 font-mono">
+                  Base: {s.costColumn} · médio {fmt(s.mean)} · min {fmt(s.min)} · max {fmt(s.max)}
+                </p>
+                <div className="h-56 mt-3">
+                  <ResponsiveContainer>
+                    <LineChart data={s.points}>
+                      <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
+                      <XAxis dataKey="period" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }} formatter={(v: number) => fmt(v)} />
+                      <Line type="monotone" dataKey="cpp" stroke="#0a1f44" strokeWidth={1.5} dot={false} name="CPP" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Correlations */}
+
       {summary && summary.correlations.length > 0 && (
         <section>
           <p className="eyebrow">Correlações com {activeFocus}</p>
