@@ -99,8 +99,8 @@
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: color-mix(in oklab, #4A37B5 25%, transparent);
-    color: #fff;
+    background: color-mix(in oklab, var(--prisma-indigo) 25%, transparent);
+    color: var(--prisma-white);
   }
 
 }
@@ -113,8 +113,8 @@
     letter-spacing: 0.18em;
     color: var(--color-brand-gray);
   }
-  .hairline { border-color: color-mix(in oklab, #0f2940 10%, transparent); }
-  .hairline-strong { border-color: color-mix(in oklab, #0f2940 20%, transparent); }
+  .hairline { border-color: color-mix(in oklab, var(--prisma-ink) 10%, transparent); }
+  .hairline-strong { border-color: color-mix(in oklab, var(--prisma-ink) 20%, transparent); }
 }
 
 /* Editorial motion */
