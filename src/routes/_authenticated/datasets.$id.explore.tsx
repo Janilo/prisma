@@ -313,6 +313,58 @@ function ExplorePage() {
         </section>
       )}
 
+      {/* VIF - multicollinearity between independent variables */}
+      {summary && summary.vif && summary.vif.length >= 2 && (
+        <section>
+          <p className="eyebrow">Colinearidade entre variáveis (VIF)</p>
+          <p className="mt-2 text-sm text-brand-navy/70 max-w-3xl">
+            VIF mede o quanto cada variável é explicada pelas <em>outras</em> variáveis independentes.
+            Quando duas variáveis se movem juntas (ex.: Google e Meta crescem na mesma campanha),
+            o modelo tem dificuldade de atribuir crédito separadamente e os coeficientes individuais
+            ficam instáveis. <strong>VIF &lt; 5</strong> é saudável, <strong>5–10</strong> pede atenção,
+            <strong> &gt; 10</strong> indica colinearidade severa — considere remover uma das variáveis,
+            combiná-las, ou aumentar a regularização (α) no modelo.
+          </p>
+          <div className="mt-6 border hairline bg-white overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-xs uppercase tracking-widest text-brand-gray border-b hairline">
+                <tr>
+                  <th className="text-left p-3">Variável</th>
+                  <th className="text-right p-3">VIF</th>
+                  <th className="text-left p-3 pl-6">Diagnóstico</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...summary.vif].sort((a, b) => b.vif - a.vif).map((v) => {
+                  const color =
+                    v.severity === "high"
+                      ? "text-brand-mustard"
+                      : v.severity === "moderate"
+                        ? "text-brand-purple"
+                        : "text-brand-green";
+                  const label =
+                    v.severity === "high"
+                      ? "Colinearidade severa · atribuição instável"
+                      : v.severity === "moderate"
+                        ? "Colinearidade moderada · interpretar com cautela"
+                        : "Independente o suficiente";
+                  return (
+                    <tr key={v.variable} className="border-b hairline last:border-0">
+                      <td className="p-3 font-medium text-brand-navy">{v.variable}</td>
+                      <td className="p-3 text-right font-mono text-xs">
+                        {v.vif >= 999 ? "∞" : v.vif.toFixed(2)}
+                      </td>
+                      <td className={"p-3 pl-6 text-xs " + color}>{label}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
+
       {/* Seasonality */}
       {summary && summary.seasonality.buckets.length > 1 && (
         <section>
