@@ -15,6 +15,7 @@ import { Route as DemoRouteImport } from './routes/demo'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
+import { Route as AuthenticatedMethodologyRouteImport } from './routes/_authenticated/methodology'
 import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
 import { Route as AuthenticatedCompareRouteImport } from './routes/_authenticated/compare'
 import { Route as AuthenticatedRunsIndexRouteImport } from './routes/_authenticated/runs.index'
@@ -55,6 +56,12 @@ const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
   path: '/upload',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedMethodologyRoute =
+  AuthenticatedMethodologyRouteImport.update({
+    id: '/methodology',
+    path: '/methodology',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedExploreRoute = AuthenticatedExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
@@ -117,6 +124,7 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/compare': typeof AuthenticatedCompareRoute
   '/explore': typeof AuthenticatedExploreRoute
+  '/methodology': typeof AuthenticatedMethodologyRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/runs/$id': typeof AuthenticatedRunsIdRoute
@@ -134,6 +142,7 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/compare': typeof AuthenticatedCompareRoute
   '/explore': typeof AuthenticatedExploreRoute
+  '/methodology': typeof AuthenticatedMethodologyRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/runs/$id': typeof AuthenticatedRunsIdRoute
   '/share/runs/$id': typeof ShareRunsIdRoute
@@ -152,6 +161,7 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/compare': typeof AuthenticatedCompareRoute
   '/_authenticated/explore': typeof AuthenticatedExploreRoute
+  '/_authenticated/methodology': typeof AuthenticatedMethodologyRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/_authenticated/runs/$id': typeof AuthenticatedRunsIdRoute
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/compare'
     | '/explore'
+    | '/methodology'
     | '/upload'
     | '/datasets/$id'
     | '/runs/$id'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/compare'
     | '/explore'
+    | '/methodology'
     | '/upload'
     | '/runs/$id'
     | '/share/runs/$id'
@@ -205,6 +217,7 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/_authenticated/compare'
     | '/_authenticated/explore'
+    | '/_authenticated/methodology'
     | '/_authenticated/upload'
     | '/_authenticated/datasets/$id'
     | '/_authenticated/runs/$id'
@@ -267,6 +280,13 @@ declare module '@tanstack/react-router' {
       path: '/upload'
       fullPath: '/upload'
       preLoaderRoute: typeof AuthenticatedUploadRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/methodology': {
+      id: '/_authenticated/methodology'
+      path: '/methodology'
+      fullPath: '/methodology'
+      preLoaderRoute: typeof AuthenticatedMethodologyRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/explore': {
@@ -363,6 +383,7 @@ const AuthenticatedDatasetsIdRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedCompareRoute: typeof AuthenticatedCompareRoute
   AuthenticatedExploreRoute: typeof AuthenticatedExploreRoute
+  AuthenticatedMethodologyRoute: typeof AuthenticatedMethodologyRoute
   AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedDatasetsIdRoute: typeof AuthenticatedDatasetsIdRouteWithChildren
   AuthenticatedRunsIdRoute: typeof AuthenticatedRunsIdRoute
@@ -373,6 +394,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedCompareRoute: AuthenticatedCompareRoute,
   AuthenticatedExploreRoute: AuthenticatedExploreRoute,
+  AuthenticatedMethodologyRoute: AuthenticatedMethodologyRoute,
   AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedDatasetsIdRoute: AuthenticatedDatasetsIdRouteWithChildren,
   AuthenticatedRunsIdRoute: AuthenticatedRunsIdRoute,
@@ -395,3 +417,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
