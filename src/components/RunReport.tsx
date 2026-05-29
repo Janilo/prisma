@@ -22,7 +22,12 @@ export type RunTotals = {
   spend: number;
   roi: number | null;
   curve?: { spend: number; contribution: number }[];
+  contribLow?: number;
+  contribHigh?: number;
+  roiLow?: number | null;
+  roiHigh?: number | null;
 };
+
 
 
 export type RunDecomp = Record<string, number | string> & {
