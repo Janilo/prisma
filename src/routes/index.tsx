@@ -4,7 +4,8 @@ import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { MethodSection } from "@/components/marketing/MethodSection";
 
-const OG_IMAGE = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png";
+const OG_IMAGE =
+  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
@@ -17,7 +18,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Prisma · Marketing Mix Modeling" },
-      { name: "description", content: "Suba uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação e mostra contribuição em R$, ROI por canal e base vs. incremental." },
+      {
+        name: "description",
+        content:
+          "Suba uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação e mostra contribuição em R$, ROI por canal e base vs. incremental.",
+      },
       { property: "og:title", content: "Prisma · Marketing Mix Modeling" },
       { property: "og:description", content: "MMM com Ridge, adstock e saturação a partir da sua planilha." },
       { property: "og:url", content: "https://prisma.pereirasaraiva.com/" },
@@ -26,9 +31,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:description", content: "MMM com Ridge, adstock e saturação a partir da sua planilha." },
       { name: "twitter:image", content: OG_IMAGE },
     ],
-    links: [
-      { rel: "canonical", href: "https://prisma.pereirasaraiva.com/" },
-    ],
+    links: [{ rel: "canonical", href: "https://prisma.pereirasaraiva.com/" }],
   }),
   component: HomePage,
 });
@@ -43,11 +46,11 @@ function HomePage() {
             <div className="space-y-8">
               <p className="eyebrow">Marketing Mix Modeling</p>
               <h1 className="font-display text-4xl lg:text-6xl font-light italic text-brand-navy leading-tight">
-                Decomponha suas vendas no canal que realmente moveu o ponteiro.
+                A receita entra inteira. Sai decomposta em canais.
               </h1>
               <p className="text-base text-brand-navy/70 leading-relaxed max-w-lg">
-                Você sobe uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação,
-                mostra contribuição em R$, ROI por canal e o quanto é base versus incremental.
+                Você sobe uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação, mostra
+                contribuição em R$, ROI por canal e o quanto é base versus incremental.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
@@ -70,10 +73,7 @@ function HomePage() {
                   Entrar
                 </Link>
               </div>
-              <p className="text-xs text-brand-navy/60">
-                A demo usa dados fictícios e roda em segundos, sem cadastro.
-              </p>
-
+              <p className="text-xs text-brand-navy/60">A demo usa dados fictícios e roda em segundos, sem cadastro.</p>
             </div>
             <figure className="bg-brand-creme border hairline p-6 lg:p-8">
               <figcaption className="flex items-baseline justify-between mb-6">
@@ -96,12 +96,11 @@ function HomePage() {
                       <div key={d.label} className="flex items-center gap-4">
                         <span className="w-16 text-[11px] uppercase tracking-widest text-brand-navy/70">{d.label}</span>
                         <div className="flex-1 h-6 bg-brand-navy/5 relative">
-                          <div
-                            className="h-full"
-                            style={{ width: `${(d.value / max) * 100}%`, background: d.color }}
-                          />
+                          <div className="h-full" style={{ width: `${(d.value / max) * 100}%`, background: d.color }} />
                         </div>
-                        <span className="w-10 text-right font-display text-sm text-brand-navy tabular-nums">{d.value}%</span>
+                        <span className="w-10 text-right font-display text-sm text-brand-navy tabular-nums">
+                          {d.value}%
+                        </span>
                       </div>
                     ))}
                   </div>
