@@ -189,7 +189,7 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
   const contribSamples: number[][] = Array.from({ length: p }, () => []);
   const roiSamples: number[][] = Array.from({ length: p }, () => []);
   const channelSpends = featureNames.map((name, j) =>
-    mediaSet.has(name) ? rawColumns[j].reduce((a, b) => a + b, 0) : 0
+    mediaSet.has(name) ? channelSpendTotal(name, rawColumns[j]) : 0
   );
   for (let b = 0; b < B; b++) {
     const yb = new Array<number>(n);
