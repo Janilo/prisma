@@ -285,7 +285,10 @@ export function summarizeDataset(
       .filter((k) => bucketsMap[k]?.length)
       .map((k) => ({ label: k, mean: mean(bucketsMap[k]), count: bucketsMap[k].length }));
     seasonality = { kind, buckets };
-  }
+
+  // VIF — collinearity between independent (numeric) variables, excluding the focus/dependent
+  const vifNames = Object.keys(numericData).filter((k) => k !== focus);
+  const vif: VifEntry[] = computeVif(vifNames.map((n) => numericData[n]), vifNames);
 
   return {
     overview: {
@@ -302,7 +305,79 @@ export function summarizeDataset(
     trend,
     correlations,
     seasonality,
+    vif,
   };
+}
+
+// Compute Variance Inflation Factor for each variable.
+// VIF_i = (R^-1)_ii where R is the correlation matrix of all predictors.
+// VIF ≈ 1 → independent. 1–5 ok. 5–10 moderate collinearity. >10 high (atribuição instável).
+function computeVif(cols: number[][], names: string[]): VifEntry[] {
+  const p = cols.length;
+  if (p < 2) return names.map((variable) => ({ variable, vif: 1, severity: "ok" as const }));
+
+  // Correlation matrix
+  const R: number[][] = Array.from({ length: p }, () => new Array(p).fill(0));
+  for (let i = 0; i < p; i++) {
+    R[i][i] = 1;
+    for (let j = i + 1; j < p; j++) {
+      const r = pearson(cols[i], cols[j]);
+      R[i][j] = r;
+      R[j][i] = r;
+    }
+  }
+  // Tiny ridge on diagonal for numerical stability (won't change VIFs meaningfully).
+  for (let i = 0; i < p; i++) R[i][i] += 1e-8;
+
+  // Invert via Cholesky (R is SPD when no perfect collinearity)
+  let inv: number[][] | null = null;
+  try {
+    inv = choleskyInverseLocal(R);
+  } catch {
+    inv = null;
+  }
+
+  return names.map((variable, i) => {
+    const v = inv ? Math.max(1, inv[i][i]) : Infinity;
+    const severity: VifEntry["severity"] = !Number.isFinite(v) || v > 10 ? "high" : v > 5 ? "moderate" : "ok";
+    return { variable, vif: Number.isFinite(v) ? round(v, 2) : 999, severity };
+  });
+}
+
+function choleskyInverseLocal(A: number[][]): number[][] {
+  const n = A.length;
+  const L: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j <= i; j++) {
+      let s = A[i][j];
+      for (let k = 0; k < j; k++) s -= L[i][k] * L[j][k];
+      if (i === j) {
+        if (s <= 0) throw new Error("not SPD");
+        L[i][j] = Math.sqrt(s);
+      } else {
+        L[i][j] = s / L[j][j];
+      }
+    }
+  }
+  const inv: number[][] = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let j = 0; j < n; j++) {
+    const y = new Array(n).fill(0);
+    for (let i = 0; i < n; i++) {
+      let s = i === j ? 1 : 0;
+      for (let k = 0; k < i; k++) s -= L[i][k] * y[k];
+      y[i] = s / L[i][i];
+    }
+    const x = new Array(n).fill(0);
+    for (let i = n - 1; i >= 0; i--) {
+      let s = y[i];
+      for (let k = i + 1; k < n; k++) s -= L[k][i] * x[k];
+      x[i] = s / L[i][i];
+    }
+    for (let i = 0; i < n; i++) inv[i][j] = x[i];
+  }
+  return inv;
+}
+
 }
 
 // Compact JSON for sending to the LLM (no sparklines, no full series).
