@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -135,6 +135,9 @@ function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm focus:outline-none focus:border-brand-navy"
               />
+            </div>
+            <div className="flex justify-end mt-1">
+              <Link to="/forgot-password" className="text-xs text-brand-gray hover:text-brand-navy">Esqueci a senha</Link>
             </div>
             <button
               type="submit"
