@@ -242,7 +242,14 @@ export const runMmm = createServerFn({ method: "POST" })
         contributions_json: totals,
         roi_json: totals.filter((t) => t.isMedia),
         decomposition_json: decomposition,
-        predicted_json: { labels, actual: y, predicted: fit.yPred },
+        predicted_json: {
+          labels,
+          actual: y,
+          predicted: fit.yPred,
+          holdout: holdout
+            ? { labels: holdout.labels, actual: holdout.actual, predicted: holdout.predicted }
+            : null,
+        },
         finished_at: new Date().toISOString(),
       })
       .select("id")
