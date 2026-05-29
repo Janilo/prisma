@@ -157,6 +157,58 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
 
   const fit = ridgeFit({ X, y, alpha: data.alpha, featureNames });
 
+  // ===== Residual bootstrap for confidence intervals (B=200) =====
+  // Resample residuals with replacement, refit Ridge, collect contribution & ROI per feature.
+  // Provides honest uncertainty bands; complements (and partially mitigates) Ridge's known
+  // p-value underestimation.
+  const B = 200;
+  const residualsFit = y.map((v, i) => v - fit.yPred[i]);
+  // Mulligan PRNG seeded so CI is reproducible for the same dataset/params.
+  let seed = (data.alpha * 1e6 + n * 31 + p) >>> 0 || 1;
+  const rand = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 0x100000000;
+  };
+  const contribSamples: number[][] = Array.from({ length: p }, () => []);
+  const roiSamples: number[][] = Array.from({ length: p }, () => []);
+  const channelSpends = featureNames.map((name, j) =>
+    mediaSet.has(name) ? rawColumns[j].reduce((a, b) => a + b, 0) : 0
+  );
+  for (let b = 0; b < B; b++) {
+    const yb = new Array<number>(n);
+    for (let i = 0; i < n; i++) {
+      const idx = Math.floor(rand() * n);
+      yb[i] = fit.yPred[i] + residualsFit[idx];
+    }
+    try {
+      const fb = ridgeFit({ X, y: yb, alpha: data.alpha, featureNames });
+      for (let j = 0; j < p; j++) {
+        let c = 0;
+        for (let i = 0; i < n; i++) c += fb.contributions[i][j];
+        contribSamples[j].push(c);
+        if (channelSpends[j] > 0) roiSamples[j].push(c / channelSpends[j]);
+      }
+    } catch {
+      // skip degenerate sample
+    }
+  }
+  function percentile(arr: number[], q: number): number {
+    if (arr.length === 0) return NaN;
+    const sorted = [...arr].sort((a, b) => a - b);
+    const idx = (sorted.length - 1) * q;
+    const lo = Math.floor(idx), hi = Math.ceil(idx);
+    if (lo === hi) return sorted[lo];
+    return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+  }
+  const contribCI = contribSamples.map((s) => ({
+    low: percentile(s, 0.05),
+    high: percentile(s, 0.95),
+  }));
+  const roiCI = roiSamples.map((s) =>
+    s.length > 0 ? { low: percentile(s, 0.05), high: percentile(s, 0.95) } : null
+  );
+
+
   const k = Math.min(data.holdoutPeriods, Math.max(0, n - Math.max(8, p + 2)));
   let holdout: { n: number; r2: number; mape: number; rmse: number; labels: string[]; actual: number[]; predicted: number[] } | null = null;
   let trainMetrics: { r2: number; mape: number; rmse: number; n: number } | null = null;
