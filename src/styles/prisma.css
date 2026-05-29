@@ -1,0 +1,866 @@
+/* ============================================================
+   J P Saraiva DS — PRIMITIVES
+   Brand-locked raw values. Derived products MUST NOT override these.
+   If you need a different value, override the matching role token in
+   semantic.css instead.
+   ============================================================ */
+
+/* Fraunces — variable display serif (Undercase Type) */
+@font-face {
+  font-family: "Fraunces";
+  src: url("/src/assets/fonts/Fraunces-VariableFont_SOFT_WONK_opsz_wght.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("/src/assets/fonts/Fraunces-Italic-VariableFont_SOFT_WONK_opsz_wght.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Inter Tight — variable body sans */
+@font-face {
+  font-family: "Inter Tight";
+  src: url("/src/assets/fonts/InterTight-VariableFont_wght.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter Tight";
+  src: url("/src/assets/fonts/InterTight-Italic-VariableFont_wght.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* ============================
+     PALETTE — primaries (brand-locked)
+     ============================ */
+  --jps-purple:        #4A1942;
+  --jps-purple-deep:   #3A1334;
+  --jps-green:         #2E5D4F;
+  --jps-gold:          #C9A227;
+  --jps-marine:        #0F2940;
+
+  /* PALETTE — neutrals */
+  --jps-ink:           #1F1F1F;
+  --jps-muted:         #595959;
+  --jps-soft:          #5F5B55;
+  --jps-stone:         #D9D6CF;
+  --jps-cream:         #F0EEE7;
+  --jps-offwhite:      #F8F6F1;
+  --jps-white:         #FFFFFF;
+
+  /* PALETTE — soft fills */
+  --jps-gold-soft:     #FBF6E8;
+  --jps-marine-soft:   #EAF0F6;
+
+  /* PALETTE — system */
+  --jps-danger-base:   #B00020;
+
+  /* ============================
+     TYPE — font stacks (brand-locked)
+     ============================ */
+  --jps-display:    "Fraunces", "Source Serif 4", Georgia, serif;
+  --jps-body:       "Inter Tight", "Inter", "Helvetica Neue", system-ui, sans-serif;
+  --jps-mono:       "JetBrains Mono", "SF Mono", Consolas, ui-monospace, monospace;
+
+  /* Fraunces axes */
+  --jps-display-axes:       "opsz" 96, "SOFT" 0, "WONK" 0;
+  --jps-display-axes-large: "opsz" 144, "SOFT" 0, "WONK" 0;
+
+  /* TYPE — scale (px, @ 1920×1080) */
+  --jps-fs-cover:    160px;
+  --jps-fs-stat:     280px;
+  --jps-fs-h1:       72px;
+  --jps-fs-h2:       28px;
+  --jps-fs-h3:       12px;
+  --jps-fs-body:     14px;
+  --jps-fs-body-sm:  12px;
+  --jps-fs-caption:  10px;
+  --jps-fs-eyebrow:  11px;
+
+  /* TYPE — letter-spacing */
+  --jps-tracking-display: -0.012em;
+  --jps-tracking-body:    -0.005em;
+  --jps-tracking-eyebrow: 0.18em;
+  --jps-tracking-header:  0.30em;
+
+  /* TYPE — line height */
+  --jps-lh-tight: 1.05;
+  --jps-lh-body:  1.5;
+  --jps-lh-loose: 1.6;
+
+  /* ============================
+     SPACING — base 4
+     ============================ */
+  --jps-space-xs:  4px;
+  --jps-space-sm:  8px;
+  --jps-space-md:  16px;
+  --jps-space-lg:  24px;
+  --jps-space-xl:  32px;
+  --jps-space-2xl: 48px;
+  --jps-space-3xl: 80px;
+  --jps-page-margin: 48px;
+
+  /* BORDERS */
+  --jps-rule-hair:    0.5px;
+  --jps-rule-card:    1px;
+  --jps-rule-callout: 1.5px;
+
+  /* RADIUS */
+  --jps-radius-none: 0;
+  --jps-radius-sm:   2px;
+  --jps-radius-md:   4px;
+  --jps-radius-pill: 999px;
+
+  /* SHADOW */
+  --jps-shadow-card:  0 1px 0 rgba(31, 31, 31, 0.04), 0 2px 8px rgba(31, 31, 31, 0.04);
+  --jps-shadow-hover: 0 2px 0 rgba(31, 31, 31, 0.06), 0 6px 18px rgba(15, 41, 64, 0.10);
+
+  /* TEXTURE — subtle paper grain */
+  --jps-paper: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.12  0 0 0 0 0.12  0 0 0 0.035 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+
+  /* MOTION */
+  --jps-ease:       cubic-bezier(.4, 0, .2, 1);
+  --jps-ease-out:   cubic-bezier(0, 0, .2, 1);
+  --jps-dur-hover:  150ms;
+  --jps-dur-state:  200ms;
+  --jps-dur-enter:  300ms;
+  --jps-dur-page:   400ms;
+}
+/* ============================================================
+   J P Saraiva DS — SEMANTIC (role tokens)
+   This is the override surface for derived products. Re-bind any of
+   these to a different primitive (or a new value) and the whole UI
+   follows.
+   Convention: only role tokens live here. No raw hex, no scale numbers.
+   ============================================================ */
+
+:root {
+  /* SURFACES */
+  --jps-bg:            var(--jps-cream);
+  --jps-bg-elevated:   var(--jps-offwhite);
+  --jps-surface:       var(--jps-white);
+  --jps-rule:          var(--jps-stone);
+  --jps-rule-color:    var(--jps-stone);  /* legacy alias */
+
+  /* FOREGROUNDS */
+  --jps-fg:            var(--jps-ink);
+  --jps-fg-muted:      var(--jps-muted);
+  --jps-fg-soft:       var(--jps-soft);
+  --jps-fg-on-purple:  var(--jps-offwhite);
+
+  /* ACCENTS / SYSTEM */
+  --jps-accent:        var(--jps-gold);
+  --jps-link:          var(--jps-marine);
+  --jps-danger:        var(--jps-danger-base);
+
+  /* DATA VIZ — series order (4 max) */
+  --jps-viz-1: var(--jps-marine);
+  --jps-viz-2: var(--jps-purple);
+  --jps-viz-3: var(--jps-green);
+  --jps-viz-4: var(--jps-gold);
+  --jps-viz-grid: var(--jps-stone);
+}
+/* ============================================================
+   PRISMA — product tokens (overrides do JPS DS core)
+   ------------------------------------------------------------
+   Prisma é marca independente, como Lente e Cascata — mesmo
+   guarda-chuva JPS, outro centro de gravidade. Herda só
+   primitivas técnicas do core (fontes, escala, spacing, motion,
+   radii). A camada de marca (paleta, accent, surfaces) é
+   re-bindada inteira aqui; tudo de marca vive em --prisma-*.
+
+   Conceito: ÓPTICA. Um prisma decompõe luz branca num espectro.
+   O Prisma decompõe a receita total no espectro de contribuições
+   de cada canal de marketing (marketing mix modeling). Daí:
+
+     · Âncora: VIOLETA-ÍNDIGO óptico — reaproxima do roxo da
+       marca-mãe, mas mais azul/espectral. Distinto do marinho
+       do Cascata e do teal do Lente.
+     · Assinatura: o ESPECTRO — 6 canais ordenados (cool→warm),
+       a luz branca já separada. É a divergência consciente do
+       Prisma frente ao limite de 4 séries do core: MMM decompõe
+       muitos canais, então o produto sobe a cap para 6.
+     · Reservadas: VERDE-LIFT (contribuição incremental, "bom")
+       e CORAL-SAT (saturação / retorno decrescente / desperdício).
+
+   Regra: nada de --jps-* novos de marca. Tudo de marca = --prisma-*,
+   e os role tokens semânticos do core são apontados pra cá.
+
+   Core consumido: J P Saraiva DS v2 · Versão Prisma: 0.1 · Maio 2026
+   ============================================================ */
+
+:root {
+  /* ============================================================
+     PRISMA PRIMITIVES — paleta
+     ============================================================ */
+
+  /* Marca — violeta-índigo óptico. A espinha estrutural: a face
+     do prisma antes da luz se abrir. */
+  --prisma-indigo:       #4A37B5;  /* brand primary, accent, foco, série base */
+  --prisma-indigo-deep:  #33268C;  /* hover, press, headers densos, links */
+  --prisma-abyss:        #1C1547;  /* superfície mais escura (sidebar, painéis dark) */
+  --prisma-indigo-soft:  #ECEAFB;  /* fill de seleção, info bg, faixa de canal-base */
+  --prisma-indigo-ink:   #241A5C;  /* texto sobre indigo-soft */
+  --prisma-violet:       #7A5CF0;  /* violeta claro — highlight espectral, micro-acentos */
+
+  /* ESPECTRO — os 6 canais, em ordem fixa cool→warm. É a luz
+     branca decomposta: cada canal de mídia ganha uma cor do
+     espectro. Análogo ao waterfall do Cascata — semântica
+     própria, não o data viz genérico de 4 séries. */
+  --prisma-ch-1: #6B4FE0;  /* violeta   — Brand / TV          */
+  --prisma-ch-2: #2D7BE0;  /* azul      — Vídeo / Display      */
+  --prisma-ch-3: #0E97A8;  /* ciano     — Search              */
+  --prisma-ch-4: #4FA23E;  /* verde     — Social / Influencer  */
+  --prisma-ch-5: #E0A21E;  /* âmbar     — Promo / Trade        */
+  --prisma-ch-6: #C2562F;  /* terracota — OOH / Outros         */
+
+  /* Baseline — demanda orgânica / linha de base. Não é canal:
+     é "o resto". Neutro lavanda dessaturado, fora do espectro. */
+  --prisma-baseline:      #B8B4D8;
+  --prisma-baseline-soft: #EDECF5;
+
+  /* Reservadas — estados analíticos do MMM. Nunca decorativas. */
+  --prisma-lift:       #2E9E5E;  /* contribuição incremental, delta positivo, "bom" */
+  --prisma-lift-soft:  #E4F3EA;
+  --prisma-sat:        #DB5A45;  /* saturação / retorno decrescente / verba desperdiçada */
+  --prisma-sat-soft:   #FBEAE6;
+  --prisma-sat-deep:   #A8371F;  /* texto sobre claro */
+
+  /* Neutros — escala fria com viés VIOLETA (casa com o índigo,
+     longe do azul dos neutros do Cascata e do verde do Lente). */
+  --prisma-ink:        #1C1A2B;  /* violeta-quase-preto, texto primário */
+  --prisma-slate:      #44415A;  /* labels, body secundário */
+  --prisma-mute:       #726E89;  /* metadata, placeholders */
+  --prisma-stone:      #D7D4E2;  /* hairlines, bordas de card */
+  --prisma-stone-soft: #E7E4EF;  /* divisores internos de tabela */
+  --prisma-mist:       #F0EEF6;  /* superfície elevada, hover de linha */
+  --prisma-paper:      #F7F6FB;  /* fundo da página, app shell (off-white violeta-frio) */
+  --prisma-white:      #FFFFFF;
+
+  /* Sistema */
+  --prisma-danger:     #C0263B;  /* erro/destrutivo — carmim franco, distinto do coral de saturação */
+  --prisma-success:    var(--prisma-lift);
+  --prisma-warning:    #E0A21E;  /* = ch-5 âmbar */
+
+  /* ============================================================
+     REBIND — role tokens do core (tudo --jps-* daqui pra baixo)
+     ============================================================ */
+
+  /* SURFACES */
+  --jps-bg:            var(--prisma-paper);
+  --jps-bg-elevated:   var(--prisma-mist);
+  --jps-surface:       var(--prisma-white);
+  --jps-rule:          var(--prisma-stone);
+  --jps-rule-color:    var(--prisma-stone);
+
+  /* FOREGROUNDS */
+  --jps-fg:            var(--prisma-ink);
+  --jps-fg-muted:      var(--prisma-slate);
+  --jps-fg-soft:       var(--prisma-mute);
+  --jps-fg-on-purple:  var(--prisma-white);   /* legacy alias; agora "on-brand" (on-indigo) */
+
+  /* ACCENTS / SYSTEM */
+  --jps-accent:        var(--prisma-indigo);
+  --jps-link:          var(--prisma-indigo-deep);
+  --jps-danger:        var(--prisma-danger);
+
+  /* DATA VIZ — série genérica de 4 (gráficos que não são o espectro
+     de canais). Os 4 primeiros stops do espectro. O espectro de
+     canais usa --prisma-ch-1..6 e tem cap próprio de 6. */
+  --jps-viz-1:         var(--prisma-ch-1);
+  --jps-viz-2:         var(--prisma-ch-2);
+  --jps-viz-3:         var(--prisma-ch-3);
+  --jps-viz-4:         var(--prisma-ch-4);
+  --jps-viz-grid:      var(--prisma-stone);
+
+  /* TIPOGRAFIA — Inter Tight assume a hierarquia de produto (denso,
+     tabelas de contribuição, números). Fraunces fica reservada a
+     momentos de marca: hero da landing, headline de empty state,
+     onboarding. Re-binda --jps-display pra Inter Tight no produto. */
+  --jps-display:       "Inter Tight", "Inter", "Helvetica Neue", system-ui, sans-serif;
+
+  /* PAPER — produto digital denso, sem grain de papel */
+  --jps-paper:         none;
+
+  /* SHADOW — sombras com tom índigo, coerentes com o neutro frio */
+  --jps-shadow-card:   0 1px 0 rgba(28, 21, 71, 0.03), 0 2px 8px rgba(28, 21, 71, 0.07);
+  --jps-shadow-hover:  0 1px 0 rgba(28, 21, 71, 0.04), 0 8px 24px rgba(74, 55, 181, 0.13);
+}
+
+/* ============================================================
+   PRISMA — primitivas de produto que NÃO existem no core
+   (especificidades do SaaS analítico de MMM)
+   ============================================================ */
+:root {
+  /* Densidade de UI — analítico pede linhas médias */
+  --prisma-row-h-sm:   30px;
+  --prisma-row-h-md:   38px;
+  --prisma-row-h-lg:   46px;
+
+  /* Hit targets */
+  --prisma-tap-min:    38px;
+
+  /* Layout do app shell */
+  --prisma-sidebar-w:  248px;
+  --prisma-topbar-h:   56px;
+
+  /* Container do dashboard */
+  --prisma-content-max: 1320px;
+
+  /* Numerais tabulares — colunas de contribuição, ROI, gasto */
+  --prisma-tnum:       "tnum" 1, "lnum" 1;
+}
+/* ============================================================
+   J P Saraiva DS — TYPOGRAPHY baselines
+   Apply .jps to a root element to opt every child into the brand
+   type system. Derived products inherit this unchanged — if a
+   product needs different display behavior, override the matching
+   semantic token (e.g. --jps-display) instead of forking these rules.
+   ============================================================ */
+
+.jps {
+  background: var(--jps-bg);
+  background-image: var(--jps-paper);
+  color: var(--jps-fg);
+  font-family: var(--jps-body);
+  font-size: var(--jps-fs-body);
+  line-height: var(--jps-lh-body);
+  letter-spacing: var(--jps-tracking-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.jps h1, .jps .h1 {
+  font-family: var(--jps-display);
+  font-variation-settings: var(--jps-display-axes-large);
+  font-size: var(--jps-fs-h1);
+  font-weight: 600;
+  line-height: var(--jps-lh-tight);
+  letter-spacing: var(--jps-tracking-display);
+  color: var(--jps-purple);
+  margin: 0 0 var(--jps-space-md);
+}
+
+.jps h2, .jps .h2 {
+  font-family: var(--jps-display);
+  font-variation-settings: var(--jps-display-axes);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--jps-fs-h2);
+  line-height: 1.25;
+  color: var(--jps-muted);
+  margin: 0 0 var(--jps-space-lg);
+}
+
+.jps h3, .jps .h3 {
+  font-family: var(--jps-body);
+  font-size: var(--jps-fs-h3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--jps-tracking-header);
+  color: var(--jps-purple);
+  margin: 0 0 var(--jps-space-sm);
+}
+
+.jps .eyebrow {
+  font-family: var(--jps-body);
+  font-size: var(--jps-fs-eyebrow);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--jps-tracking-eyebrow);
+  color: var(--jps-soft);
+}
+
+.jps .stat {
+  font-family: var(--jps-display);
+  font-variation-settings: var(--jps-display-axes-large);
+  font-size: var(--jps-fs-stat);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--jps-gold);
+}
+
+.jps p, .jps .body {
+  font-family: var(--jps-body);
+  font-size: var(--jps-fs-body);
+  line-height: var(--jps-lh-body);
+  letter-spacing: var(--jps-tracking-body);
+  color: var(--jps-ink);
+  margin: 0 0 var(--jps-space-md);
+}
+
+.jps .caption {
+  font-family: var(--jps-display);
+  font-style: italic;
+  font-size: var(--jps-fs-caption);
+  color: var(--jps-muted);
+}
+
+.jps code, .jps .mono {
+  font-family: var(--jps-mono);
+  font-size: 0.92em;
+}
+
+.jps hr, .jps .rule {
+  border: 0;
+  border-top: var(--jps-rule-hair) solid var(--jps-rule-color);
+  margin: var(--jps-space-lg) 0;
+}
+/* ============================================================
+   PRISMA — components
+   Componentes reutilizáveis do produto, todos consumindo role
+   tokens do core JPS DS (re-bindados em product-tokens.css) +
+   primitivas --prisma-*.
+   Namespace: .prisma-*  ·  estado: data-variant, data-tone, aria-*
+   ============================================================ */
+
+/* ---------- Base ---------- */
+.prisma {
+  background: var(--jps-bg);
+  color: var(--jps-fg);
+  font-family: var(--jps-body);
+  font-size: 14px;
+  line-height: var(--jps-lh-body);
+  letter-spacing: var(--jps-tracking-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+.prisma *, .prisma *::before, .prisma *::after { box-sizing: border-box; }
+
+/* Numerais tabulares — usar em qualquer valor de contribuição/ROI/gasto */
+.prisma-num {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: var(--prisma-tnum);
+  text-align: right;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.prisma-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--jps-space-sm);
+  height: 36px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: var(--jps-radius-sm);
+  font-family: var(--jps-body);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--jps-dur-hover) var(--jps-ease),
+              color var(--jps-dur-hover) var(--jps-ease),
+              border-color var(--jps-dur-hover) var(--jps-ease);
+}
+.prisma-btn:focus-visible { outline: 2px solid var(--prisma-violet); outline-offset: 2px; }
+.prisma-btn[data-size="sm"] { height: 28px; padding: 0 12px; font-size: 12px; }
+.prisma-btn[data-size="lg"] { height: 44px; padding: 0 20px; font-size: 14px; }
+
+.prisma-btn[data-variant="primary"] { background: var(--prisma-indigo); color: var(--prisma-white); }
+.prisma-btn[data-variant="primary"]:hover { background: var(--prisma-indigo-deep); }
+
+.prisma-btn[data-variant="secondary"] {
+  background: var(--prisma-white);
+  color: var(--prisma-ink);
+  border-color: var(--prisma-stone);
+}
+.prisma-btn[data-variant="secondary"]:hover { background: var(--prisma-mist); border-color: var(--prisma-mute); }
+
+.prisma-btn[data-variant="ghost"] { background: transparent; color: var(--prisma-indigo-deep); }
+.prisma-btn[data-variant="ghost"]:hover { background: var(--prisma-indigo-soft); }
+
+.prisma-btn[data-variant="danger"] { background: var(--prisma-danger); color: var(--prisma-white); }
+.prisma-btn[data-variant="danger"]:hover { background: #9A1E30; }
+
+.prisma-btn[disabled], .prisma-btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+
+/* ============================================================
+   FORM CONTROLS
+   ============================================================ */
+.prisma-field { display: grid; gap: 6px; }
+.prisma-label { font-size: 12px; font-weight: 600; color: var(--prisma-slate); }
+.prisma-input, .prisma-textarea, .prisma-select {
+  height: 36px;
+  padding: 0 12px;
+  background: var(--prisma-white);
+  border: 1px solid var(--prisma-stone);
+  border-radius: var(--jps-radius-md);
+  color: var(--prisma-ink);
+  font-family: var(--jps-body);
+  font-size: 14px;
+  line-height: 1.4;
+  width: 100%;
+  transition: border-color var(--jps-dur-hover) var(--jps-ease),
+              box-shadow var(--jps-dur-hover) var(--jps-ease);
+}
+.prisma-textarea { height: auto; padding: 10px 12px; min-height: 96px; resize: vertical; }
+.prisma-input::placeholder, .prisma-textarea::placeholder { color: var(--prisma-mute); }
+.prisma-input:hover, .prisma-textarea:hover, .prisma-select:hover { border-color: var(--prisma-mute); }
+.prisma-input:focus, .prisma-textarea:focus, .prisma-select:focus {
+  outline: none;
+  border-color: var(--prisma-indigo);
+  box-shadow: 0 0 0 3px var(--prisma-indigo-soft);
+}
+.prisma-input[aria-invalid="true"], .prisma-textarea[aria-invalid="true"] { border-color: var(--prisma-danger); }
+.prisma-input[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px var(--prisma-sat-soft); }
+.prisma-help { font-size: 12px; color: var(--prisma-mute); }
+.prisma-help[data-tone="error"] { color: var(--prisma-danger); }
+
+.prisma-search { position: relative; display: block; }
+.prisma-search > svg {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  color: var(--prisma-mute); pointer-events: none;
+}
+.prisma-search > input { padding-left: 34px; }
+
+.prisma-check {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; color: var(--prisma-slate); cursor: pointer;
+}
+.prisma-check input { accent-color: var(--prisma-indigo); width: 16px; height: 16px; }
+
+/* Range — usado no otimizador de budget (realocação) */
+.prisma-range { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 999px; background: var(--prisma-stone); cursor: pointer; }
+.prisma-range::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 999px; background: var(--prisma-indigo); border: 2px solid var(--prisma-white); box-shadow: 0 1px 3px rgba(28,21,71,0.3); }
+.prisma-range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 999px; background: var(--prisma-indigo); border: 2px solid var(--prisma-white); }
+
+/* ============================================================
+   CHIPS / FILTERS / BADGES
+   ============================================================ */
+.prisma-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 10px;
+  background: var(--prisma-mist);
+  color: var(--prisma-slate);
+  border: 1px solid transparent;
+  border-radius: var(--jps-radius-pill);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  transition: background var(--jps-dur-hover) var(--jps-ease);
+}
+.prisma-chip:hover { background: var(--prisma-stone-soft); }
+.prisma-chip[aria-pressed="true"], .prisma-chip[data-state="active"] {
+  background: var(--prisma-indigo-soft);
+  color: var(--prisma-indigo-ink);
+  border-color: var(--prisma-indigo);
+}
+.prisma-chip > .x { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; opacity: 0.6; }
+.prisma-chip > .x:hover { opacity: 1; }
+
+/* Chip de canal — ponto colorido do espectro à esquerda */
+.prisma-chip > .ch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; }
+
+.prisma-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 2px 8px;
+  border-radius: var(--jps-radius-pill);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.02em;
+  background: var(--prisma-mist); color: var(--prisma-slate);
+}
+.prisma-badge[data-tone="brand"]   { background: var(--prisma-indigo-soft);  color: var(--prisma-indigo-ink); }
+.prisma-badge[data-tone="success"] { background: var(--prisma-lift-soft);    color: #1C6B3E; }
+.prisma-badge[data-tone="warning"] { background: #FBF1D9;                    color: #8A6310; }
+.prisma-badge[data-tone="danger"]  { background: var(--prisma-sat-soft);     color: var(--prisma-sat-deep); }
+.prisma-badge[data-tone="ai"]      { background: var(--prisma-indigo-soft);  color: var(--prisma-violet); }
+.prisma-badge .dot { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+
+/* ============================================================
+   TABS
+   ============================================================ */
+.prisma-tabs { display: flex; align-items: center; gap: 4px; border-bottom: 1px solid var(--prisma-stone); }
+.prisma-tab {
+  appearance: none; background: transparent; border: 0;
+  padding: 10px 14px; margin-bottom: -1px;
+  font-family: var(--jps-body); font-size: 13px; font-weight: 500;
+  color: var(--prisma-mute); cursor: pointer;
+  border-bottom: 2px solid transparent;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.prisma-tab:hover { color: var(--prisma-slate); }
+.prisma-tab[aria-selected="true"] { color: var(--prisma-indigo-deep); border-bottom-color: var(--prisma-indigo); font-weight: 600; }
+.prisma-tab .count {
+  font-size: 11px; background: var(--prisma-mist); color: var(--prisma-mute);
+  padding: 1px 6px; border-radius: var(--jps-radius-pill);
+  font-variant-numeric: tabular-nums;
+}
+.prisma-tab[aria-selected="true"] .count { background: var(--prisma-indigo-soft); color: var(--prisma-indigo-ink); }
+
+/* ============================================================
+   CARDS / KPI
+   ============================================================ */
+.prisma-card {
+  background: var(--prisma-white);
+  border: 1px solid var(--prisma-stone);
+  border-radius: var(--jps-radius-sm);
+  padding: 20px; display: grid; gap: 12px;
+}
+.prisma-card[data-elev="raised"] { box-shadow: var(--jps-shadow-card); border-color: transparent; }
+
+.prisma-kpi {
+  background: var(--prisma-white);
+  border: 1px solid var(--prisma-stone);
+  border-radius: var(--jps-radius-sm);
+  padding: 18px 20px; display: grid; gap: 6px;
+  position: relative;
+}
+.prisma-kpi .label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.14em; color: var(--prisma-mute);
+}
+.prisma-kpi .value {
+  font-family: var(--jps-body);
+  font-size: 32px; font-weight: 600;
+  color: var(--prisma-ink);
+  letter-spacing: -0.02em; line-height: 1.05;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.prisma-kpi .value.lift { color: var(--prisma-lift); }
+.prisma-kpi .value.indigo { color: var(--prisma-indigo-deep); }
+.prisma-kpi .delta { font-size: 12px; color: var(--prisma-mute); display: flex; align-items: center; gap: 4px; }
+.prisma-kpi .delta[data-tone="up"]   { color: var(--prisma-lift); }
+.prisma-kpi .delta[data-tone="down"] { color: var(--prisma-sat); }
+/* faixa de acento no topo de KPIs de destaque */
+.prisma-kpi[data-accent="brand"]::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--prisma-indigo); }
+.prisma-kpi[data-accent="lift"]::before  { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--prisma-lift); }
+.prisma-kpi[data-accent="sat"]::before    { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--prisma-sat); }
+/* faixa-espectro: o degradê discreto do espectro de canais */
+.prisma-kpi[data-accent="spectrum"]::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg,
+    var(--prisma-ch-1) 0%, var(--prisma-ch-2) 20%, var(--prisma-ch-3) 40%,
+    var(--prisma-ch-4) 60%, var(--prisma-ch-5) 80%, var(--prisma-ch-6) 100%);
+}
+
+/* ============================================================
+   TABLE — analítica, números à direita, deltas com cor
+   ============================================================ */
+.prisma-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.prisma-table thead th {
+  text-align: left; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--prisma-mute);
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--prisma-stone);
+  background: var(--prisma-paper);
+  white-space: nowrap;
+}
+.prisma-table thead th.num { text-align: right; }
+.prisma-table tbody td {
+  padding: 11px 12px;
+  border-bottom: 1px solid var(--prisma-stone-soft);
+  color: var(--prisma-ink); vertical-align: middle;
+}
+.prisma-table tbody tr:hover td { background: var(--prisma-mist); }
+.prisma-table .num { font-variant-numeric: tabular-nums lining-nums; text-align: right; }
+.prisma-table .muted { color: var(--prisma-mute); }
+.prisma-table .pos { color: var(--prisma-lift); }
+.prisma-table .neg { color: var(--prisma-sat); }
+/* célula de canal: faixa de cor à esquerda */
+.prisma-table td.ch { position: relative; padding-left: 20px; }
+.prisma-table td.ch::before { content: ""; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 6px; height: 6px; border-radius: 2px; background: var(--ch, var(--prisma-baseline)); }
+.prisma-table tr[data-row="total"] td {
+  background: var(--prisma-indigo);
+  color: var(--prisma-white); font-weight: 600;
+}
+.prisma-table tr[data-row="subtotal"] td {
+  background: var(--prisma-indigo-soft);
+  font-weight: 600; color: var(--prisma-indigo-ink);
+  border-bottom-color: var(--prisma-stone);
+}
+
+/* ============================================================
+   MODAL / DRAWER (visual only)
+   ============================================================ */
+.prisma-modal-mock {
+  background: var(--prisma-white);
+  border-radius: var(--jps-radius-md);
+  box-shadow: 0 18px 40px rgba(28, 21, 71, 0.22), 0 2px 8px rgba(28, 21, 71, 0.08);
+  padding: 24px; width: 100%; max-width: 440px;
+  display: grid; gap: 16px;
+}
+.prisma-modal-mock .title { font-size: 18px; font-weight: 600; color: var(--prisma-ink); letter-spacing: -0.01em; }
+.prisma-modal-mock .actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+.prisma-drawer-mock {
+  background: var(--prisma-white);
+  border-left: 1px solid var(--prisma-stone);
+  width: 100%; max-width: 380px; padding: 20px;
+  display: grid; gap: 16px; align-content: start;
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+.prisma-toast {
+  background: var(--prisma-abyss);
+  color: var(--prisma-white);
+  padding: 10px 14px;
+  border-radius: var(--jps-radius-sm);
+  font-size: 13px;
+  display: inline-flex; align-items: center; gap: 10px;
+  box-shadow: 0 10px 24px rgba(28, 21, 71, 0.28);
+  max-width: 420px;
+}
+.prisma-toast .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--prisma-violet); }
+.prisma-toast[data-tone="success"] .dot { background: var(--prisma-lift); }
+.prisma-toast[data-tone="warning"] .dot { background: var(--prisma-warning); }
+.prisma-toast[data-tone="danger"]  .dot { background: var(--prisma-sat); }
+
+/* ============================================================
+   EMPTY / LOADING / ERROR
+   ============================================================ */
+.prisma-state {
+  display: grid; justify-items: center; text-align: center; gap: 12px;
+  padding: 40px 24px;
+  background: var(--prisma-white);
+  border: 1px dashed var(--prisma-stone);
+  border-radius: var(--jps-radius-sm);
+}
+.prisma-state .icon {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--prisma-mist);
+  border-radius: var(--jps-radius-pill);
+  color: var(--prisma-mute);
+}
+.prisma-state[data-tone="brand"] .icon  { background: var(--prisma-indigo-soft); color: var(--prisma-indigo-deep); }
+.prisma-state[data-tone="danger"] .icon { background: var(--prisma-sat-soft);    color: var(--prisma-sat-deep); }
+.prisma-state .headline {
+  font-family: var(--jps-body);
+  font-size: 18px; font-weight: 600;
+  color: var(--prisma-ink); letter-spacing: -0.015em; max-width: 380px;
+}
+.prisma-state[data-feel="brand"] .headline {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 96, "SOFT" 0, "WONK" 0;
+  font-style: italic; font-weight: 400; font-size: 28px;
+  color: var(--prisma-slate);
+}
+.prisma-state .body { font-size: 13px; color: var(--prisma-mute); max-width: 380px; }
+
+.prisma-skeleton {
+  background: linear-gradient(90deg, var(--prisma-mist) 0%, var(--prisma-stone-soft) 50%, var(--prisma-mist) 100%);
+  background-size: 200% 100%;
+  border-radius: var(--jps-radius-sm);
+  animation: prisma-shimmer 1.4s linear infinite;
+}
+@keyframes prisma-shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+/* ============================================================
+   ESPECTRO — legenda de canais + barra de decomposição (peça central)
+   ============================================================ */
+.prisma-spectrum-legend {
+  display: flex; flex-wrap: wrap; gap: 14px;
+  font-size: 11px; color: var(--prisma-slate);
+}
+.prisma-spectrum-legend .k { display: inline-flex; align-items: center; gap: 6px; }
+.prisma-spectrum-legend .k i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
+.prisma-spectrum-legend .k i.ch-1 { background: var(--prisma-ch-1); }
+.prisma-spectrum-legend .k i.ch-2 { background: var(--prisma-ch-2); }
+.prisma-spectrum-legend .k i.ch-3 { background: var(--prisma-ch-3); }
+.prisma-spectrum-legend .k i.ch-4 { background: var(--prisma-ch-4); }
+.prisma-spectrum-legend .k i.ch-5 { background: var(--prisma-ch-5); }
+.prisma-spectrum-legend .k i.ch-6 { background: var(--prisma-ch-6); }
+.prisma-spectrum-legend .k i.baseline { background: var(--prisma-baseline); }
+
+/* Barra de decomposição empilhada — 100% horizontal, share por canal */
+.prisma-decomp-bar {
+  display: flex; height: 28px; width: 100%;
+  border-radius: var(--jps-radius-sm); overflow: hidden;
+  border: 1px solid var(--prisma-stone);
+}
+.prisma-decomp-bar > span {
+  display: block; height: 100%;
+  border-right: 1px solid rgba(255,255,255,0.5);
+}
+.prisma-decomp-bar > span:last-child { border-right: 0; }
+
+/* ============================================================
+   APP SHELL
+   ============================================================ */
+.prisma-shell {
+  display: grid;
+  grid-template-columns: var(--prisma-sidebar-w) 1fr;
+  height: 100%;
+  background: var(--prisma-paper);
+}
+.prisma-sidebar {
+  background: var(--prisma-abyss);
+  color: #ADA7D0;
+  display: grid;
+  grid-template-rows: var(--prisma-topbar-h) 1fr auto;
+}
+.prisma-sidebar .brand {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  color: var(--prisma-white);
+  height: var(--prisma-topbar-h);
+}
+.prisma-sidebar .brand svg { height: 20px; width: auto; }
+.prisma-sidebar nav { padding: 14px 10px; display: grid; gap: 2px; align-content: start; }
+.prisma-sidebar nav .group-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.18em; color: #7B74A8;
+  padding: 14px 10px 6px;
+}
+.prisma-sidebar nav a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; font-size: 13px; font-weight: 500;
+  color: #ADA7D0; text-decoration: none;
+  border-radius: var(--jps-radius-sm);
+}
+.prisma-sidebar nav a:hover { background: rgba(255,255,255,0.06); color: var(--prisma-white); }
+.prisma-sidebar nav a[aria-current="page"] {
+  background: var(--prisma-indigo);
+  color: var(--prisma-white); font-weight: 600;
+}
+.prisma-sidebar nav a svg { width: 16px; height: 16px; flex: 0 0 16px; }
+.prisma-sidebar .footer {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 10px; font-size: 12px;
+}
+.prisma-sidebar .footer .who {
+  width: 28px; height: 28px; border-radius: var(--jps-radius-pill);
+  background: var(--prisma-indigo); color: var(--prisma-white);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+}
+.prisma-sidebar .footer .name { color: var(--prisma-white); font-weight: 500; }
+.prisma-sidebar .footer .role { color: #7B74A8; font-size: 11px; }
+
+.prisma-main { display: grid; grid-template-rows: var(--prisma-topbar-h) 1fr; min-width: 0; }
+.prisma-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  background: var(--prisma-white);
+  border-bottom: 1px solid var(--prisma-stone);
+}
+.prisma-topbar .crumbs { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--prisma-mute); }
+.prisma-topbar .crumbs strong { color: var(--prisma-ink); font-weight: 600; }
+
+.prisma-content {
+  padding: 24px 28px 56px;
+  overflow: auto;
+  display: grid; gap: 20px; align-content: start;
+}
+
+/* ============================================================
+   ICONS — minimal line glyphs, 24x24 stroke 1.5
+   ============================================================ */
+.prisma-ico { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.prisma-ico-lg { width: 24px; height: 24px; }

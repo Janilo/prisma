@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Prisma">
+  <g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M4 24 H17"></path>
+    <path d="M25 9 L41 39 H9 Z"></path>
+  </g>
+  <g stroke-width="2.2" stroke-linecap="round">
+    <path d="M33 24 L45 13" stroke="#6B4FE0"></path>
+    <path d="M33.5 24 L46 19" stroke="#2D7BE0"></path>
+    <path d="M34 24 L46.5 24" stroke="#0E97A8"></path>
+    <path d="M33.5 24 L46 29" stroke="#4FA23E"></path>
+    <path d="M33 24 L45 35" stroke="#E0A21E"></path>
+  </g>
+</svg>

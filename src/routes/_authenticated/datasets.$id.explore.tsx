@@ -16,7 +16,9 @@ import {
   YAxis,
 } from "recharts";
 
-import { getDataset } from "@/lib/mmm.functions";
+import { getDataset, updateUnitCosts } from "@/lib/mmm.functions";
+import { computeUnitCosts } from "@/lib/describe.functions";
+
 import {
   describeDataset,
   interpretDataset,
@@ -66,6 +68,9 @@ function ExplorePage() {
   const getFn = useServerFn(getDataset);
   const describeFn = useServerFn(describeDataset);
   const interpretFn = useServerFn(interpretDataset);
+  const cppFn = useServerFn(computeUnitCosts);
+  const updateCostsFn = useServerFn(updateUnitCosts);
+
 
   const dsQuery = useQuery({
     queryKey: ["dataset", id],
@@ -83,8 +88,10 @@ function ExplorePage() {
         n_cols: number;
         summary_json: DatasetSummary | null;
         insights_json: DatasetInsights | null;
+        unit_costs_json?: Record<string, string> | null;
       }
     | undefined;
+
 
   const numericCols = useMemo(
     () => (ds?.columns_json ?? []).filter((c) => c.kind === "number").map((c) => c.name),
@@ -116,6 +123,37 @@ function ExplorePage() {
 
   const summary = summaryQuery.data?.summary;
   const insights = insightsQuery.data?.insights;
+
+  const cppQuery = useQuery({
+    queryKey: ["dataset-cpp", id, ds?.unit_costs_json],
+    queryFn: () => cppFn({ data: { datasetId: id } }),
+    enabled: Boolean(ds && ds.unit_costs_json && Object.keys(ds.unit_costs_json).length > 0),
+  });
+
+  const [newUnit, setNewUnit] = useState("");
+  const [newCost, setNewCost] = useState("");
+  const saveMappings = useMutation({
+    mutationFn: (mappings: Record<string, string>) =>
+      updateCostsFn({ data: { id, mappings } }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["dataset", id] });
+      qc.invalidateQueries({ queryKey: ["dataset-cpp", id] });
+      toast.success("Mapeamento salvo.");
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha ao salvar."),
+  });
+  const currentMappings = ds?.unit_costs_json ?? {};
+  const removeMapping = (unit: string) => {
+    const next = { ...currentMappings };
+    delete next[unit];
+    saveMappings.mutate(next);
+  };
+  const addMapping = () => {
+    if (!newUnit || !newCost || newUnit === newCost) return;
+    saveMappings.mutate({ ...currentMappings, [newUnit]: newCost });
+    setNewUnit(""); setNewCost("");
+  };
+
 
   if (dsQuery.isLoading || !ds) {
     return <div className="mt-12 text-sm text-brand-navy/60">Carregando dataset...</div>;
@@ -219,12 +257,12 @@ function ExplorePage() {
             <div className="mt-6 border hairline bg-white p-6 h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={summary.timeSeries}>
-                  <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
-                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: "#0a1f44" }} />
-                  <YAxis tick={{ fontSize: 10, fill: "#0a1f44" }} />
-                  <Tooltip contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }} />
-                  <Line type="monotone" dataKey="value" stroke="#0a1f44" strokeWidth={1.5} dot={false} name={activeFocus} />
-                  <Line type="monotone" dataKey="movingAvg" stroke="#c89b3c" strokeWidth={1.5} dot={false} name="Média móvel 4p" />
+                  <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
+                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: "#6B4FE0" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "#6B4FE0" }} />
+                  <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }} />
+                  <Line type="monotone" dataKey="value" stroke="#6B4FE0" strokeWidth={1.5} dot={false} name={activeFocus} />
+                  <Line type="monotone" dataKey="movingAvg" stroke="#E0A21E" strokeWidth={1.5} dot={false} name="Média móvel 4p" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -285,7 +323,91 @@ function ExplorePage() {
         )}
       </section>
 
+      {/* Cost per execution unit (CPP) */}
+      <section>
+        <p className="eyebrow">Custo por unidade de execução</p>
+        <p className="mt-2 text-sm text-brand-navy/70 max-w-2xl">
+          Quando um canal está em unidades de execução (GRP, impressões, cliques), aponte qual coluna
+          carrega o investimento (R$). O custo por unidade (CPP) entra na análise exploratória e o
+          ROI dos modelos passa a usar o investimento real.
+        </p>
+
+        <div className="mt-6 border hairline bg-white p-4 space-y-3">
+          {Object.entries(currentMappings).length === 0 && (
+            <p className="text-xs text-brand-navy/60">Nenhum mapeamento configurado.</p>
+          )}
+          {Object.entries(currentMappings).map(([unit, cost]) => (
+            <div key={unit} className="flex items-center gap-3 text-sm">
+              <span className="font-mono">{unit}</span>
+              <span className="text-brand-gray text-xs">→</span>
+              <span className="font-mono">{cost}</span>
+              <button
+                onClick={() => removeMapping(unit)}
+                className="ml-auto text-[10px] uppercase tracking-widest text-brand-navy/60 hover:text-brand-navy"
+              >
+                Remover
+              </button>
+            </div>
+          ))}
+          <div className="flex items-center gap-2 pt-3 border-t hairline">
+            <select
+              value={newUnit}
+              onChange={(e) => setNewUnit(e.target.value)}
+              className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+            >
+              <option value="">— coluna em unidades de execução —</option>
+              {numericCols.filter((n) => !currentMappings[n]).map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+            <span className="text-brand-gray text-xs">→</span>
+            <select
+              value={newCost}
+              onChange={(e) => setNewCost(e.target.value)}
+              className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+            >
+              <option value="">— coluna de investimento (R$) —</option>
+              {numericCols.filter((n) => n !== newUnit).map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+            <button
+              onClick={addMapping}
+              disabled={!newUnit || !newCost || saveMappings.isPending}
+              className="px-3 py-1 text-[10px] uppercase tracking-widest bg-brand-navy text-white disabled:opacity-40"
+            >
+              Adicionar
+            </button>
+          </div>
+        </div>
+
+        {cppQuery.data && cppQuery.data.series.length > 0 && (
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {cppQuery.data.series.map((s) => (
+              <div key={s.unitColumn} className="border hairline bg-white p-4">
+                <p className="eyebrow">CPP · {s.unitColumn}</p>
+                <p className="text-xs text-brand-navy/60 mt-1 font-mono">
+                  Base: {s.costColumn} · médio {fmt(s.mean)} · min {fmt(s.min)} · max {fmt(s.max)}
+                </p>
+                <div className="h-56 mt-3">
+                  <ResponsiveContainer>
+                    <LineChart data={s.points}>
+                      <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
+                      <XAxis dataKey="period" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} />
+                      <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }} formatter={(v: number) => fmt(v)} />
+                      <Line type="monotone" dataKey="cpp" stroke="#6B4FE0" strokeWidth={1.5} dot={false} name="CPP" />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* Correlations */}
+
       {summary && summary.correlations.length > 0 && (
         <section>
           <p className="eyebrow">Correlações com {activeFocus}</p>
@@ -295,16 +417,16 @@ function ExplorePage() {
           <div className="mt-6 border hairline bg-white p-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={summary.correlations.slice(0, 10)} layout="vertical" margin={{ left: 80 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
-                <XAxis type="number" domain={[-1, 1]} tick={{ fontSize: 10, fill: "#0a1f44" }} />
-                <YAxis type="category" dataKey="variable" width={140} tick={{ fontSize: 11, fill: "#0a1f44" }} />
+                <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
+                <XAxis type="number" domain={[-1, 1]} tick={{ fontSize: 10, fill: "#6B4FE0" }} />
+                <YAxis type="category" dataKey="variable" width={140} tick={{ fontSize: 11, fill: "#6B4FE0" }} />
                 <Tooltip
-                  contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }}
+                  contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }}
                   formatter={(v: number) => fmt(v, 3)}
                 />
                 <Bar dataKey="r">
                   {summary.correlations.slice(0, 10).map((c, i) => (
-                    <Cell key={i} fill={c.r >= 0 ? "#0a1f44" : "#c89b3c"} />
+                    <Cell key={i} fill={c.r >= 0 ? "#6B4FE0" : "#E0A21E"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -312,6 +434,58 @@ function ExplorePage() {
           </div>
         </section>
       )}
+
+      {/* VIF - multicollinearity between independent variables */}
+      {summary && summary.vif && summary.vif.length >= 2 && (
+        <section>
+          <p className="eyebrow">Colinearidade entre variáveis (VIF)</p>
+          <p className="mt-2 text-sm text-brand-navy/70 max-w-3xl">
+            VIF mede o quanto cada variável é explicada pelas <em>outras</em> variáveis independentes.
+            Quando duas variáveis se movem juntas (ex.: Google e Meta crescem na mesma campanha),
+            o modelo tem dificuldade de atribuir crédito separadamente e os coeficientes individuais
+            ficam instáveis. <strong>VIF &lt; 5</strong> é saudável, <strong>5–10</strong> pede atenção,
+            <strong> &gt; 10</strong> indica colinearidade severa — considere remover uma das variáveis,
+            combiná-las, ou aumentar a regularização (α) no modelo.
+          </p>
+          <div className="mt-6 border hairline bg-white overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-xs uppercase tracking-widest text-brand-gray border-b hairline">
+                <tr>
+                  <th className="text-left p-3">Variável</th>
+                  <th className="text-right p-3">VIF</th>
+                  <th className="text-left p-3 pl-6">Diagnóstico</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[...summary.vif].sort((a, b) => b.vif - a.vif).map((v) => {
+                  const color =
+                    v.severity === "high"
+                      ? "text-brand-mustard"
+                      : v.severity === "moderate"
+                        ? "text-brand-purple"
+                        : "text-brand-green";
+                  const label =
+                    v.severity === "high"
+                      ? "Colinearidade severa · atribuição instável"
+                      : v.severity === "moderate"
+                        ? "Colinearidade moderada · interpretar com cautela"
+                        : "Independente o suficiente";
+                  return (
+                    <tr key={v.variable} className="border-b hairline last:border-0">
+                      <td className="p-3 font-medium text-brand-navy">{v.variable}</td>
+                      <td className="p-3 text-right font-mono text-xs">
+                        {v.vif >= 999 ? "∞" : v.vif.toFixed(2)}
+                      </td>
+                      <td className={"p-3 pl-6 text-xs " + color}>{label}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
 
       {/* Seasonality */}
       {summary && summary.seasonality.buckets.length > 1 && (
@@ -322,14 +496,14 @@ function ExplorePage() {
           <div className="mt-6 border hairline bg-white p-6 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={summary.seasonality.buckets}>
-                <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
-                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#0a1f44" }} />
-                <YAxis tick={{ fontSize: 10, fill: "#0a1f44" }} />
+                <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#6B4FE0" }} />
+                <YAxis tick={{ fontSize: 10, fill: "#6B4FE0" }} />
                 <Tooltip
-                  contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }}
+                  contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }}
                   formatter={(v: number) => fmt(v)}
                 />
-                <Bar dataKey="mean" fill="#0a1f44" />
+                <Bar dataKey="mean" fill="#6B4FE0" />
               </BarChart>
             </ResponsiveContainer>
           </div>

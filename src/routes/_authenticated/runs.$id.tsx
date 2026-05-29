@@ -1,40 +1,15 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { useMemo } from "react";
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Area,
-  AreaChart,
-  Legend,
-} from "recharts";
+import { useSuspenseQuery, useQuery, useMutation, queryOptions, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { toast } from "sonner";
 
-import { getRun } from "@/lib/mmm.functions";
+import { getRun, getLatestDatasetVersion, rerunOnLatestVersion } from "@/lib/mmm.functions";
+import { RunReport, type RunReportData } from "@/components/RunReport";
 
 export const Route = createFileRoute("/_authenticated/runs/$id")({
   component: RunPage,
 });
-
-type Totals = {
-  variable: string;
-  contribution: number;
-  share: number;
-  pValue: number;
-  zStat: number;
-  isMedia: boolean;
-  spend: number;
-  roi: number | null;
-};
-
-type Decomp = Record<string, number | string> & { period: string; base: number; actual: number; predicted: number };
-
-const SERIES_COLORS = ["#0F2940", "#4A1942", "#2E5D4F", "#C9A227", "#7B5BA8", "#3C8C7A", "#A05E2B", "#5B7A99"];
 
 function RunPage() {
   const { id } = Route.useParams();
@@ -43,194 +18,99 @@ function RunPage() {
     queryOptions({ queryKey: ["run", id], queryFn: () => fn({ data: { id } }) }),
   );
 
-  const run = data.run as unknown as {
-    id: string;
-    name: string;
-    dep_variable: string;
-    metrics_json: { r2: number; mape: number; rmse: number; n: number; p: number };
-    contributions_json: Totals[];
-    roi_json: Totals[];
-    decomposition_json: Decomp[];
-    predicted_json: { labels: string[]; actual: number[]; predicted: number[] };
-    params_json: { alpha: number; adstockDecay: number; saturationAlpha: number; mediaVariables: string[] };
-    created_at: string;
+  const run = data.run as unknown as RunReportData;
+  const datasetId = (data.run as { dataset_id?: string }).dataset_id;
+
+  return (
+    <RunReport
+      run={run}
+      header={
+        <div className="space-y-4">
+          {datasetId && <RerunOnLatest runId={id} datasetId={datasetId} />}
+          <ShareButton runId={id} />
+        </div>
+      }
+    />
+  );
+}
+
+function RerunOnLatest({ runId, datasetId }: { runId: string; datasetId: string }) {
+  const latestFn = useServerFn(getLatestDatasetVersion);
+  const rerunFn = useServerFn(rerunOnLatestVersion);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  const { data: latest } = useQuery({
+    queryKey: ["latest-dataset", datasetId],
+    queryFn: () => latestFn({ data: { datasetId } }),
+  });
+
+  const mutation = useMutation({
+    mutationFn: () => rerunFn({ data: { runId } }),
+    onSuccess: (res) => {
+      toast.success("Run criado na versão mais nova do dataset.");
+      void qc.invalidateQueries({ queryKey: ["runs"] });
+      navigate({ to: "/runs/$id", params: { id: res.runId } });
+    },
+    onError: (err) =>
+      toast.error(err instanceof Error ? err.message : "Falha ao re-executar."),
+  });
+
+  if (!latest || latest.id === datasetId) return null;
+
+  return (
+    <div className="border hairline-strong bg-brand-creme p-4 flex items-center justify-between gap-4 flex-wrap">
+      <p className="text-xs text-brand-navy/80">
+        Existe uma <strong>versão mais nova</strong> deste dataset (v{latest.version}). Re-execute o
+        mesmo modelo nela para comparar como os resultados mudam com os dados atualizados.
+      </p>
+      <button
+        onClick={() => mutation.mutate()}
+        disabled={mutation.isPending}
+        className="text-xs uppercase tracking-widest bg-brand-navy text-white px-4 py-2 hover:bg-brand-purple disabled:opacity-50"
+      >
+        {mutation.isPending ? "Rodando..." : `Re-executar na v${latest.version}`}
+      </button>
+    </div>
+  );
+}
+
+function ShareButton({ runId }: { runId: string }) {
+  const [copied, setCopied] = useState(false);
+  const shareUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/share/runs/${runId}`
+      : `/share/runs/${runId}`;
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      toast.success("Link copiado. Qualquer pessoa com ele pode ver este modelo.");
+      setTimeout(() => setCopied(false), 2500);
+    } catch {
+      toast.error("Não consegui copiar — copie manualmente.");
+    }
   };
 
-
-  const totals = run.contributions_json ?? [];
-  const variables = useMemo(() => totals.filter((t) => t.variable !== "Base (sazonalidade + intercepto)"), [totals]);
-  const variableNames = useMemo(() => variables.map((t) => t.variable), [variables]);
-  const ranked = useMemo(() => [...totals].sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution)), [totals]);
-  const rois = useMemo(() => (run.roi_json ?? []).filter((r) => r.roi !== null).sort((a, b) => (b.roi! - a.roi!)), [run.roi_json]);
-
-  const predData = useMemo(
-    () => run.predicted_json.labels.map((l, i) => ({
-      period: l,
-      Real: run.predicted_json.actual[i],
-      Predito: run.predicted_json.predicted[i],
-    })),
-    [run.predicted_json],
-  );
-
-  const metrics = run.metrics_json;
-
   return (
-    <div className="p-12 max-w-7xl">
-      <p className="eyebrow">Resultado</p>
-      <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">{run.name}</h1>
-      <p className="mt-3 text-xs text-brand-navy/60 font-mono">
-        Alvo: {run.dep_variable} · α={run.params_json.alpha} · adstock={run.params_json.adstockDecay} · saturação={run.params_json.saturationAlpha} · {new Date(run.created_at).toLocaleString("pt-BR")}
+    <div className="flex items-center gap-3 flex-wrap">
+      <button
+        onClick={copy}
+        className="text-xs uppercase tracking-widest border border-brand-navy/30 px-4 py-2 hover:bg-brand-navy hover:text-white transition-colors"
+      >
+        {copied ? "Copiado ✓" : "Copiar link de compartilhamento"}
+      </button>
+      <input
+        readOnly
+        value={shareUrl}
+        onFocus={(e) => e.currentTarget.select()}
+        className="flex-1 min-w-64 max-w-xl border border-brand-navy/20 bg-white px-3 py-2 text-xs font-mono"
+      />
+      <p className="text-[10px] text-brand-gray basis-full">
+        Read-only · sem login · qualquer pessoa com o link vê o resultado. O link é o próprio UUID
+        da run (122 bits, não-enumerável). Para revogar, delete a run.
       </p>
-
-      {/* Quality metrics */}
-      <section className="mt-12 grid grid-cols-4 gap-px bg-brand-navy/10 border hairline">
-        <Metric label="R²" value={(metrics.r2 * 100).toFixed(1) + "%"} hint="Quanto da variação foi explicada. Acima de 70% costuma ser bom." />
-        <Metric label="MAPE" value={(metrics.mape * 100).toFixed(1) + "%"} hint="Erro percentual médio. Quanto menor, mais preciso. Abaixo de 15% é forte." />
-        <Metric label="RMSE" value={fmt(metrics.rmse)} hint="Erro absoluto típico, na mesma unidade da variável." />
-        <Metric label="n / p" value={`${metrics.n} / ${metrics.p}`} hint="Períodos observados / variáveis no modelo." />
-      </section>
-
-      {/* Decomposition over time */}
-      <section className="mt-16">
-        <p className="eyebrow">Decomposição no tempo</p>
-        <h2 className="font-display text-2xl text-brand-navy mt-2">De onde vieram as vendas, semana a semana</h2>
-        <p className="text-xs text-brand-navy/60 mt-2 max-w-xl">
-          Cada faixa colorida é a contribuição de uma variável em cada período. Base = o que aconteceria
-          sem nenhuma das variáveis explicativas (sazonalidade + tendência).
-        </p>
-        <div className="mt-6 border hairline-strong bg-white p-4 h-96">
-          <ResponsiveContainer>
-            <AreaChart data={run.decomposition_json}>
-              <CartesianGrid stroke="#0F294015" />
-              <XAxis dataKey="period" tick={{ fontSize: 10, fontFamily: "Inter Tight" }} />
-              <YAxis tick={{ fontSize: 10, fontFamily: "Inter Tight" }} tickFormatter={fmt} />
-              <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, fontFamily: "Inter Tight", border: "1px solid #0F294020", borderRadius: 0 }} />
-              <Legend wrapperStyle={{ fontSize: 11, fontFamily: "Inter Tight" }} />
-              <Area type="monotone" dataKey="base" stackId="1" stroke="#94908a" fill="#94908a" name="Base" fillOpacity={0.5} />
-              {variableNames.map((name, i) => (
-                <Area key={name} type="monotone" dataKey={name} stackId="1" stroke={SERIES_COLORS[i % SERIES_COLORS.length]} fill={SERIES_COLORS[i % SERIES_COLORS.length]} fillOpacity={0.7} />
-              ))}
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
-
-      {/* Actual vs predicted */}
-      <section className="mt-16">
-        <p className="eyebrow">Real vs predito</p>
-        <h2 className="font-display text-2xl text-brand-navy mt-2">O modelo acompanha a realidade?</h2>
-        <div className="mt-6 border hairline-strong bg-white p-4 h-80">
-          <ResponsiveContainer>
-            <LineChart data={predData}>
-              <CartesianGrid stroke="#0F294015" />
-              <XAxis dataKey="period" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
-              <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: "1px solid #0F294020", borderRadius: 0 }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
-              <Line type="monotone" dataKey="Real" stroke="#0F2940" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="Predito" stroke="#C9A227" strokeWidth={2} strokeDasharray="4 3" dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
-
-      {/* Ranking */}
-      <section className="mt-16">
-        <p className="eyebrow">Ranking de drivers</p>
-        <h2 className="font-display text-2xl text-brand-navy mt-2">Quem mais explica {run.dep_variable}</h2>
-        <table className="mt-6 w-full text-sm border-collapse">
-          <thead>
-            <tr className="border-b hairline-strong">
-              <th className="text-left py-2 eyebrow">Variável</th>
-              <th className="text-right py-2 eyebrow">Contribuição</th>
-              <th className="text-right py-2 eyebrow">Participação</th>
-              <th className="text-right py-2 eyebrow">Significância (p)</th>
-              <th className="text-left py-2 pl-4 eyebrow">Confiança</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ranked.map((t) => {
-              const conf = pConfidence(t.pValue, t.variable);
-              const w = Math.min(100, Math.abs(t.share) * 100);
-              return (
-                <tr key={t.variable} className="border-b hairline">
-                  <td className="py-3 font-medium">
-                    {t.variable}
-                    {t.isMedia && <span className="ml-2 text-[10px] uppercase tracking-widest text-brand-mustard">mídia</span>}
-                  </td>
-                  <td className="py-3 text-right font-mono text-xs">{fmt(t.contribution)}</td>
-                  <td className="py-3 text-right">
-                    <div className="inline-flex items-center gap-2">
-                      <div className="w-24 h-1 bg-brand-navy/10 relative">
-                        <div className="absolute inset-y-0 left-0 bg-brand-navy" style={{ width: `${w}%` }} />
-                      </div>
-                      <span className="font-mono text-xs">{(t.share * 100).toFixed(1)}%</span>
-                    </div>
-                  </td>
-                  <td className="py-3 text-right font-mono text-xs">{t.variable.startsWith("Base") ? "—" : t.pValue.toFixed(3)}</td>
-                  <td className="py-3 pl-4 text-xs">{conf}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </section>
-
-      {/* ROI */}
-      {rois.length > 0 && (
-        <section className="mt-16">
-          <p className="eyebrow">ROI por canal de mídia</p>
-          <h2 className="font-display text-2xl text-brand-navy mt-2">Cada R$ investido virou quanto?</h2>
-          <table className="mt-6 w-full text-sm border-collapse">
-            <thead>
-              <tr className="border-b hairline-strong">
-                <th className="text-left py-2 eyebrow">Canal</th>
-                <th className="text-right py-2 eyebrow">Investido</th>
-                <th className="text-right py-2 eyebrow">Gerou</th>
-                <th className="text-right py-2 eyebrow">ROI</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rois.map((r) => (
-                <tr key={r.variable} className="border-b hairline">
-                  <td className="py-3 font-medium">{r.variable}</td>
-                  <td className="py-3 text-right font-mono text-xs">{fmt(r.spend)}</td>
-                  <td className="py-3 text-right font-mono text-xs">{fmt(r.contribution)}</td>
-                  <td className="py-3 text-right">
-                    <span className="font-display text-xl text-brand-navy">{r.roi!.toFixed(2)}×</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
-      )}
     </div>
   );
-}
-
-function Metric({ label, value, hint }: { label: string; value: string; hint: string }) {
-  return (
-    <div className="bg-brand-creme p-6">
-      <p className="eyebrow">{label}</p>
-      <p className="font-display text-4xl text-brand-navy mt-2">{value}</p>
-      <p className="text-[11px] text-brand-navy/60 mt-2 leading-snug">{hint}</p>
-    </div>
-  );
-}
-
-function pConfidence(p: number, name: string): string {
-  if (name.startsWith("Base")) return "—";
-  if (p < 0.01) return "Muito alta (★★★)";
-  if (p < 0.05) return "Alta (★★)";
-  if (p < 0.1) return "Moderada (★)";
-  return "Baixa";
-}
-
-function fmt(n: number): string {
-  if (!Number.isFinite(n)) return "—";
-  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + "B";
-  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + "M";
-  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "k";
-  return n.toFixed(1);
 }

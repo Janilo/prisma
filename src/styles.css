@@ -1,38 +1,11 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "./styles/prisma.css";
 
 @custom-variant dark (&:is(.dark *));
 
-/* J P Saraiva — Fraunces + Inter Tight (bundled, not CDN) */
-@font-face {
-  font-family: "Fraunces";
-  src: url("/fonts/Fraunces.ttf") format("truetype-variations");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Fraunces";
-  src: url("/fonts/Fraunces-Italic.ttf") format("truetype-variations");
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Inter Tight";
-  src: url("/fonts/InterTight.ttf") format("truetype-variations");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Inter Tight";
-  src: url("/fonts/InterTight-Italic.ttf") format("truetype-variations");
-  font-weight: 100 900;
-  font-style: italic;
-  font-display: swap;
-}
+/* Fraunces, Inter Tight, JetBrains Mono são declarados em src/styles/prisma.css. */
 
 @theme inline {
   --color-background: var(--background);
@@ -54,145 +27,82 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  /* Prisma palette tokens */
-  --color-indigo:       var(--prisma-indigo);
-  --color-violet:       var(--prisma-violet);
-  --color-lift:         var(--prisma-lift);
-  --color-sat:          var(--prisma-sat);
-  --color-ch-1:         var(--prisma-ch-1);
-  --color-ch-2:         var(--prisma-ch-2);
-  --color-ch-3:         var(--prisma-ch-3);
-  --color-ch-4:         var(--prisma-ch-4);
-  --color-ch-5:         var(--prisma-ch-5);
-  --color-ch-6:         var(--prisma-ch-6);
-  /* backward-compat: existing TSX brand-* classes stay functional */
-  --color-brand-purple:  var(--prisma-indigo);
-  --color-brand-navy:    var(--prisma-abyss);
-  --color-brand-green:   var(--prisma-lift);
-  --color-brand-mustard: var(--prisma-ch-5);
-  --color-brand-creme:   var(--prisma-paper);
-  --color-brand-offwhite:var(--prisma-paper);
-  --color-brand-stone:   var(--prisma-stone);
-  --color-brand-gray:    var(--prisma-mute);
-  --color-brand-ink:     var(--prisma-ink);
-  --color-brand-white:   var(--prisma-white);
-  --color-viz-1: var(--chart-1);
-  --color-viz-2: var(--chart-2);
-  --color-viz-3: var(--chart-3);
-  --color-viz-4: var(--chart-4);
+
+  /* Brand tokens — rebind direto aos primitives do DS Prisma (src/styles/prisma.css) */
+  --color-brand-purple: var(--prisma-indigo);        /* #4A37B5 — brand primary */
+  --color-brand-purple-deep: var(--prisma-indigo-deep); /* #33268C — hover/press */
+  --color-brand-navy: var(--prisma-abyss);           /* #1C1547 */
+  --color-brand-green: var(--prisma-lift);           /* #2E9E5E */
+  --color-brand-mustard: var(--prisma-violet);       /* #7A5CF0 — violet accent */
+  --color-brand-creme: var(--prisma-indigo-soft);    /* #ECEAFB */
+  --color-brand-offwhite: var(--prisma-paper);       /* #F7F6FB */
+  --color-brand-stone: var(--prisma-stone);          /* #D7D4E2 */
+  --color-brand-gray: var(--prisma-mute);            /* #726E89 */
+  --color-brand-ink: var(--prisma-indigo-ink);       /* #241A5C */
+  --color-brand-white: var(--prisma-white);
+
+  /* Data viz palette — espectro Prisma (ch-1..ch-6) */
+  --color-viz-1: var(--prisma-ch-1);
+  --color-viz-2: var(--prisma-ch-2);
+  --color-viz-3: var(--prisma-ch-3);
+  --color-viz-4: var(--prisma-ch-4);
+  --color-viz-5: var(--prisma-ch-5);
+  --color-viz-6: var(--prisma-ch-6);
+
+
+
   --font-display: "Fraunces", "Source Serif 4", Georgia, serif;
   --font-sans: "Inter Tight", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Consolas, ui-monospace, monospace;
+
   --radius-sm: 2px;
   --radius-md: 2px;
   --radius-lg: 2px;
 }
 
 :root {
-  --radius: 2px;
-
-  /* ============================================================
-     PRISMA — brand primitives
-     Âncora: violeta-índigo óptico · espectro de 6 canais MMM
-     ============================================================ */
-  --prisma-indigo:       #4A37B5;
-  --prisma-indigo-deep:  #33268C;
-  --prisma-abyss:        #1C1547;
-  --prisma-indigo-soft:  #ECEAFB;
-  --prisma-violet:       #7A5CF0;
-
-  /* 6-channel spectrum — ordered cool→warm */
-  --prisma-ch-1: #6B4FE0;  /* violeta  — Brand / TV */
-  --prisma-ch-2: #2D7BE0;  /* azul     — Vídeo / Display */
-  --prisma-ch-3: #0E97A8;  /* ciano    — Search */
-  --prisma-ch-4: #4FA23E;  /* verde    — Social */
-  --prisma-ch-5: #E0A21E;  /* âmbar    — Promo / Trade */
-  --prisma-ch-6: #C2562F;  /* terracota— OOH / Outros */
-
-  --prisma-baseline:      #B8B4D8;
-  --prisma-baseline-soft: #EDECF5;
-
-  /* Reserved — analytic states, never decorative */
-  --prisma-lift:      #2E9E5E;
-  --prisma-lift-soft: #E4F3EA;
-  --prisma-sat:       #DB5A45;
-  --prisma-sat-soft:  #FBEAE6;
-
-  /* Neutrals — cool violet-tinted scale */
-  --prisma-ink:        #1C1A2B;
-  --prisma-slate:      #44415A;
-  --prisma-mute:       #726E89;
-  --prisma-stone:      #D7D4E2;
-  --prisma-stone-soft: #E7E4EF;
-  --prisma-mist:       #F0EEF6;
-  --prisma-paper:      #F7F6FB;
-  --prisma-white:      #FFFFFF;
-
-  --prisma-danger:  #C0263B;
-
-  /* shadcn semantic tokens → prisma palette */
-  --background:             var(--prisma-paper);
-  --foreground:             var(--prisma-ink);
-  --card:                   var(--prisma-white);
-  --card-foreground:        var(--prisma-ink);
-  --popover:                var(--prisma-white);
-  --popover-foreground:     var(--prisma-ink);
-  --primary:                var(--prisma-indigo);
-  --primary-foreground:     var(--prisma-white);
-  --secondary:              var(--prisma-mist);
-  --secondary-foreground:   var(--prisma-slate);
-  --muted:                  var(--prisma-mist);
-  --muted-foreground:       var(--prisma-mute);
-  --accent:                 var(--prisma-indigo-soft);
-  --accent-foreground:      var(--prisma-indigo-deep);
-  --destructive:            var(--prisma-danger);
+  --background: var(--prisma-paper);
+  --foreground: var(--prisma-ink);
+  --card: var(--prisma-white);
+  --card-foreground: var(--prisma-ink);
+  --popover: var(--prisma-white);
+  --popover-foreground: var(--prisma-ink);
+  --primary: var(--prisma-indigo);                 /* #4A37B5 — exato */
+  --primary-foreground: var(--prisma-white);
+  --secondary: var(--prisma-indigo-soft);
+  --secondary-foreground: var(--prisma-indigo-ink);
+  --muted: var(--prisma-mist);
+  --muted-foreground: var(--prisma-slate);
+  --accent: var(--prisma-indigo-soft);
+  --accent-foreground: var(--prisma-indigo-ink);
+  --destructive: var(--prisma-danger);
   --destructive-foreground: var(--prisma-white);
-  --border:                 var(--prisma-stone);
-  --input:                  var(--prisma-stone);
-  --ring:                   var(--prisma-indigo);
-
-  /* Data viz — 4-series generic (first 4 stops of spectrum) */
-  --chart-1: var(--prisma-ch-1);
-  --chart-2: var(--prisma-ch-2);
-  --chart-3: var(--prisma-ch-3);
-  --chart-4: var(--prisma-ch-4);
+  --border: color-mix(in oklab, var(--prisma-indigo) 14%, transparent);
+  --input: color-mix(in oklab, var(--prisma-indigo) 18%, transparent);
+  --ring: color-mix(in oklab, var(--prisma-indigo) 40%, transparent);
+  --radius: 2px;
 }
 
-.dark {
-  --background:             #1C1547;
-  --foreground:             #F7F6FB;
-  --card:                   #241A5C;
-  --card-foreground:        #F7F6FB;
-  --popover:                #241A5C;
-  --popover-foreground:     #F7F6FB;
-  --primary:                #7A5CF0;
-  --primary-foreground:     #1C1547;
-  --secondary:              #241A5C;
-  --secondary-foreground:   #D7D4E2;
-  --muted:                  #241A5C;
-  --muted-foreground:       #D7D4E2;
-  --accent:                 #241A5C;
-  --accent-foreground:      #F7F6FB;
-  --destructive:            #E04B5A;
-  --destructive-foreground: #1C1547;
-  --border:                 oklch(1 0 0 / 10%);
-  --input:                  oklch(1 0 0 / 15%);
-  --ring:                   #7A5CF0;
-}
+
+
+/* Prisma é light-only por enquanto — dashboards analíticos rodam em light.
+   Quando dark for prioridade, definir [data-theme="dark"] em prisma.css
+   rebindando os --prisma-* neutros, e rebindar aqui via var(--prisma-*). */
 
 @layer base {
   * { border-color: var(--color-border); }
   html, body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
-    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--jps-body), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    letter-spacing: -0.005em;
   }
   ::selection {
     background: color-mix(in oklab, var(--prisma-indigo) 25%, transparent);
+    color: var(--prisma-white);
   }
+
 }
 
 @layer utilities {
@@ -201,10 +111,10 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: var(--prisma-mute);
+    color: var(--color-brand-gray);
   }
-  .hairline { border-color: var(--prisma-stone); }
-  .hairline-strong { border-color: var(--prisma-stone-soft); }
+  .hairline { border-color: color-mix(in oklab, var(--prisma-ink) 10%, transparent); }
+  .hairline-strong { border-color: color-mix(in oklab, var(--prisma-ink) 20%, transparent); }
 }
 
 /* Editorial motion */
@@ -219,4 +129,20 @@
 @keyframes drawLine {
   from { stroke-dashoffset: 2000; }
   to { stroke-dashoffset: 0; }
+}
+
+/* Print: export run report as PDF via browser dialog */
+@media print {
+  @page { size: A4; margin: 14mm; }
+  html, body { background: #ffffff !important; }
+  .no-print { display: none !important; }
+  nav, aside, header { display: none !important; }
+  main { display: block !important; }
+  .print-root { padding: 0 !important; max-width: none !important; }
+  /* Keep chart colors */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  section { break-inside: avoid; page-break-inside: avoid; }
+  table { break-inside: auto; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  h1, h2 { break-after: avoid; page-break-after: avoid; }
 }

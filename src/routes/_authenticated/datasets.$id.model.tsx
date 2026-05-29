@@ -38,6 +38,7 @@ function ModelPage() {
   );
   const ds = data.dataset as unknown as {
     columns_json: ColumnInfo[];
+    unit_costs_json?: Record<string, string> | null;
   };
 
   const cols = ds.columns_json ?? [];
@@ -52,11 +53,26 @@ function ModelPage() {
   const [dep, setDep] = useState<string>(sp.dep ?? numericCols[0] ?? "");
   const [dateCol, setDateCol] = useState<string>(sp.date ?? dateCols[0] ?? "");
   const [indep, setIndep] = useState<string[]>(initialIndep);
-  const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest/i.test(n)));
+  const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest|grp/i.test(n)));
   const [alpha, setAlpha] = useState(1);
-  const [decay, setDecay] = useState(0.5);
+  const [decays, setDecays] = useState<Record<string, number>>({});
   const [satAlpha, setSatAlpha] = useState(1);
+  const [holdout, setHoldout] = useState(0);
   const [runName, setRunName] = useState(`Modelo · ${new Date().toLocaleDateString("pt-BR")}`);
+  // Per-channel mapping: channel column (e.g. GRP TV) -> investment column ($ TV).
+  // Seeded from the dataset's saved mapping; user can adjust per run.
+  const [spendBasis, setSpendBasis] = useState<Record<string, string>>(ds.unit_costs_json ?? {});
+
+
+  // Suggest a sensible default per channel based on its name (heuristic).
+  const suggestDecay = (name: string): number => {
+    const n = name.toLowerCase();
+    if (/\btv\b|televis|ooh|out.?of.?home|radio|r[aá]dio|print|jornal|revista/.test(n)) return 0.7;
+    if (/google|search|sem|adwords|youtube|yt\b/.test(n)) return 0.1;
+    if (/meta|facebook|insta|tiktok|social|paid.?social/.test(n)) return 0.3;
+    return 0.5;
+  };
+  const decayFor = (name: string) => decays[name] ?? suggestDecay(name);
 
   const toggle = (arr: string[], v: string) =>
     arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
@@ -72,8 +88,14 @@ function ModelPage() {
           mediaVariables: media,
           dateColumn: dateCol || null,
           alpha,
-          adstockDecay: decay,
+          adstockDecay: 0.5,
+          adstockDecays: Object.fromEntries(media.map((m) => [m, decayFor(m)])),
           saturationAlpha: satAlpha,
+          holdoutPeriods: holdout,
+          spendBasis: Object.fromEntries(
+            Object.entries(spendBasis).filter(([ch, cost]) => media.includes(ch) && !!cost),
+          ),
+
         },
       }),
     onSuccess: (r) => {
@@ -123,10 +145,100 @@ function ModelPage() {
           </select>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <Slider label="Regularização (α)" value={alpha} min={0} max={50} step={0.5} onChange={setAlpha} hint="Maior = mais estável, menos preciso" />
-          <Slider label="Adstock (decay)" value={decay} min={0} max={0.9} step={0.05} onChange={setDecay} hint="Memória da mídia" />
           <Slider label="Saturação (Hill α)" value={satAlpha} min={0.5} max={3} step={0.1} onChange={setSatAlpha} hint="Curva de retorno" />
+        </div>
+
+        {media.length > 0 && (
+          <div>
+            <p className="eyebrow mb-2">Adstock por canal (carryover)</p>
+            <p className="text-[10px] text-brand-gray mb-3">
+              Cada canal tem memória diferente. TV/OOH costuma ficar em 0,6–0,8 (efeito dura semanas).
+              Google paid em 0,0–0,2 (efeito quase imediato). Meta/social em 0,2–0,4.
+              Valores iniciais são sugeridos pelo nome — ajuste conforme seu conhecimento do canal.
+            </p>
+            <div className="space-y-3 border hairline-strong bg-white p-3">
+              {media.map((m) => (
+                <div key={m} className="flex items-center gap-3">
+                  <span className="text-xs flex-1 truncate" title={m}>{m}</span>
+                  <input
+                    type="range"
+                    min={0}
+                    max={0.9}
+                    step={0.05}
+                    value={decayFor(m)}
+                    onChange={(e) =>
+                      setDecays((d) => ({ ...d, [m]: parseFloat(e.target.value) }))
+                    }
+                    className="flex-1 accent-brand-purple"
+                  />
+                  <span className="font-mono text-xs w-10 text-right">{decayFor(m).toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {media.length > 0 && (
+          <div>
+            <p className="eyebrow mb-2">Base de investimento (para ROI)</p>
+            <p className="text-[10px] text-brand-gray mb-3">
+              Se o canal está em <strong>unidades de execução</strong> (GRP, impressões, cliques),
+              aponte qual coluna tem o <strong>investimento real (R$)</strong> daquele canal.
+              O ROI será calculado sobre esse investimento. Deixe em branco se a própria
+              coluna do canal já estiver em reais.
+            </p>
+            <div className="space-y-2 border hairline-strong bg-white p-3">
+              {media.map((m) => {
+                const costOptions = numericCols.filter((n) => n !== m && n !== dep);
+                return (
+                  <div key={m} className="flex items-center gap-3">
+                    <span className="text-xs flex-1 truncate" title={m}>{m}</span>
+                    <select
+                      value={spendBasis[m] ?? ""}
+                      onChange={(e) =>
+                        setSpendBasis((s) => {
+                          const next = { ...s };
+                          if (e.target.value) next[m] = e.target.value;
+                          else delete next[m];
+                          return next;
+                        })
+                      }
+                      className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+                    >
+                      <option value="">— mesma coluna (já em R$) —</option>
+                      {costOptions.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+
+        <div>
+          <label htmlFor="holdout-input" className="eyebrow block mb-2">
+            Validação out-of-sample (últimos N períodos)
+          </label>
+          <input
+            id="holdout-input"
+            type="number"
+            min={0}
+            max={Math.max(0, numericCols.length > 0 ? 100 : 0)}
+            step={1}
+            value={holdout}
+            onChange={(e) => setHoldout(Math.max(0, Math.floor(Number(e.target.value) || 0)))}
+            className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm font-mono"
+          />
+          <p className="text-[10px] text-brand-gray mt-1">
+            0 = treinar em tudo (só métricas in-sample). Com N{">"}0, o modelo treina nos primeiros
+            períodos e prevê os últimos N — assim você vê se o R²/MAPE se sustentam fora da amostra.
+            Padrão recomendado: 10–20% das observações (ex.: 8–12 semanas).
+          </p>
         </div>
 
         <button
