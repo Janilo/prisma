@@ -298,6 +298,8 @@ export const getRun = createServerFn({ method: "POST" })
       .maybeSingle();
     if (error || !run) throw new Error("Run não encontrado.");
     return { run };
+  });
+
 
 // Public read-only access to a single run. The UUID itself is the access token —
 // unguessable (122 bits of entropy) and the response strips user_id and ownership info.
