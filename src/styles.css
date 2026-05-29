@@ -63,27 +63,28 @@
 }
 
 :root {
-  --background: oklch(0.974 0.006 84);  /* offwhite */
-  --foreground: oklch(0.245 0.04 250);  /* navy */
+  --background: oklch(0.985 0.004 280);            /* prisma offwhite */
+  --foreground: oklch(0.22 0.06 280);              /* prisma indigo ink */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.245 0.04 250);
+  --card-foreground: oklch(0.22 0.06 280);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.245 0.04 250);
-  --primary: oklch(0.245 0.04 250);
-  --primary-foreground: oklch(0.974 0.006 84);
-  --secondary: oklch(0.945 0.01 80);  /* creme */
-  --secondary-foreground: oklch(0.245 0.04 250);
-  --muted: oklch(0.945 0.01 80);
-  --muted-foreground: oklch(0.62 0.01 70); /* soft gray */
-  --accent: oklch(0.945 0.01 80);
-  --accent-foreground: oklch(0.245 0.04 250);
-  --destructive: oklch(0.45 0.18 22);
-  --destructive-foreground: oklch(0.984 0.003 247);
-  --border: color-mix(in oklab, #0f2940 12%, transparent);
-  --input: color-mix(in oklab, #0f2940 15%, transparent);
-  --ring: color-mix(in oklab, #0f2940 30%, transparent);
+  --popover-foreground: oklch(0.22 0.06 280);
+  --primary: oklch(0.42 0.20 285);                 /* prisma indigo #4A37B5 */
+  --primary-foreground: oklch(0.985 0.004 280);
+  --secondary: oklch(0.955 0.02 285);              /* indigo-soft */
+  --secondary-foreground: oklch(0.30 0.14 285);    /* indigo-ink */
+  --muted: oklch(0.955 0.02 285);
+  --muted-foreground: oklch(0.55 0.04 285);
+  --accent: oklch(0.955 0.02 285);
+  --accent-foreground: oklch(0.30 0.14 285);
+  --destructive: oklch(0.55 0.20 25);
+  --destructive-foreground: oklch(0.985 0.004 280);
+  --border: color-mix(in oklab, #4A37B5 14%, transparent);
+  --input: color-mix(in oklab, #4A37B5 18%, transparent);
+  --ring: color-mix(in oklab, #4A37B5 40%, transparent);
   --radius: 2px;
 }
+
 
 .dark {
   --background: oklch(0.18 0.02 250);
@@ -110,15 +111,17 @@
 @layer base {
   * { border-color: var(--color-border); }
   html, body {
-    background-color: var(--color-brand-offwhite);
-    color: var(--color-brand-navy);
-    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--jps-body), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: color-mix(in oklab, #c9a227 30%, transparent);
+    background: color-mix(in oklab, #4A37B5 25%, transparent);
+    color: #fff;
   }
+
 }
 
 @layer utilities {
