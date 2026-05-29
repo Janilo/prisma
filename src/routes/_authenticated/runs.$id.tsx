@@ -394,7 +394,7 @@ function BudgetSimulator({ rois, depVariable }: { rois: Totals[]; depVariable: s
   );
 }
 
-}
+
 
 function Metric({ label, value, hint }: { label: string; value: string; hint: string }) {
   return (
