@@ -204,12 +204,19 @@ export const runMmm = createServerFn({ method: "POST" })
       });
     }
 
+    if (holdout) holdout.labels = labels.slice(n - holdout.n);
+
     const metrics = {
       r2: r2(y, fit.yPred),
       mape: mape(y, fit.yPred),
       rmse: rmse(y, fit.yPred),
       n,
       p,
+      holdoutPeriods: k,
+      train: trainMetrics,
+      holdout: holdout
+        ? { n: holdout.n, r2: holdout.r2, mape: holdout.mape, rmse: holdout.rmse }
+        : null,
     };
 
     // Persist run
