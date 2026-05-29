@@ -31,6 +31,11 @@ const RunInput = z.object({
   // Out-of-sample holdout: number of last periods to reserve for validation.
   // 0 = no holdout (train on all data, only in-sample metrics).
   holdoutPeriods: z.number().int().min(0).max(200).default(0),
+  // For channels measured in execution units (e.g. GRPs), map the channel column to the
+  // column that holds the actual investment. When provided, ROI uses the investment sum
+  // instead of summing the execution-unit values.
+  spendBasis: z.record(z.string(), z.string()).optional(),
+
 });
 
 function toNumber(v: unknown): number {
