@@ -128,8 +128,37 @@ export const runMmm = createServerFn({ method: "POST" })
       transformedColumns.map((col) => col[i])
     );
 
-    // Fit Ridge
+    // Fit Ridge on full data for attribution/decomposition
     const fit = ridgeFit({ X, y, alpha: data.alpha, featureNames });
+
+    // Out-of-sample holdout validation: refit on train-only, evaluate on the last k periods.
+    const k = Math.min(data.holdoutPeriods, Math.max(0, n - Math.max(8, p + 2)));
+    let holdout: { n: number; r2: number; mape: number; rmse: number; labels: string[]; actual: number[]; predicted: number[] } | null = null;
+    let trainMetrics: { r2: number; mape: number; rmse: number; n: number } | null = null;
+    if (k > 0) {
+      const nTrain = n - k;
+      const Xtr = X.slice(0, nTrain);
+      const ytr = y.slice(0, nTrain);
+      const Xte = X.slice(nTrain);
+      const yte = y.slice(nTrain);
+      const fitTr = ridgeFit({ X: Xtr, y: ytr, alpha: data.alpha, featureNames });
+      const yPredTr = fitTr.yPred;
+      const yPredTe = Xte.map((row) => {
+        let s = fitTr.intercept;
+        for (let j = 0; j < p; j++) s += fitTr.beta[j] * row[j];
+        return s;
+      });
+      trainMetrics = { r2: r2(ytr, yPredTr), mape: mape(ytr, yPredTr), rmse: rmse(ytr, yPredTr), n: nTrain };
+      holdout = {
+        n: k,
+        r2: r2(yte, yPredTe),
+        mape: mape(yte, yPredTe),
+        rmse: rmse(yte, yPredTe),
+        labels: [],
+        actual: yte,
+        predicted: yPredTe,
+      };
+    }
 
     // Build date/index labels
     let labels: string[] = [];
