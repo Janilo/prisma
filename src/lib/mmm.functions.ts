@@ -300,6 +300,25 @@ export const getRun = createServerFn({ method: "POST" })
     return { run };
   });
 
+
+// Public read-only access to a single run. The UUID itself is the access token —
+// unguessable (122 bits of entropy) and the response strips user_id and ownership info.
+// Anyone with the link can view the run; no login required.
+export const getPublicRun = createServerFn({ method: "POST" })
+  .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const { data: run, error } = await supabaseAdmin
+      .from("runs")
+      .select(
+        "id, name, status, dep_variable, indep_variables_json, params_json, metrics_json, contributions_json, roi_json, decomposition_json, predicted_json, created_at, finished_at",
+      )
+      .eq("id", data.id)
+      .maybeSingle();
+    if (error || !run) throw new Error("Run não encontrado.");
+    return { run };
+  });
+
+
 // Get a single dataset
 export const getDataset = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

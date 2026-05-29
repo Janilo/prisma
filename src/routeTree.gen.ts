@@ -18,6 +18,7 @@ import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
 import { Route as AuthenticatedRunsIndexRouteImport } from './routes/_authenticated/runs.index'
 import { Route as AuthenticatedDatasetsIndexRouteImport } from './routes/_authenticated/datasets.index'
+import { Route as ShareRunsIdRouteImport } from './routes/share.runs.$id'
 import { Route as AuthenticatedRunsIdRouteImport } from './routes/_authenticated/runs.$id'
 import { Route as AuthenticatedDatasetsIdRouteImport } from './routes/_authenticated/datasets.$id'
 import { Route as AuthenticatedDatasetsIdIndexRouteImport } from './routes/_authenticated/datasets.$id.index'
@@ -69,6 +70,11 @@ const AuthenticatedDatasetsIndexRoute =
     path: '/datasets/',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const ShareRunsIdRoute = ShareRunsIdRouteImport.update({
+  id: '/share/runs/$id',
+  path: '/share/runs/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedRunsIdRoute = AuthenticatedRunsIdRouteImport.update({
   id: '/runs/$id',
   path: '/runs/$id',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/upload': typeof AuthenticatedUploadRoute
   '/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/runs/$id': typeof AuthenticatedRunsIdRoute
+  '/share/runs/$id': typeof ShareRunsIdRoute
   '/datasets/': typeof AuthenticatedDatasetsIndexRoute
   '/runs/': typeof AuthenticatedRunsIndexRoute
   '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/explore': typeof AuthenticatedExploreRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/runs/$id': typeof AuthenticatedRunsIdRoute
+  '/share/runs/$id': typeof ShareRunsIdRoute
   '/datasets': typeof AuthenticatedDatasetsIndexRoute
   '/runs': typeof AuthenticatedRunsIndexRoute
   '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
   '/_authenticated/runs/$id': typeof AuthenticatedRunsIdRoute
+  '/share/runs/$id': typeof ShareRunsIdRoute
   '/_authenticated/datasets/': typeof AuthenticatedDatasetsIndexRoute
   '/_authenticated/runs/': typeof AuthenticatedRunsIndexRoute
   '/_authenticated/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
@@ -155,6 +164,7 @@ export interface FileRouteTypes {
     | '/upload'
     | '/datasets/$id'
     | '/runs/$id'
+    | '/share/runs/$id'
     | '/datasets/'
     | '/runs/'
     | '/datasets/$id/explore'
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/explore'
     | '/upload'
     | '/runs/$id'
+    | '/share/runs/$id'
     | '/datasets'
     | '/runs'
     | '/datasets/$id/explore'
@@ -185,6 +196,7 @@ export interface FileRouteTypes {
     | '/_authenticated/upload'
     | '/_authenticated/datasets/$id'
     | '/_authenticated/runs/$id'
+    | '/share/runs/$id'
     | '/_authenticated/datasets/'
     | '/_authenticated/runs/'
     | '/_authenticated/datasets/$id/explore'
@@ -198,6 +210,7 @@ export interface RootRouteChildren {
   DemoRoute: typeof DemoRoute
   LoginRoute: typeof LoginRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ShareRunsIdRoute: typeof ShareRunsIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -264,6 +277,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/datasets/'
       preLoaderRoute: typeof AuthenticatedDatasetsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/share/runs/$id': {
+      id: '/share/runs/$id'
+      path: '/share/runs/$id'
+      fullPath: '/share/runs/$id'
+      preLoaderRoute: typeof ShareRunsIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/runs/$id': {
       id: '/_authenticated/runs/$id'
@@ -349,6 +369,7 @@ const rootRouteChildren: RootRouteChildren = {
   DemoRoute: DemoRoute,
   LoginRoute: LoginRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ShareRunsIdRoute: ShareRunsIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
