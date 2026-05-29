@@ -21,7 +21,9 @@ export type RunTotals = {
   isMedia: boolean;
   spend: number;
   roi: number | null;
+  curve?: { spend: number; contribution: number }[];
 };
+
 
 export type RunDecomp = Record<string, number | string> & {
   period: string;
@@ -365,10 +367,85 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
         </section>
       )}
 
+      <ResponseCurves channels={(run.contributions_json ?? []).filter((t) => t.isMedia && t.curve && t.curve.length > 0)} />
+
       {rois.length >= 2 && <BudgetSimulator rois={rois} depVariable={run.dep_variable} />}
+
     </div>
   );
 }
+
+function ResponseCurves({ channels }: { channels: RunTotals[] }) {
+  if (channels.length === 0) return null;
+  return (
+    <section className="mt-16">
+      <p className="eyebrow">Curva de resposta por canal</p>
+      <h2 className="font-display text-2xl text-brand-navy mt-2">Quanto mais investir rende quanto?</h2>
+      <p className="text-xs text-brand-navy/60 mt-2 max-w-2xl">
+        Cada curva mostra a contribuição estimada do canal em função do total investido, mantendo
+        adstock e saturação Hill do modelo. O ponto dourado marca o nível atual de gasto.
+        A inclinação local é o <strong>ROI marginal</strong> — se a curva está achatando,
+        cada real adicional rende menos (saturação); se ainda sobe forte, há espaço para investir mais.
+      </p>
+      <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {channels.map((c, i) => {
+          const color = SERIES_COLORS[i % SERIES_COLORS.length];
+          const data = (c.curve ?? []).map((p) => ({
+            spend: p.spend,
+            Contribuição: p.contribution,
+          }));
+          return (
+            <div key={c.variable} className="border hairline-strong bg-white p-4">
+              <p className="eyebrow">{c.variable}</p>
+              <p className="text-xs text-brand-navy/60 mt-1 font-mono">
+                Hoje: {fmt(c.spend)} → {fmt(c.contribution)} · ROI {c.roi != null ? c.roi.toFixed(2) + "×" : "—"}
+              </p>
+              <div className="h-56 mt-3">
+                <ResponsiveContainer>
+                  <LineChart data={data} margin={{ top: 10, right: 10, bottom: 0, left: 0 }}>
+                    <CartesianGrid stroke="#0F294015" />
+                    <XAxis
+                      dataKey="spend"
+                      type="number"
+                      domain={[0, "dataMax"]}
+                      tick={{ fontSize: 10 }}
+                      tickFormatter={fmt}
+                    />
+                    <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
+                    <Tooltip
+                      formatter={(v: number) => fmt(v)}
+                      labelFormatter={(v: number) => `Investimento: ${fmt(v)}`}
+                      contentStyle={{ fontSize: 12, border: "1px solid #0F294020", borderRadius: 0 }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="Contribuição"
+                      stroke={color}
+                      strokeWidth={2}
+                      dot={(props: { cx?: number; cy?: number; payload?: { spend: number } }) => {
+                        const { cx, cy, payload } = props;
+                        if (cx == null || cy == null || !payload) return <g key={`${cx}-${cy}`} />;
+                        const isCurrent = Math.abs(payload.spend - c.spend) < c.spend * 0.06;
+                        if (!isCurrent) return <g key={payload.spend} />;
+                        return <circle key={payload.spend} cx={cx} cy={cy} r={5} fill="#C9A227" stroke="#0F2940" strokeWidth={1.5} />;
+                      }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <p className="mt-4 text-[11px] text-brand-navy/60 max-w-3xl">
+        Eixo X até 1,5× o gasto histórico do canal. A curva é uma <em>extrapolação</em> da forma
+        funcional do modelo (adstock geométrico + Hill); fora do intervalo observado a incerteza
+        cresce muito. Use como guia direcional, não como previsão exata.
+      </p>
+    </section>
+  );
+}
+
 
 function BudgetSimulator({ rois, depVariable }: { rois: RunTotals[]; depVariable: string }) {
   const [deltas, setDeltas] = useState<Record<string, number>>({});
