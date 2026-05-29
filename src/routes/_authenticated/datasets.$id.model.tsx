@@ -54,9 +54,19 @@ function ModelPage() {
   const [indep, setIndep] = useState<string[]>(initialIndep);
   const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest/i.test(n)));
   const [alpha, setAlpha] = useState(1);
-  const [decay, setDecay] = useState(0.5);
+  const [decays, setDecays] = useState<Record<string, number>>({});
   const [satAlpha, setSatAlpha] = useState(1);
   const [runName, setRunName] = useState(`Modelo · ${new Date().toLocaleDateString("pt-BR")}`);
+
+  // Suggest a sensible default per channel based on its name (heuristic).
+  const suggestDecay = (name: string): number => {
+    const n = name.toLowerCase();
+    if (/\btv\b|televis|ooh|out.?of.?home|radio|r[aá]dio|print|jornal|revista/.test(n)) return 0.7;
+    if (/google|search|sem|adwords|youtube|yt\b/.test(n)) return 0.1;
+    if (/meta|facebook|insta|tiktok|social|paid.?social/.test(n)) return 0.3;
+    return 0.5;
+  };
+  const decayFor = (name: string) => decays[name] ?? suggestDecay(name);
 
   const toggle = (arr: string[], v: string) =>
     arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v];
