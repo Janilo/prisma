@@ -194,6 +194,7 @@ export const runMmm = createServerFn({ method: "POST" })
         params_json: {
           alpha: data.alpha,
           adstockDecay: data.adstockDecay,
+          adstockDecays: data.adstockDecays ?? null,
           saturationAlpha: data.saturationAlpha,
           mediaVariables: data.mediaVariables,
           dateColumn: data.dateColumn,
