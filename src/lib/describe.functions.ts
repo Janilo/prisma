@@ -164,3 +164,56 @@ export const interpretDataset = createServerFn({ method: "POST" })
 
     return { insights, summary };
   });
+
+// Compute cost-per-execution-unit (CPP) time series for each saved mapping
+// { executionUnitColumn -> investmentColumn } on the dataset.
+export const computeUnitCosts = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ datasetId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    const ds = await loadDatasetForUser(data.datasetId, context.userId);
+    const mappings = (ds.unit_costs_json ?? {}) as Record<string, string>;
+    const entries = Object.entries(mappings);
+    if (entries.length === 0) return { series: [] as Array<{
+      unitColumn: string; costColumn: string;
+      points: { period: string; cpp: number; units: number; cost: number }[];
+      mean: number; min: number; max: number;
+    }> };
+
+    const { rows } = await loadRows(ds.storage_path);
+    const cols = (ds.columns_json ?? []) as Array<{ name: string; kind: string }>;
+    const dateCol = cols.find((c) => c.kind === "date")?.name ?? null;
+
+    const num = (v: unknown): number => {
+      if (typeof v === "number") return Number.isFinite(v) ? v : 0;
+      if (v == null || v === "") return 0;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const series = entries.map(([unitColumn, costColumn]) => {
+      const points: { period: string; cpp: number; units: number; cost: number }[] = [];
+      const cpps: number[] = [];
+      rows.forEach((r, i) => {
+        const units = num(r[unitColumn]);
+        const cost = num(r[costColumn]);
+        const cpp = units > 0 ? cost / units : 0;
+        const period = dateCol
+          ? (() => {
+              const d = new Date(String(r[dateCol]));
+              return Number.isFinite(d.getTime()) ? d.toISOString().slice(0, 10) : `t${i + 1}`;
+            })()
+          : `t${i + 1}`;
+        points.push({ period, cpp, units, cost });
+        if (units > 0) cpps.push(cpp);
+      });
+      const mean = cpps.length ? cpps.reduce((a, b) => a + b, 0) / cpps.length : 0;
+      const min = cpps.length ? Math.min(...cpps) : 0;
+      const max = cpps.length ? Math.max(...cpps) : 0;
+      return { unitColumn, costColumn, points, mean, min, max };
+    });
+    return { series };
+  });
+
