@@ -196,25 +196,52 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     return entry;
   });
 
-  const totals: { variable: string; contribution: number; share: number; pValue: number; zStat: number; isMedia: boolean; spend: number; roi: number | null }[] = [];
+  type CurvePoint = { spend: number; contribution: number };
+  type Total = {
+    variable: string; contribution: number; share: number; pValue: number; zStat: number;
+    isMedia: boolean; spend: number; roi: number | null; curve?: CurvePoint[];
+  };
+  const totals: Total[] = [];
   const sumPredicted = fit.yPred.reduce((a, b) => a + b, 0) || 1;
   const baseTotal = fit.intercept * n;
   totals.push({ variable: "Base (sazonalidade + intercepto)", contribution: baseTotal, share: baseTotal / sumPredicted, pValue: 0, zStat: 0, isMedia: false, spend: 0, roi: null });
+
+  // Response curve factors: 0 → 1.5× current spend, 16 points.
+  const curveFactors = Array.from({ length: 16 }, (_, i) => (i / 10)); // 0, 0.1, ..., 1.5
+
   for (let j = 0; j < p; j++) {
     const name = featureNames[j];
     const contrib = fit.contributions.reduce((a, row) => a + row[j], 0);
-    const spend = mediaSet.has(name) ? rawColumns[j].reduce((a, b) => a + b, 0) : 0;
+    const isMedia = mediaSet.has(name);
+    const spend = isMedia ? rawColumns[j].reduce((a, b) => a + b, 0) : 0;
+
+    let curve: CurvePoint[] | undefined;
+    if (isMedia && channelMeta[name]) {
+      const { decay, k, rawSeries } = channelMeta[name];
+      const beta = fit.beta[j];
+      curve = curveFactors.map((f) => {
+        const scaled = rawSeries.map((v) => v * f);
+        const ad = adstock(scaled, decay);
+        const hs = hill(ad, data.saturationAlpha, k);
+        const c = hs.reduce((a, v) => a + v * beta, 0);
+        const s = scaled.reduce((a, v) => a + v, 0);
+        return { spend: s, contribution: c };
+      });
+    }
+
     totals.push({
       variable: name,
       contribution: contrib,
       share: contrib / sumPredicted,
       pValue: fit.pValues[j],
       zStat: fit.zStats[j],
-      isMedia: mediaSet.has(name),
+      isMedia,
       spend,
       roi: spend > 0 ? contrib / spend : null,
+      ...(curve ? { curve } : {}),
     });
   }
+
 
   if (holdout) holdout.labels = labels.slice(n - holdout.n);
 
