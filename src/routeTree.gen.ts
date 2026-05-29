@@ -19,6 +19,7 @@ import { Route as AuthenticatedMethodologyRouteImport } from './routes/_authenti
 import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
 import { Route as AuthenticatedCompareRouteImport } from './routes/_authenticated/compare'
 import { Route as AuthenticatedRunsIndexRouteImport } from './routes/_authenticated/runs.index'
+import { Route as AuthenticatedResultsIndexRouteImport } from './routes/_authenticated/results.index'
 import { Route as AuthenticatedDatasetsIndexRouteImport } from './routes/_authenticated/datasets.index'
 import { Route as ShareRunsIdRouteImport } from './routes/share.runs.$id'
 import { Route as AuthenticatedRunsIdRouteImport } from './routes/_authenticated/runs.$id'
@@ -81,6 +82,12 @@ const AuthenticatedRunsIndexRoute = AuthenticatedRunsIndexRouteImport.update({
   path: '/runs/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedResultsIndexRoute =
+  AuthenticatedResultsIndexRouteImport.update({
+    id: '/results/',
+    path: '/results/',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedDatasetsIndexRoute =
   AuthenticatedDatasetsIndexRouteImport.update({
     id: '/datasets/',
@@ -161,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/runs/$id': typeof AuthenticatedRunsIdRoute
   '/share/runs/$id': typeof ShareRunsIdRoute
   '/datasets/': typeof AuthenticatedDatasetsIndexRoute
+  '/results/': typeof AuthenticatedResultsIndexRoute
   '/runs/': typeof AuthenticatedRunsIndexRoute
   '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
   '/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
@@ -182,6 +190,7 @@ export interface FileRoutesByTo {
   '/runs/$id': typeof AuthenticatedRunsIdRoute
   '/share/runs/$id': typeof ShareRunsIdRoute
   '/datasets': typeof AuthenticatedDatasetsIndexRoute
+  '/results': typeof AuthenticatedResultsIndexRoute
   '/runs': typeof AuthenticatedRunsIndexRoute
   '/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
   '/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
@@ -206,6 +215,7 @@ export interface FileRoutesById {
   '/_authenticated/runs/$id': typeof AuthenticatedRunsIdRoute
   '/share/runs/$id': typeof ShareRunsIdRoute
   '/_authenticated/datasets/': typeof AuthenticatedDatasetsIndexRoute
+  '/_authenticated/results/': typeof AuthenticatedResultsIndexRoute
   '/_authenticated/runs/': typeof AuthenticatedRunsIndexRoute
   '/_authenticated/datasets/$id/explore': typeof AuthenticatedDatasetsIdExploreRoute
   '/_authenticated/datasets/$id/model': typeof AuthenticatedDatasetsIdModelRoute
@@ -230,6 +240,7 @@ export interface FileRouteTypes {
     | '/runs/$id'
     | '/share/runs/$id'
     | '/datasets/'
+    | '/results/'
     | '/runs/'
     | '/datasets/$id/explore'
     | '/datasets/$id/model'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '/runs/$id'
     | '/share/runs/$id'
     | '/datasets'
+    | '/results'
     | '/runs'
     | '/datasets/$id/explore'
     | '/datasets/$id/model'
@@ -274,6 +286,7 @@ export interface FileRouteTypes {
     | '/_authenticated/runs/$id'
     | '/share/runs/$id'
     | '/_authenticated/datasets/'
+    | '/_authenticated/results/'
     | '/_authenticated/runs/'
     | '/_authenticated/datasets/$id/explore'
     | '/_authenticated/datasets/$id/model'
@@ -359,6 +372,13 @@ declare module '@tanstack/react-router' {
       path: '/runs'
       fullPath: '/runs/'
       preLoaderRoute: typeof AuthenticatedRunsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/results/': {
+      id: '/_authenticated/results/'
+      path: '/results'
+      fullPath: '/results/'
+      preLoaderRoute: typeof AuthenticatedResultsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/datasets/': {
@@ -471,6 +491,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedResultsRoiRoute: typeof AuthenticatedResultsRoiRoute
   AuthenticatedRunsIdRoute: typeof AuthenticatedRunsIdRoute
   AuthenticatedDatasetsIndexRoute: typeof AuthenticatedDatasetsIndexRoute
+  AuthenticatedResultsIndexRoute: typeof AuthenticatedResultsIndexRoute
   AuthenticatedRunsIndexRoute: typeof AuthenticatedRunsIndexRoute
 }
 
@@ -486,6 +507,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedResultsRoiRoute: AuthenticatedResultsRoiRoute,
   AuthenticatedRunsIdRoute: AuthenticatedRunsIdRoute,
   AuthenticatedDatasetsIndexRoute: AuthenticatedDatasetsIndexRoute,
+  AuthenticatedResultsIndexRoute: AuthenticatedResultsIndexRoute,
   AuthenticatedRunsIndexRoute: AuthenticatedRunsIndexRoute,
 }
 
