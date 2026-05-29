@@ -82,10 +82,12 @@ function ExplorePage() {
         period_start: string | null;
         period_end: string | null;
         n_rows: number;
-        n_cols: number;
         summary_json: DatasetSummary | null;
         insights_json: DatasetInsights | null;
+        unit_costs_json?: Record<string, string> | null;
       }
+    | undefined;
+
     | undefined;
 
   const numericCols = useMemo(
