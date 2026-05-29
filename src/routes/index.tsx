@@ -51,19 +51,29 @@ function HomePage() {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
-                  to="/login"
-                  className="inline-flex items-center bg-brand-navy text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple"
+                  to="/demo"
+                  className="inline-flex items-center bg-brand-mustard text-brand-navy px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-mustard/80"
                 >
-                  Entrar
+                  Rodar com dataset de exemplo
                 </Link>
                 <Link
                   to="/login"
                   search={{ mode: "signup" }}
-                  className="inline-flex items-center border border-brand-navy/20 bg-white text-brand-navy px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-creme"
+                  className="inline-flex items-center bg-brand-navy text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple"
                 >
                   Criar conta
                 </Link>
+                <Link
+                  to="/login"
+                  className="inline-flex items-center border border-brand-navy/20 bg-white text-brand-navy px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-creme"
+                >
+                  Entrar
+                </Link>
               </div>
+              <p className="text-xs text-brand-navy/60">
+                A demo usa dados fictícios e roda em segundos, sem cadastro.
+              </p>
+
             </div>
             <figure className="bg-brand-creme border hairline p-6 lg:p-8">
               <figcaption className="flex items-baseline justify-between mb-6">
