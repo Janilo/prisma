@@ -24,8 +24,12 @@ const RunInput = z.object({
   dateColumn: z.string().nullable().optional(),
   alpha: z.number().min(0).max(1000).default(1),
   adstockDecay: z.number().min(0).max(0.95).default(0.5),
+  // Per-channel adstock decay (overrides global adstockDecay for those keys).
+  // TV ~0.6–0.8 (carryover de semanas), Google paid ~0.0–0.2, Meta ~0.2–0.4.
+  adstockDecays: z.record(z.string(), z.number().min(0).max(0.95)).optional(),
   saturationAlpha: z.number().min(0.5).max(3).default(1),
 });
+
 
 function toNumber(v: unknown): number {
   if (typeof v === "number") return Number.isFinite(v) ? v : 0;
