@@ -19,6 +19,7 @@ function RoiView() {
         <div className="prisma-card">
           <div className="type-sample-h3">Retorno por real · break-even 1,0</div>
           <svg viewBox="0 0 300 210" style={{ width: "100%", height: "auto", fontFamily: "'Inter Tight',sans-serif" }}>
+            {/* Cores espelham --prisma-* (ch-1..6 / sat / mute / ink / slate). */}
             <line x1="118" y1="8" x2="118" y2="196" stroke="#726E89" strokeWidth="1" strokeDasharray="3 3" />
             <text x="118" y="6" fontSize="8.5" fill="#726E89" textAnchor="middle">1,0</text>
             <g fontSize="10" fill="#1C1A2B">
