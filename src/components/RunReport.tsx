@@ -82,7 +82,30 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
     [run.predicted_json],
   );
 
+  const residuals = useMemo(() => {
+    const { labels, actual, predicted } = run.predicted_json;
+    const raw = actual.map((a, i) => a - predicted[i]);
+    const mean = raw.reduce((s, v) => s + v, 0) / (raw.length || 1);
+    const variance = raw.reduce((s, v) => s + (v - mean) ** 2, 0) / (raw.length > 1 ? raw.length - 1 : 1);
+    const sd = Math.sqrt(variance) || 1;
+    return labels.map((l, i) => {
+      const r = raw[i];
+      const z = (r - mean) / sd;
+      return {
+        period: l,
+        residual: r,
+        z,
+        actual: actual[i],
+        predicted: predicted[i],
+        outlier: Math.abs(z) >= 2.5,
+      };
+    });
+  }, [run.predicted_json]);
+
+  const outliers = useMemo(() => residuals.filter((r) => r.outlier), [residuals]);
+
   const metrics = run.metrics_json;
+
 
   const handlePrint = () => {
     if (typeof window !== "undefined") window.print();
@@ -182,6 +205,86 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
           </ResponsiveContainer>
         </div>
       </section>
+
+      <section className="mt-16">
+        <p className="eyebrow">Diagnóstico de resíduos</p>
+        <h2 className="font-display text-2xl text-brand-navy mt-2">Onde o modelo errou feio</h2>
+        <p className="text-xs text-brand-navy/60 mt-2 max-w-xl">
+          Resíduo = Real − Predito. Padronizamos pelo desvio padrão (z-score). Períodos com
+          |z| ≥ 2,5 são marcados como <strong>outliers</strong>: provavelmente um evento
+          externo (promoção atípica, ruptura, feriado deslocado) que o modelo não enxerga.
+          Investigue antes de confiar no ROI desses períodos.
+        </p>
+        <div className="mt-6 border hairline-strong bg-white p-4 h-72">
+          <ResponsiveContainer>
+            <LineChart data={residuals}>
+              <CartesianGrid stroke="#0F294015" />
+              <XAxis dataKey="period" tick={{ fontSize: 10 }} />
+              <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
+              <Tooltip
+                formatter={(v: number, name: string) => name === "z" ? v.toFixed(2) : fmt(v)}
+                contentStyle={{ fontSize: 12, border: "1px solid #0F294020", borderRadius: 0 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="residual"
+                stroke="#0F2940"
+                strokeWidth={1.5}
+                name="Resíduo"
+                dot={(props: { cx?: number; cy?: number; payload?: { outlier?: boolean; period?: string } }) => {
+                  const { cx, cy, payload } = props;
+                  if (!payload?.outlier || cx == null || cy == null) {
+                    return <g key={payload?.period ?? `${cx}-${cy}`} />;
+                  }
+                  return <circle key={payload.period} cx={cx} cy={cy} r={4} fill="#C9A227" stroke="#0F2940" strokeWidth={1} />;
+                }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
+        {outliers.length === 0 ? (
+          <p className="mt-4 text-xs text-brand-navy/60">
+            Nenhum período com |z| ≥ 2,5. Resíduos parecem bem comportados.
+          </p>
+        ) : (
+          <div className="mt-6">
+            <p className="text-xs text-brand-navy/70 mb-3">
+              <strong>{outliers.length}</strong> período{outliers.length > 1 ? "s" : ""} fora do esperado:
+            </p>
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b hairline-strong">
+                  <th className="text-left py-2 eyebrow">Período</th>
+                  <th className="text-right py-2 eyebrow">Real</th>
+                  <th className="text-right py-2 eyebrow">Predito</th>
+                  <th className="text-right py-2 eyebrow">Resíduo</th>
+                  <th className="text-right py-2 eyebrow">z-score</th>
+                  <th className="text-left py-2 pl-4 eyebrow">Direção</th>
+                </tr>
+              </thead>
+              <tbody>
+                {outliers
+                  .slice()
+                  .sort((a, b) => Math.abs(b.z) - Math.abs(a.z))
+                  .map((o) => (
+                    <tr key={o.period} className="border-b hairline">
+                      <td className="py-3 font-medium">{o.period}</td>
+                      <td className="py-3 text-right font-mono text-xs">{fmt(o.actual)}</td>
+                      <td className="py-3 text-right font-mono text-xs">{fmt(o.predicted)}</td>
+                      <td className="py-3 text-right font-mono text-xs">{fmt(o.residual)}</td>
+                      <td className="py-3 text-right font-mono text-xs">{o.z.toFixed(2)}</td>
+                      <td className="py-3 pl-4 text-xs">
+                        {o.z > 0 ? "Real acima do esperado" : "Real abaixo do esperado"}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
 
       <section className="mt-16">
         <p className="eyebrow">Ranking de drivers</p>
