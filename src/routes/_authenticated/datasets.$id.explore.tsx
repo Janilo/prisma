@@ -257,12 +257,12 @@ function ExplorePage() {
             <div className="mt-6 border hairline bg-white p-6 h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={summary.timeSeries}>
-                  <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
-                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: "#0a1f44" }} />
-                  <YAxis tick={{ fontSize: 10, fill: "#0a1f44" }} />
-                  <Tooltip contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }} />
-                  <Line type="monotone" dataKey="value" stroke="#0a1f44" strokeWidth={1.5} dot={false} name={activeFocus} />
-                  <Line type="monotone" dataKey="movingAvg" stroke="#c89b3c" strokeWidth={1.5} dot={false} name="Média móvel 4p" />
+                  <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
+                  <XAxis dataKey="period" tick={{ fontSize: 10, fill: "#6B4FE0" }} />
+                  <YAxis tick={{ fontSize: 10, fill: "#6B4FE0" }} />
+                  <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }} />
+                  <Line type="monotone" dataKey="value" stroke="#6B4FE0" strokeWidth={1.5} dot={false} name={activeFocus} />
+                  <Line type="monotone" dataKey="movingAvg" stroke="#E0A21E" strokeWidth={1.5} dot={false} name="Média móvel 4p" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -392,11 +392,11 @@ function ExplorePage() {
                 <div className="h-56 mt-3">
                   <ResponsiveContainer>
                     <LineChart data={s.points}>
-                      <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
+                      <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
                       <XAxis dataKey="period" tick={{ fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 10 }} />
-                      <Tooltip contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }} formatter={(v: number) => fmt(v)} />
-                      <Line type="monotone" dataKey="cpp" stroke="#0a1f44" strokeWidth={1.5} dot={false} name="CPP" />
+                      <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }} formatter={(v: number) => fmt(v)} />
+                      <Line type="monotone" dataKey="cpp" stroke="#6B4FE0" strokeWidth={1.5} dot={false} name="CPP" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -417,16 +417,16 @@ function ExplorePage() {
           <div className="mt-6 border hairline bg-white p-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={summary.correlations.slice(0, 10)} layout="vertical" margin={{ left: 80 }}>
-                <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
-                <XAxis type="number" domain={[-1, 1]} tick={{ fontSize: 10, fill: "#0a1f44" }} />
-                <YAxis type="category" dataKey="variable" width={140} tick={{ fontSize: 11, fill: "#0a1f44" }} />
+                <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
+                <XAxis type="number" domain={[-1, 1]} tick={{ fontSize: 10, fill: "#6B4FE0" }} />
+                <YAxis type="category" dataKey="variable" width={140} tick={{ fontSize: 11, fill: "#6B4FE0" }} />
                 <Tooltip
-                  contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }}
+                  contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }}
                   formatter={(v: number) => fmt(v, 3)}
                 />
                 <Bar dataKey="r">
                   {summary.correlations.slice(0, 10).map((c, i) => (
-                    <Cell key={i} fill={c.r >= 0 ? "#0a1f44" : "#c89b3c"} />
+                    <Cell key={i} fill={c.r >= 0 ? "#6B4FE0" : "#E0A21E"} />
                   ))}
                 </Bar>
               </BarChart>
@@ -496,14 +496,14 @@ function ExplorePage() {
           <div className="mt-6 border hairline bg-white p-6 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={summary.seasonality.buckets}>
-                <CartesianGrid strokeDasharray="2 4" stroke="#0a1f4420" />
-                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#0a1f44" }} />
-                <YAxis tick={{ fontSize: 10, fill: "#0a1f44" }} />
+                <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#6B4FE0" }} />
+                <YAxis tick={{ fontSize: 10, fill: "#6B4FE0" }} />
                 <Tooltip
-                  contentStyle={{ background: "#fffdf7", border: "1px solid #0a1f4430", fontSize: 12 }}
+                  contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }}
                   formatter={(v: number) => fmt(v)}
                 />
-                <Bar dataKey="mean" fill="#0a1f44" />
+                <Bar dataKey="mean" fill="#6B4FE0" />
               </BarChart>
             </ResponsiveContainer>
           </div>
