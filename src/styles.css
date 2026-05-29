@@ -68,27 +68,28 @@
 }
 
 :root {
-  --background: oklch(0.985 0.004 280);            /* prisma offwhite */
-  --foreground: oklch(0.22 0.06 280);              /* prisma indigo ink */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.22 0.06 280);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.22 0.06 280);
-  --primary: oklch(0.42 0.20 285);                 /* prisma indigo #4A37B5 */
-  --primary-foreground: oklch(0.985 0.004 280);
-  --secondary: oklch(0.955 0.02 285);              /* indigo-soft */
-  --secondary-foreground: oklch(0.30 0.14 285);    /* indigo-ink */
-  --muted: oklch(0.955 0.02 285);
-  --muted-foreground: oklch(0.55 0.04 285);
-  --accent: oklch(0.955 0.02 285);
-  --accent-foreground: oklch(0.30 0.14 285);
-  --destructive: oklch(0.55 0.20 25);
-  --destructive-foreground: oklch(0.985 0.004 280);
-  --border: color-mix(in oklab, #4A37B5 14%, transparent);
-  --input: color-mix(in oklab, #4A37B5 18%, transparent);
-  --ring: color-mix(in oklab, #4A37B5 40%, transparent);
+  --background: var(--prisma-paper);
+  --foreground: var(--prisma-ink);
+  --card: var(--prisma-white);
+  --card-foreground: var(--prisma-ink);
+  --popover: var(--prisma-white);
+  --popover-foreground: var(--prisma-ink);
+  --primary: var(--prisma-indigo);                 /* #4A37B5 — exato */
+  --primary-foreground: var(--prisma-white);
+  --secondary: var(--prisma-indigo-soft);
+  --secondary-foreground: var(--prisma-indigo-ink);
+  --muted: var(--prisma-mist);
+  --muted-foreground: var(--prisma-slate);
+  --accent: var(--prisma-indigo-soft);
+  --accent-foreground: var(--prisma-indigo-ink);
+  --destructive: var(--prisma-danger);
+  --destructive-foreground: var(--prisma-white);
+  --border: color-mix(in oklab, var(--prisma-indigo) 14%, transparent);
+  --input: color-mix(in oklab, var(--prisma-indigo) 18%, transparent);
+  --ring: color-mix(in oklab, var(--prisma-indigo) 40%, transparent);
   --radius: 2px;
 }
+
 
 
 .dark {
