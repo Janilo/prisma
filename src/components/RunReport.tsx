@@ -367,7 +367,10 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
         </section>
       )}
 
+      <ResponseCurves channels={(run.contributions_json ?? []).filter((t) => t.isMedia && t.curve && t.curve.length > 0)} />
+
       {rois.length >= 2 && <BudgetSimulator rois={rois} depVariable={run.dep_variable} />}
+
     </div>
   );
 }
