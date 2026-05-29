@@ -38,7 +38,7 @@ function ComparePage() {
     return (
       <div className="p-12 max-w-3xl">
         <p className="eyebrow">Comparativo</p>
-        <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
           Selecione dois runs para comparar
         </h1>
         <p className="mt-4 text-sm text-brand-navy/70">
@@ -69,7 +69,7 @@ function CompareView({ aId, bId }: { aId: string; bId: string }) {
   return (
     <div className="p-12 max-w-7xl">
       <p className="eyebrow">Comparativo de runs</p>
-      <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
         {runA.name} <span className="text-brand-navy/40">vs</span> {runB.name}
       </h1>
       {!sameDataset && (
@@ -172,7 +172,7 @@ function MetricsCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
   return (
     <section className="mt-12">
       <p className="eyebrow">Métricas</p>
-      <h2 className="font-display text-2xl text-brand-navy mt-2">Qual modelo ajusta melhor?</h2>
+      <h2 className="text-xl font-semibold text-brand-navy mt-2">Qual modelo ajusta melhor?</h2>
       <p className="mt-2 text-[11px] text-brand-navy/60">Verde = melhor desempenho.</p>
       <table className="mt-4 w-full text-sm border-collapse">
         <thead>
@@ -292,7 +292,7 @@ function RoiCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
   return (
     <section className="mt-12">
       <p className="eyebrow">ROI por canal</p>
-      <h2 className="font-display text-2xl text-brand-navy mt-2">Como a configuração mudou a leitura de cada canal?</h2>
+      <h2 className="text-xl font-semibold text-brand-navy mt-2">Como a configuração mudou a leitura de cada canal?</h2>
       <table className="mt-4 w-full text-sm border-collapse">
         <thead>
           <tr className="border-b hairline-strong">
@@ -310,10 +310,10 @@ function RoiCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
             return (
               <tr key={ch} className="border-b hairline">
                 <td className="py-3 font-medium">{ch}</td>
-                <td className="py-3 text-right font-display text-lg">
+                <td className="py-3 text-right font-mono tabular-nums">
                   {ra?.roi != null ? ra.roi.toFixed(2) + "×" : "—"}
                 </td>
-                <td className="py-3 text-right font-display text-lg pl-4">
+                <td className="py-3 text-right font-mono tabular-nums pl-4">
                   {rb?.roi != null ? rb.roi.toFixed(2) + "×" : "—"}
                 </td>
                 <td

@@ -230,7 +230,7 @@ function ExplorePage() {
               id="focus-select"
               value={activeFocus}
               onChange={(e) => setFocus(e.target.value)}
-              className="mt-2 bg-transparent border-b hairline-strong text-2xl font-display text-brand-navy focus:outline-none pr-4"
+              className="mt-2 bg-transparent border-b hairline-strong text-2xl font-semibold text-brand-navy focus:outline-none pr-4"
             >
               {numericCols.map((c) => (
                 <option key={c} value={c}>
@@ -290,13 +290,13 @@ function ExplorePage() {
           <p className="mt-6 text-sm text-brand-navy/60">A IA está lendo seus dados...</p>
         ) : insights ? (
           <>
-            <h2 className="mt-4 font-display text-3xl font-light italic text-brand-navy leading-tight">
+            <h2 className="mt-4 text-xl font-semibold tracking-tight text-brand-navy leading-tight">
               {insights.headline}
             </h2>
             <ul className="mt-8 space-y-3">
               {insights.keyFindings.map((f, i) => (
                 <li key={i} className="flex gap-4 text-sm text-brand-navy leading-relaxed">
-                  <span className="font-display text-brand-mustard">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="font-mono font-bold text-brand-mustard">{String(i + 1).padStart(2, "0")}</span>
                   <span>{f}</span>
                 </li>
               ))}

@@ -40,7 +40,7 @@ function RunsPage() {
   return (
     <div className="p-12 max-w-5xl">
       <p className="eyebrow">Histórico</p>
-      <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
         Modelos rodados
       </h1>
 
@@ -97,7 +97,7 @@ function RunsPage() {
                         className="accent-brand-purple"
                       />
                     </td>
-                    <td className="py-4 font-display text-lg text-brand-navy">{r.name}</td>
+                    <td className="py-4 font-medium text-brand-navy">{r.name}</td>
                     <td className="py-4 text-brand-navy/70">{r.dep_variable}</td>
                     <td className="py-4 text-right font-mono text-xs">{m.r2 !== undefined ? (m.r2 * 100).toFixed(1) + "%" : "—"}</td>
                     <td className="py-4 text-right font-mono text-xs">{m.mape !== undefined ? (m.mape * 100).toFixed(1) + "%" : "—"}</td>
