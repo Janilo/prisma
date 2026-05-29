@@ -285,6 +285,8 @@ export function summarizeDataset(
       .filter((k) => bucketsMap[k]?.length)
       .map((k) => ({ label: k, mean: mean(bucketsMap[k]), count: bucketsMap[k].length }));
     seasonality = { kind, buckets };
+  }
+
 
   // VIF — collinearity between independent (numeric) variables, excluding the focus/dependent
   const vifNames = Object.keys(numericData).filter((k) => k !== focus);
