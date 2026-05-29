@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PrismaIcons, Ico } from "./PrismaIcons";
 
+const ADMIN_EMAIL = "janilo@pereirasaraiva.com";
+
 const VIEWS = [
   { to: "/results/decomp", label: "Decomposição", icon: "i-decompose" },
   { to: "/results/response", label: "Curvas de resposta", icon: "i-curve" },
@@ -88,6 +90,15 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
               {v.label}
             </Link>
           ))}
+          {email === ADMIN_EMAIL && (
+            <>
+              <div className="group-label">Sistema</div>
+              <Link to="/admin" aria-current={isActive("/admin") ? "page" : undefined}>
+                <Ico id="i-shield" />
+                Admin
+              </Link>
+            </>
+          )}
         </nav>
         <div className="footer">
           <div className="who">{initials}</div>

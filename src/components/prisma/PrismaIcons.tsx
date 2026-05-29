@@ -19,6 +19,7 @@ export function PrismaIcons() {
         <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 4l1.4 4 4 1.4-4 1.4L12 15l-1.4-4-4-1.4 4-1.4L12 4z" fill="currentColor"/><circle cx="18" cy="18" r="1.4" fill="currentColor"/></symbol>
         <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="1.5"/><path d="M12 11v5M12 8.2v.1" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/></symbol>
         <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 12a8 8 0 108-8 8 8 0 00-6 2.7L4 9" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M4 4v5h5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></symbol>
+        <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3L4 7v5c0 4.4 3.4 8.5 8 9.5 4.6-1 8-5.1 8-9.5V7L12 3z" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/></symbol>
       </defs>
     </svg>
   );
