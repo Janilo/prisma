@@ -35,23 +35,24 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Brand tokens (J P Saraiva) */
-  --color-brand-purple: #4a1942;
-  --color-brand-navy: #0f2940;
-  --color-brand-green: #2e5d4f;
-  --color-brand-mustard: #c9a227;
-  --color-brand-creme: #f0eee7;
-  --color-brand-offwhite: #f8f6f1;
-  --color-brand-stone: #d9d6cf;
-  --color-brand-gray: #94908a;
-  --color-brand-ink: #1f1f1f;
+  /* Brand tokens — repointed to Prisma palette */
+  --color-brand-purple: #33268C;   /* indigo-deep */
+  --color-brand-navy: #1C1547;     /* abyss — dark surface / primary text */
+  --color-brand-green: #2EA86B;    /* lift green */
+  --color-brand-mustard: #7A5CF0;  /* violet — CTA accent */
+  --color-brand-creme: #ECEAFB;    /* indigo-soft warm bg */
+  --color-brand-offwhite: #F7F6FC; /* cool offwhite */
+  --color-brand-stone: #D8D4F0;    /* rule color */
+  --color-brand-gray: #6B6585;     /* muted text */
+  --color-brand-ink: #241A5C;      /* indigo-ink */
   --color-brand-white: #ffffff;
 
-  /* Data viz palette (series order) */
-  --color-viz-1: var(--color-brand-navy);
-  --color-viz-2: var(--color-brand-purple);
-  --color-viz-3: var(--color-brand-green);
-  --color-viz-4: var(--color-brand-mustard);
+  /* Data viz palette — Prisma spectrum */
+  --color-viz-1: #6B4FE0;
+  --color-viz-2: #2D7BE0;
+  --color-viz-3: #0E97A8;
+  --color-viz-4: #C9A227;
+
 
   --font-display: "Fraunces", "Source Serif 4", Georgia, serif;
   --font-sans: "Inter Tight", "Inter", system-ui, sans-serif;
