@@ -379,7 +379,7 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                     )}
                   </td>
 
-                  </td>
+
                 </tr>
               ))}
             </tbody>
