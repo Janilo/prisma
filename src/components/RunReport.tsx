@@ -21,7 +21,9 @@ export type RunTotals = {
   isMedia: boolean;
   spend: number;
   roi: number | null;
+  curve?: { spend: number; contribution: number }[];
 };
+
 
 export type RunDecomp = Record<string, number | string> & {
   period: string;
