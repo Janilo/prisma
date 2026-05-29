@@ -32,6 +32,12 @@ export interface SeasonalityBucket {
   count: number;
 }
 
+export interface VifEntry {
+  variable: string;
+  vif: number;
+  severity: "ok" | "moderate" | "high";
+}
+
 export interface DatasetSummary {
   overview: {
     nRows: number;
@@ -47,7 +53,9 @@ export interface DatasetSummary {
   trend: { slopePerPeriod: number; pctChangeOverWindow: number } | null;
   correlations: Correlation[];
   seasonality: { kind: "month" | "weekday" | null; buckets: SeasonalityBucket[] };
+  vif: VifEntry[];
 }
+
 
 function toNum(v: unknown): number | null {
   if (typeof v === "number") return Number.isFinite(v) ? v : null;
