@@ -109,11 +109,12 @@ export const runMmm = createServerFn({ method: "POST" })
 
     const mediaSet = new Set(data.mediaVariables);
 
-    // Apply adstock + saturation to media columns
+    // Apply adstock + saturation to media columns (per-channel decay when provided)
     const transformedColumns: number[][] = rawColumns.map((arr, idx) => {
       const name = featureNames[idx];
       if (!mediaSet.has(name)) return arr;
-      const ad = adstock(arr, data.adstockDecay);
+      const decay = data.adstockDecays?.[name] ?? data.adstockDecay;
+      const ad = adstock(arr, decay);
       const med = median(ad) || 1;
       return hill(ad, data.saturationAlpha, med);
     });
