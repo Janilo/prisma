@@ -271,29 +271,75 @@ function UploadPage() {
               </tr>
             </thead>
             <tbody>
-              {datasets.map((d) => (
-                <tr key={d.id} className="border-b hairline hover:bg-brand-creme/50">
-                  <td className="py-4 font-display text-lg text-brand-navy">{d.name}</td>
-                  <td className="py-4 text-brand-navy/70">{d.granularity ?? "—"}</td>
-                  <td className="py-4 text-right font-mono text-xs">{d.n_rows}</td>
-                  <td className="py-4 text-right font-mono text-xs">{d.n_cols}</td>
-                  <td className="py-4 pl-4 text-xs text-brand-navy/70 font-mono">
-                    {d.period_start ?? "?"} → {d.period_end ?? "?"}
-                  </td>
-                  <td className="py-4 text-right">
-                    <Link
-                      to="/datasets/$id/explore"
-                      params={{ id: d.id }}
-                      className="text-xs uppercase tracking-widest border-b border-brand-mustard pb-0.5 text-brand-navy hover:text-brand-purple"
-                    >
-                      Abrir
-                    </Link>
-                  </td>
-                </tr>
-              ))}
+              {datasets.map((d) => {
+                const hasNewer = hasChildren.has(d.id);
+                const baseName = d.name.replace(/ · v\d+$/, "");
+                return (
+                  <tr key={d.id} className="border-b hairline hover:bg-brand-creme/50">
+                    <td className="py-4 font-display text-lg text-brand-navy">
+                      {d.name}
+                      {(d.version > 1 || hasNewer) && (
+                        <span className="ml-2 text-[10px] font-mono uppercase tracking-widest text-brand-mustard align-middle">
+                          v{d.version}
+                          {hasNewer && <span className="ml-1 text-brand-gray">(superado)</span>}
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 text-brand-navy/70">{d.granularity ?? "—"}</td>
+                    <td className="py-4 text-right font-mono text-xs">{d.n_rows}</td>
+                    <td className="py-4 text-right font-mono text-xs">{d.n_cols}</td>
+                    <td className="py-4 pl-4 text-xs text-brand-navy/70 font-mono">
+                      {d.period_start ?? "?"} → {d.period_end ?? "?"}
+                    </td>
+                    <td className="py-4 text-right whitespace-nowrap">
+                      {!hasNewer && (
+                        <button
+                          type="button"
+                          onClick={() => setVersionTarget({ id: d.id, name: baseName, nextVersion: d.version + 1 })}
+                          disabled={busy}
+                          className="mr-4 text-[10px] uppercase tracking-widest text-brand-navy/60 hover:text-brand-purple disabled:opacity-40"
+                          title="Subir uma planilha atualizada como nova versão"
+                        >
+                          Nova versão
+                        </button>
+                      )}
+                      <Link
+                        to="/datasets/$id/explore"
+                        params={{ id: d.id }}
+                        className="text-xs uppercase tracking-widest border-b border-brand-mustard pb-0.5 text-brand-navy hover:text-brand-purple"
+                      >
+                        Abrir
+                      </Link>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
+        {versionTarget && (
+          <div className="mt-4 border hairline-strong bg-brand-creme p-4 flex items-center justify-between gap-4">
+            <p className="text-xs text-brand-navy/80">
+              Nova versão de <strong>{versionTarget.name}</strong> — selecione a planilha atualizada (será salva como <span className="font-mono">v{versionTarget.nextVersion}</span>).
+              Runs antigos ficam intactos; você poderá re-executá-los nesta versão.
+            </p>
+            <div className="flex items-center gap-2 shrink-0">
+              <label className="text-xs uppercase tracking-widest border border-brand-navy/30 px-3 py-1.5 hover:bg-brand-navy hover:text-white transition-colors cursor-pointer">
+                <input type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={onVersionFile} disabled={busy} />
+                Escolher arquivo
+              </label>
+              <button
+                type="button"
+                onClick={() => setVersionTarget(null)}
+                className="text-[10px] uppercase tracking-widest text-brand-navy/60 hover:text-brand-navy"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        )}
+      </section>
+
       </section>
 
       <section className="mt-12" aria-labelledby="como-heading">
