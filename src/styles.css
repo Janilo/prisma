@@ -4,12 +4,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Fraunces local + Inter Tight + JetBrains Mono via Google */
+/* J P Saraiva — Fraunces + Inter Tight (bundled, not CDN) */
 @font-face {
   font-family: "Fraunces";
-  src: url("/src/assets/fonts/Fraunces.ttf") format("truetype-variations");
+  src: url("/fonts/Fraunces.ttf") format("truetype-variations");
   font-weight: 100 900;
   font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("/fonts/Fraunces-Italic.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter Tight";
+  src: url("/fonts/InterTight.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter Tight";
+  src: url("/fonts/InterTight-Italic.ttf") format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
   font-display: swap;
 }
 
@@ -33,90 +54,144 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-
-  /* Brand tokens (J P Saraiva) */
-  --color-brand-purple: #4a1942;
-  --color-brand-navy: #0f2940;
-  --color-brand-green: #2e5d4f;
-  --color-brand-mustard: #c9a227;
-  --color-brand-creme: #f0eee7;
-  --color-brand-offwhite: #f8f6f1;
-  --color-brand-stone: #d9d6cf;
-  --color-brand-gray: #94908a;
-  --color-brand-ink: #1f1f1f;
-  --color-brand-white: #ffffff;
-
-  /* Data viz palette (series order) */
-  --color-viz-1: var(--color-brand-navy);
-  --color-viz-2: var(--color-brand-purple);
-  --color-viz-3: var(--color-brand-green);
-  --color-viz-4: var(--color-brand-mustard);
-
+  /* Prisma palette tokens */
+  --color-indigo:       var(--prisma-indigo);
+  --color-violet:       var(--prisma-violet);
+  --color-lift:         var(--prisma-lift);
+  --color-sat:          var(--prisma-sat);
+  --color-ch-1:         var(--prisma-ch-1);
+  --color-ch-2:         var(--prisma-ch-2);
+  --color-ch-3:         var(--prisma-ch-3);
+  --color-ch-4:         var(--prisma-ch-4);
+  --color-ch-5:         var(--prisma-ch-5);
+  --color-ch-6:         var(--prisma-ch-6);
+  /* backward-compat: existing TSX brand-* classes stay functional */
+  --color-brand-purple:  var(--prisma-indigo);
+  --color-brand-navy:    var(--prisma-abyss);
+  --color-brand-green:   var(--prisma-lift);
+  --color-brand-mustard: var(--prisma-ch-5);
+  --color-brand-creme:   var(--prisma-paper);
+  --color-brand-offwhite:var(--prisma-paper);
+  --color-brand-stone:   var(--prisma-stone);
+  --color-brand-gray:    var(--prisma-mute);
+  --color-brand-ink:     var(--prisma-ink);
+  --color-brand-white:   var(--prisma-white);
+  --color-viz-1: var(--chart-1);
+  --color-viz-2: var(--chart-2);
+  --color-viz-3: var(--chart-3);
+  --color-viz-4: var(--chart-4);
   --font-display: "Fraunces", "Source Serif 4", Georgia, serif;
   --font-sans: "Inter Tight", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Consolas, ui-monospace, monospace;
-
   --radius-sm: 2px;
   --radius-md: 2px;
   --radius-lg: 2px;
 }
 
 :root {
-  --background: oklch(0.974 0.006 84);  /* offwhite */
-  --foreground: oklch(0.245 0.04 250);  /* navy */
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.245 0.04 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.245 0.04 250);
-  --primary: oklch(0.245 0.04 250);
-  --primary-foreground: oklch(0.974 0.006 84);
-  --secondary: oklch(0.945 0.01 80);  /* creme */
-  --secondary-foreground: oklch(0.245 0.04 250);
-  --muted: oklch(0.945 0.01 80);
-  --muted-foreground: oklch(0.62 0.01 70); /* soft gray */
-  --accent: oklch(0.945 0.01 80);
-  --accent-foreground: oklch(0.245 0.04 250);
-  --destructive: oklch(0.45 0.18 22);
-  --destructive-foreground: oklch(0.984 0.003 247);
-  --border: color-mix(in oklab, #0f2940 12%, transparent);
-  --input: color-mix(in oklab, #0f2940 15%, transparent);
-  --ring: color-mix(in oklab, #0f2940 30%, transparent);
   --radius: 2px;
+
+  /* ============================================================
+     PRISMA — brand primitives
+     Âncora: violeta-índigo óptico · espectro de 6 canais MMM
+     ============================================================ */
+  --prisma-indigo:       #4A37B5;
+  --prisma-indigo-deep:  #33268C;
+  --prisma-abyss:        #1C1547;
+  --prisma-indigo-soft:  #ECEAFB;
+  --prisma-violet:       #7A5CF0;
+
+  /* 6-channel spectrum — ordered cool→warm */
+  --prisma-ch-1: #6B4FE0;  /* violeta  — Brand / TV */
+  --prisma-ch-2: #2D7BE0;  /* azul     — Vídeo / Display */
+  --prisma-ch-3: #0E97A8;  /* ciano    — Search */
+  --prisma-ch-4: #4FA23E;  /* verde    — Social */
+  --prisma-ch-5: #E0A21E;  /* âmbar    — Promo / Trade */
+  --prisma-ch-6: #C2562F;  /* terracota— OOH / Outros */
+
+  --prisma-baseline:      #B8B4D8;
+  --prisma-baseline-soft: #EDECF5;
+
+  /* Reserved — analytic states, never decorative */
+  --prisma-lift:      #2E9E5E;
+  --prisma-lift-soft: #E4F3EA;
+  --prisma-sat:       #DB5A45;
+  --prisma-sat-soft:  #FBEAE6;
+
+  /* Neutrals — cool violet-tinted scale */
+  --prisma-ink:        #1C1A2B;
+  --prisma-slate:      #44415A;
+  --prisma-mute:       #726E89;
+  --prisma-stone:      #D7D4E2;
+  --prisma-stone-soft: #E7E4EF;
+  --prisma-mist:       #F0EEF6;
+  --prisma-paper:      #F7F6FB;
+  --prisma-white:      #FFFFFF;
+
+  --prisma-danger:  #C0263B;
+
+  /* shadcn semantic tokens → prisma palette */
+  --background:             var(--prisma-paper);
+  --foreground:             var(--prisma-ink);
+  --card:                   var(--prisma-white);
+  --card-foreground:        var(--prisma-ink);
+  --popover:                var(--prisma-white);
+  --popover-foreground:     var(--prisma-ink);
+  --primary:                var(--prisma-indigo);
+  --primary-foreground:     var(--prisma-white);
+  --secondary:              var(--prisma-mist);
+  --secondary-foreground:   var(--prisma-slate);
+  --muted:                  var(--prisma-mist);
+  --muted-foreground:       var(--prisma-mute);
+  --accent:                 var(--prisma-indigo-soft);
+  --accent-foreground:      var(--prisma-indigo-deep);
+  --destructive:            var(--prisma-danger);
+  --destructive-foreground: var(--prisma-white);
+  --border:                 var(--prisma-stone);
+  --input:                  var(--prisma-stone);
+  --ring:                   var(--prisma-indigo);
+
+  /* Data viz — 4-series generic (first 4 stops of spectrum) */
+  --chart-1: var(--prisma-ch-1);
+  --chart-2: var(--prisma-ch-2);
+  --chart-3: var(--prisma-ch-3);
+  --chart-4: var(--prisma-ch-4);
 }
 
 .dark {
-  --background: oklch(0.18 0.02 250);
-  --foreground: oklch(0.97 0.005 84);
-  --card: oklch(0.22 0.02 250);
-  --card-foreground: oklch(0.97 0.005 84);
-  --popover: oklch(0.22 0.02 250);
-  --popover-foreground: oklch(0.97 0.005 84);
-  --primary: oklch(0.97 0.005 84);
-  --primary-foreground: oklch(0.22 0.02 250);
-  --secondary: oklch(0.27 0.02 250);
-  --secondary-foreground: oklch(0.97 0.005 84);
-  --muted: oklch(0.27 0.02 250);
-  --muted-foreground: oklch(0.7 0.01 70);
-  --accent: oklch(0.27 0.02 250);
-  --accent-foreground: oklch(0.97 0.005 84);
-  --destructive: oklch(0.6 0.2 22);
-  --destructive-foreground: oklch(0.97 0.005 84);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.55 0.03 250);
+  --background:             #1C1547;
+  --foreground:             #F7F6FB;
+  --card:                   #241A5C;
+  --card-foreground:        #F7F6FB;
+  --popover:                #241A5C;
+  --popover-foreground:     #F7F6FB;
+  --primary:                #7A5CF0;
+  --primary-foreground:     #1C1547;
+  --secondary:              #241A5C;
+  --secondary-foreground:   #D7D4E2;
+  --muted:                  #241A5C;
+  --muted-foreground:       #D7D4E2;
+  --accent:                 #241A5C;
+  --accent-foreground:      #F7F6FB;
+  --destructive:            #E04B5A;
+  --destructive-foreground: #1C1547;
+  --border:                 oklch(1 0 0 / 10%);
+  --input:                  oklch(1 0 0 / 15%);
+  --ring:                   #7A5CF0;
 }
 
 @layer base {
   * { border-color: var(--color-border); }
   html, body {
-    background-color: var(--color-brand-offwhite);
-    color: var(--color-brand-navy);
+    background-color: var(--color-background);
+    color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    letter-spacing: -0.005em;
   }
   ::selection {
-    background: color-mix(in oklab, #c9a227 30%, transparent);
+    background: color-mix(in oklab, var(--prisma-indigo) 25%, transparent);
   }
 }
 
@@ -126,10 +201,10 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: var(--color-brand-gray);
+    color: var(--prisma-mute);
   }
-  .hairline { border-color: color-mix(in oklab, #0f2940 10%, transparent); }
-  .hairline-strong { border-color: color-mix(in oklab, #0f2940 20%, transparent); }
+  .hairline { border-color: var(--prisma-stone); }
+  .hairline-strong { border-color: var(--prisma-stone-soft); }
 }
 
 /* Editorial motion */

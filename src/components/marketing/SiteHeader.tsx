@@ -5,14 +5,14 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 bg-brand-offwhite border-b hairline">
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between">
         {/* Wordmark */}
-        <a href="/" className="flex items-baseline gap-3 group">
-          <span className="font-display text-2xl font-black italic tracking-tighter text-brand-purple group-hover:opacity-80 transition-opacity">
+        <div className="flex items-baseline gap-3">
+          <a href="/" className="font-display text-2xl font-black italic tracking-tighter text-brand-purple hover:opacity-80 transition-opacity">
             Prisma
-          </span>
-          <span className="font-sans text-[10px] uppercase tracking-[0.18em] text-brand-gray">
-            por <a href={PARENT} className="hover:text-brand-navy">J P Saraiva</a>
-          </span>
-        </a>
+          </a>
+          <a href={PARENT} target="_blank" rel="noopener noreferrer" className="hidden sm:inline font-sans text-[10px] uppercase tracking-[0.18em] text-brand-gray hover:opacity-70 transition-opacity">
+            por J P Saraiva
+          </a>
+        </div>
 
         {/* Right actions */}
         <nav className="flex items-center gap-6">
