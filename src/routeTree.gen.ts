@@ -16,6 +16,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedUploadRouteImport } from './routes/_authenticated/upload'
 import { Route as AuthenticatedExploreRouteImport } from './routes/_authenticated/explore'
+import { Route as AuthenticatedCompareRouteImport } from './routes/_authenticated/compare'
 import { Route as AuthenticatedRunsIndexRouteImport } from './routes/_authenticated/runs.index'
 import { Route as AuthenticatedDatasetsIndexRouteImport } from './routes/_authenticated/datasets.index'
 import { Route as ShareRunsIdRouteImport } from './routes/share.runs.$id'
@@ -57,6 +58,11 @@ const AuthenticatedUploadRoute = AuthenticatedUploadRouteImport.update({
 const AuthenticatedExploreRoute = AuthenticatedExploreRouteImport.update({
   id: '/explore',
   path: '/explore',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedCompareRoute = AuthenticatedCompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedRunsIndexRoute = AuthenticatedRunsIndexRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/demo': typeof DemoRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/compare': typeof AuthenticatedCompareRoute
   '/explore': typeof AuthenticatedExploreRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/demo': typeof DemoRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/compare': typeof AuthenticatedCompareRoute
   '/explore': typeof AuthenticatedExploreRoute
   '/upload': typeof AuthenticatedUploadRoute
   '/runs/$id': typeof AuthenticatedRunsIdRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/demo': typeof DemoRoute
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_authenticated/compare': typeof AuthenticatedCompareRoute
   '/_authenticated/explore': typeof AuthenticatedExploreRoute
   '/_authenticated/upload': typeof AuthenticatedUploadRoute
   '/_authenticated/datasets/$id': typeof AuthenticatedDatasetsIdRouteWithChildren
@@ -160,6 +169,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/login'
     | '/sitemap.xml'
+    | '/compare'
     | '/explore'
     | '/upload'
     | '/datasets/$id'
@@ -176,6 +186,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/login'
     | '/sitemap.xml'
+    | '/compare'
     | '/explore'
     | '/upload'
     | '/runs/$id'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/demo'
     | '/login'
     | '/sitemap.xml'
+    | '/_authenticated/compare'
     | '/_authenticated/explore'
     | '/_authenticated/upload'
     | '/_authenticated/datasets/$id'
@@ -262,6 +274,13 @@ declare module '@tanstack/react-router' {
       path: '/explore'
       fullPath: '/explore'
       preLoaderRoute: typeof AuthenticatedExploreRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/compare': {
+      id: '/_authenticated/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof AuthenticatedCompareRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/runs/': {
@@ -342,6 +361,7 @@ const AuthenticatedDatasetsIdRouteWithChildren =
   )
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedCompareRoute: typeof AuthenticatedCompareRoute
   AuthenticatedExploreRoute: typeof AuthenticatedExploreRoute
   AuthenticatedUploadRoute: typeof AuthenticatedUploadRoute
   AuthenticatedDatasetsIdRoute: typeof AuthenticatedDatasetsIdRouteWithChildren
@@ -351,6 +371,7 @@ interface AuthenticatedRouteChildren {
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedCompareRoute: AuthenticatedCompareRoute,
   AuthenticatedExploreRoute: AuthenticatedExploreRoute,
   AuthenticatedUploadRoute: AuthenticatedUploadRoute,
   AuthenticatedDatasetsIdRoute: AuthenticatedDatasetsIdRouteWithChildren,
