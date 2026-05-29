@@ -349,6 +349,11 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
           estrelas como um <em>ranking de robustez</em>, não como teste de hipótese formal.
           Para inferência rigorosa, rode o modelo novamente com <strong>α = 0</strong> (OLS
           puro, sem regularização) — os p-values dessa rodada são válidos no sentido clássico.
+          Os <strong>intervalos de confiança a 90%</strong> vêm de <em>residual bootstrap</em>
+          com 200 reamostragens: reembaralhamos os resíduos do ajuste, refazemos a Ridge e
+          coletamos a distribuição de contribuição e ROI. Esses ICs <em>são</em> robustos à
+          regularização e capturam a incerteza real do modelo.
+
         </p>
       </section>
 
