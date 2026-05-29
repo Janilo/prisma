@@ -340,7 +340,6 @@ function UploadPage() {
         )}
       </section>
 
-      </section>
 
       <section className="mt-12" aria-labelledby="como-heading">
         <h2 id="como-heading" className="eyebrow">Como funciona</h2>
