@@ -345,6 +345,8 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
         alpha: data.alpha,
         adstockDecay: data.adstockDecay,
         adstockDecays: data.adstockDecays ?? null,
+        spendBasis: data.spendBasis ?? null,
+
         saturationAlpha: data.saturationAlpha,
         mediaVariables: data.mediaVariables,
         dateColumn: data.dateColumn,
