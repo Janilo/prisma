@@ -405,7 +405,9 @@ export function compactForLlm(s: DatasetSummary) {
     },
     correlations: s.correlations.slice(0, 12).map((c) => ({ variable: c.variable, r: round(c.r, 3) })),
     seasonality: s.seasonality,
+    vif: s.vif.map((v) => ({ variable: v.variable, vif: v.vif, severity: v.severity })),
   };
+
 }
 
 function round(n: number, d = 2): number {
