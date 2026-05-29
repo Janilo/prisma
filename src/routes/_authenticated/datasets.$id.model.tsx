@@ -38,6 +38,7 @@ function ModelPage() {
   );
   const ds = data.dataset as unknown as {
     columns_json: ColumnInfo[];
+    unit_costs_json?: Record<string, string> | null;
   };
 
   const cols = ds.columns_json ?? [];
@@ -52,12 +53,16 @@ function ModelPage() {
   const [dep, setDep] = useState<string>(sp.dep ?? numericCols[0] ?? "");
   const [dateCol, setDateCol] = useState<string>(sp.date ?? dateCols[0] ?? "");
   const [indep, setIndep] = useState<string[]>(initialIndep);
-  const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest/i.test(n)));
+  const [media, setMedia] = useState<string[]>(initialIndep.filter((n: string) => /gasto|spend|media|tv|google|meta|invest|grp/i.test(n)));
   const [alpha, setAlpha] = useState(1);
   const [decays, setDecays] = useState<Record<string, number>>({});
   const [satAlpha, setSatAlpha] = useState(1);
   const [holdout, setHoldout] = useState(0);
   const [runName, setRunName] = useState(`Modelo · ${new Date().toLocaleDateString("pt-BR")}`);
+  // Per-channel mapping: channel column (e.g. GRP TV) -> investment column ($ TV).
+  // Seeded from the dataset's saved mapping; user can adjust per run.
+  const [spendBasis, setSpendBasis] = useState<Record<string, string>>(ds.unit_costs_json ?? {});
+
 
   // Suggest a sensible default per channel based on its name (heuristic).
   const suggestDecay = (name: string): number => {
