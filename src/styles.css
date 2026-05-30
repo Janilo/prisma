@@ -1,3 +1,14 @@
+/* ============================================================
+   Prisma — folha de tokens oficial
+   ------------------------------------------------------------
+   Fonte da verdade: src/styles/prisma.css
+   Primitivos:  --prisma-*   (paleta, tipografia, spacing)
+   Semânticos:  --jps-*      (rebindados para o Prisma)
+   Tailwind:    @theme inline abaixo  (utilitários como bg-indigo,
+                text-abyss, bg-indigo-soft, text-mute, etc.)
+   Shadcn:      --primary/--card/--border/etc. usados apenas
+                por src/components/ui/* (sonner + internos)
+   ============================================================ */
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -51,7 +62,7 @@
 
 
 
-  --font-display: "Fraunces", "Source Serif 4", Georgia, serif;
+  --font-display: "Fraunces", "Source Serif 4", ui-serif, serif;
   --font-sans: "Inter Tight", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Consolas, ui-monospace, monospace;
 
@@ -107,11 +118,11 @@
 
 @layer utilities {
   .eyebrow {
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--color-mute);
+    letter-spacing: 0.22em;
+    color: var(--prisma-mute);
   }
   .hairline { border-color: color-mix(in oklab, var(--prisma-ink) 10%, transparent); }
   .hairline-strong { border-color: color-mix(in oklab, var(--prisma-ink) 20%, transparent); }
