@@ -82,12 +82,12 @@ function HomePage() {
               </figcaption>
               {(() => {
                 const data = [
-                  { label: "Base", value: 58, color: "var(--color-brand-navy)" },
-                  { label: "Google", value: 14, color: "var(--color-brand-purple)" },
-                  { label: "Meta", value: 11, color: "var(--color-brand-purple)" },
-                  { label: "TV", value: 8, color: "var(--color-brand-mustard)" },
-                  { label: "OOH", value: 5, color: "var(--color-brand-mustard)" },
-                  { label: "Promo", value: 4, color: "var(--color-brand-gray)" },
+                  { label: "Base",   value: 58, color: "var(--prisma-baseline)" },
+                  { label: "Google", value: 14, color: "var(--prisma-ch-3)" },
+                  { label: "Meta",   value: 11, color: "var(--prisma-ch-4)" },
+                  { label: "TV",     value:  8, color: "var(--prisma-ch-1)" },
+                  { label: "OOH",    value:  5, color: "var(--prisma-ch-6)" },
+                  { label: "Promo",  value:  4, color: "var(--prisma-ch-5)" },
                 ];
                 const max = Math.max(...data.map((d) => d.value));
                 return (
