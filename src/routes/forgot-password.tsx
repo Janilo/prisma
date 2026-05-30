@@ -26,18 +26,18 @@ function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-offwhite flex flex-col">
+    <div className="min-h-screen bg-paper flex flex-col">
       <SiteHeader />
       <main className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
           <p className="eyebrow">Recuperar acesso</p>
-          <h1 className="mt-2 font-display text-2xl text-brand-navy">Esqueci a senha</h1>
-          <p className="mt-2 text-sm text-brand-gray">
+          <h1 className="mt-2 font-display text-2xl text-abyss">Esqueci a senha</h1>
+          <p className="mt-2 text-sm text-mute">
             Informe seu email e enviaremos um link para criar uma nova senha.
           </p>
 
           {sent ? (
-            <div className="mt-8 border border-brand-navy/20 bg-white p-4 text-sm text-brand-navy">
+            <div className="mt-8 border border-abyss/20 bg-white p-4 text-sm text-abyss">
               Se existir uma conta com <strong>{email}</strong>, você receberá em instantes um link para redefinir sua senha. Verifique também a caixa de spam.
             </div>
           ) : (
@@ -50,21 +50,21 @@ function ForgotPasswordPage() {
                   placeholder="email@exemplo.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm focus:outline-none focus:border-brand-navy"
+                  className="w-full border border-abyss/20 bg-white px-3 py-2 text-sm focus:outline-none focus:border-abyss"
                 />
               </div>
               <button
                 type="submit"
                 disabled={busy}
-                className="w-full bg-brand-navy text-white py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple disabled:opacity-50"
+                className="w-full bg-abyss text-white py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-indigo disabled:opacity-50"
               >
                 {busy ? "Enviando..." : "Enviar link"}
               </button>
             </form>
           )}
 
-          <p className="mt-6 text-xs text-brand-gray">
-            <Link to="/login" className="text-brand-navy underline underline-offset-4">Voltar para o login</Link>
+          <p className="mt-6 text-xs text-mute">
+            <Link to="/login" className="text-abyss underline underline-offset-4">Voltar para o login</Link>
           </p>
         </div>
       </main>

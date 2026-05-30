@@ -59,15 +59,15 @@ function RerunOnLatest({ runId, datasetId }: { runId: string; datasetId: string 
   if (!latest || latest.id === datasetId) return null;
 
   return (
-    <div className="border hairline-strong bg-brand-creme p-4 flex items-center justify-between gap-4 flex-wrap">
-      <p className="text-xs text-brand-navy/80">
+    <div className="border hairline-strong bg-indigo-soft p-4 flex items-center justify-between gap-4 flex-wrap">
+      <p className="text-xs text-abyss/80">
         Existe uma <strong>versão mais nova</strong> deste dataset (v{latest.version}). Re-execute o
         mesmo modelo nela para comparar como os resultados mudam com os dados atualizados.
       </p>
       <button
         onClick={() => mutation.mutate()}
         disabled={mutation.isPending}
-        className="text-xs uppercase tracking-widest bg-brand-navy text-white px-4 py-2 hover:bg-brand-purple disabled:opacity-50"
+        className="text-xs uppercase tracking-widest bg-abyss text-white px-4 py-2 hover:bg-indigo disabled:opacity-50"
       >
         {mutation.isPending ? "Rodando..." : `Re-executar na v${latest.version}`}
       </button>
@@ -97,7 +97,7 @@ function ShareButton({ runId }: { runId: string }) {
     <div className="flex items-center gap-3 flex-wrap">
       <button
         onClick={copy}
-        className="text-xs uppercase tracking-widest border border-brand-navy/30 px-4 py-2 hover:bg-brand-navy hover:text-white transition-colors"
+        className="text-xs uppercase tracking-widest border border-abyss/30 px-4 py-2 hover:bg-abyss hover:text-white transition-colors"
       >
         {copied ? "Copiado ✓" : "Copiar link de compartilhamento"}
       </button>
@@ -105,9 +105,9 @@ function ShareButton({ runId }: { runId: string }) {
         readOnly
         value={shareUrl}
         onFocus={(e) => e.currentTarget.select()}
-        className="flex-1 min-w-64 max-w-xl border border-brand-navy/20 bg-white px-3 py-2 text-xs font-mono"
+        className="flex-1 min-w-64 max-w-xl border border-abyss/20 bg-white px-3 py-2 text-xs font-mono"
       />
-      <p className="text-[10px] text-brand-gray basis-full">
+      <p className="text-[10px] text-mute basis-full">
         Read-only · sem login · qualquer pessoa com o link vê o resultado. O link é o próprio UUID
         da run (122 bits, não-enumerável). Para revogar, delete a run.
       </p>

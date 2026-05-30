@@ -41,8 +41,8 @@ function DatasetLayout() {
     <div className="p-12 max-w-7xl">
       <div>
         <p className="eyebrow">Dataset</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">{ds.name}</h1>
-        <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-xs uppercase tracking-widest text-brand-navy/60">
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-abyss">{ds.name}</h1>
+        <div className="mt-4 flex flex-wrap gap-x-8 gap-y-2 text-xs uppercase tracking-widest text-abyss/60">
           <span>{ds.n_rows} linhas</span>
           <span>{ds.n_cols} colunas</span>
           {ds.granularity && <span>{ds.granularity}</span>}
@@ -59,8 +59,8 @@ function DatasetLayout() {
           className={
             "pb-3 text-sm uppercase tracking-widest transition " +
             (!isModel
-              ? "text-brand-navy border-b-2 border-brand-mustard -mb-px"
-              : "text-brand-navy/50 hover:text-brand-navy")
+              ? "text-abyss border-b-2 border-violet -mb-px"
+              : "text-abyss/50 hover:text-abyss")
           }
         >
           Análise descritiva
@@ -71,8 +71,8 @@ function DatasetLayout() {
           className={
             "pb-3 text-sm uppercase tracking-widest transition " +
             (isModel
-              ? "text-brand-navy border-b-2 border-brand-mustard -mb-px"
-              : "text-brand-navy/50 hover:text-brand-navy")
+              ? "text-abyss border-b-2 border-violet -mb-px"
+              : "text-abyss/50 hover:text-abyss")
           }
         >
           Modelo

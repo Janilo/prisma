@@ -40,18 +40,18 @@ function ResetPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-offwhite flex flex-col">
+    <div className="min-h-screen bg-paper flex flex-col">
       <SiteHeader />
       <main className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-sm">
           <p className="eyebrow">Nova senha</p>
-          <h1 className="mt-2 font-display text-2xl text-brand-navy">Redefinir senha</h1>
+          <h1 className="mt-2 font-display text-2xl text-abyss">Redefinir senha</h1>
 
           {!ready ? (
-            <p className="mt-6 text-sm text-brand-gray">
+            <p className="mt-6 text-sm text-mute">
               Validando seu link… Se esta página não avançar em alguns segundos, o link pode ter expirado.
               <br />
-              <Link to="/forgot-password" className="mt-3 inline-block text-brand-navy underline underline-offset-4">Pedir novo link</Link>
+              <Link to="/forgot-password" className="mt-3 inline-block text-abyss underline underline-offset-4">Pedir novo link</Link>
             </p>
           ) : (
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -65,13 +65,13 @@ function ResetPasswordPage() {
                     placeholder="Mínimo 8 caracteres"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border border-brand-navy/20 bg-white px-3 py-2 pr-10 text-sm focus:outline-none focus:border-brand-navy"
+                    className="w-full border border-abyss/20 bg-white px-3 py-2 pr-10 text-sm focus:outline-none focus:border-abyss"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
-                    className="absolute inset-y-0 right-0 flex items-center px-3 text-brand-gray hover:text-brand-navy"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-mute hover:text-abyss"
                   >
                     {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -87,13 +87,13 @@ function ResetPasswordPage() {
                     placeholder="Repetir senha"
                     value={confirm}
                     onChange={(e) => setConfirm(e.target.value)}
-                    className="w-full border border-brand-navy/20 bg-white px-3 py-2 pr-10 text-sm focus:outline-none focus:border-brand-navy"
+                    className="w-full border border-abyss/20 bg-white px-3 py-2 pr-10 text-sm focus:outline-none focus:border-abyss"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirm((v) => !v)}
                     aria-label={showConfirm ? "Ocultar senha" : "Mostrar senha"}
-                    className="absolute inset-y-0 right-0 flex items-center px-3 text-brand-gray hover:text-brand-navy"
+                    className="absolute inset-y-0 right-0 flex items-center px-3 text-mute hover:text-abyss"
                   >
                     {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
                   </button>
@@ -102,7 +102,7 @@ function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={busy}
-                className="w-full bg-brand-navy text-white py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple disabled:opacity-50"
+                className="w-full bg-abyss text-white py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-indigo disabled:opacity-50"
               >
                 {busy ? "Salvando..." : "Salvar nova senha"}
               </button>

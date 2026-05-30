@@ -95,24 +95,24 @@ function DemoPage() {
   const metrics = run.metrics_json;
 
   return (
-    <div className="min-h-screen bg-brand-offwhite flex flex-col">
+    <div className="min-h-screen bg-paper flex flex-col">
       <SiteHeader />
       <main className="flex-1">
         {/* Demo banner */}
-        <div className="border-b hairline bg-brand-mustard/10">
+        <div className="border-b hairline bg-violet/10">
           <div className="mx-auto max-w-7xl px-6 lg:px-10 py-2.5 flex flex-wrap items-center justify-between gap-4 text-xs">
-            <div className="flex items-center gap-2 text-brand-navy">
+            <div className="flex items-center gap-2 text-abyss">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-navy/60" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-navy" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-abyss/60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-abyss" />
               </span>
               <span className="font-mono uppercase tracking-wider">Demo-ready</span>
-              <span className="text-brand-navy/60 hidden sm:inline">· dataset de exemplo: 50 semanas de receita + 3 canais (Google, Meta, TV)</span>
+              <span className="text-abyss/60 hidden sm:inline">· dataset de exemplo: 50 semanas de receita + 3 canais (Google, Meta, TV)</span>
             </div>
             <Link
               to="/login"
               search={{ mode: "signup" }}
-              className="rounded-sm border border-brand-navy/40 bg-transparent px-2.5 py-1 font-medium text-brand-navy hover:bg-brand-navy hover:text-brand-creme transition-colors"
+              className="rounded-sm border border-abyss/40 bg-transparent px-2.5 py-1 font-medium text-abyss hover:bg-abyss hover:text-indigo-soft transition-colors"
             >
               Rodar com meus dados →
             </Link>
@@ -121,15 +121,15 @@ function DemoPage() {
 
         <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12">
           <p className="eyebrow">Resultado da Demo</p>
-          <h1 className="mt-2 font-display text-4xl font-light italic text-brand-navy">
+          <h1 className="mt-2 font-display text-4xl font-light italic text-abyss">
             {run.name}
           </h1>
-          <p className="mt-3 text-xs text-brand-navy/60 font-mono">
+          <p className="mt-3 text-xs text-abyss/60 font-mono">
             Alvo: {run.dep_variable} · α={run.params_json.alpha} · adstock=
             {run.params_json.adstockDecay} · saturação={run.params_json.saturationAlpha}
           </p>
 
-          <section className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-px bg-brand-navy/10 border hairline">
+          <section className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-px bg-abyss/10 border hairline">
             <Metric label="R²" value={(metrics.r2 * 100).toFixed(1) + "%"} hint="Quanto da variação foi explicada." />
             <Metric label="MAPE" value={(metrics.mape * 100).toFixed(1) + "%"} hint="Erro percentual médio." />
             <Metric label="RMSE" value={fmt(metrics.rmse)} hint="Erro absoluto típico." />
@@ -138,7 +138,7 @@ function DemoPage() {
 
           <section className="mt-16">
             <p className="eyebrow">Decomposição no tempo</p>
-            <h2 className="font-display text-2xl text-brand-navy mt-2">
+            <h2 className="font-display text-2xl text-abyss mt-2">
               De onde vieram as vendas, semana a semana
             </h2>
             <div className="mt-6 border hairline-strong bg-white p-4 h-96">
@@ -160,7 +160,7 @@ function DemoPage() {
 
           <section className="mt-16">
             <p className="eyebrow">Real vs predito</p>
-            <h2 className="font-display text-2xl text-brand-navy mt-2">
+            <h2 className="font-display text-2xl text-abyss mt-2">
               O modelo acompanha a realidade?
             </h2>
             <div className="mt-6 border hairline-strong bg-white p-4 h-80">
@@ -180,7 +180,7 @@ function DemoPage() {
 
           <section className="mt-16">
             <p className="eyebrow">Ranking de drivers</p>
-            <h2 className="font-display text-2xl text-brand-navy mt-2">
+            <h2 className="font-display text-2xl text-abyss mt-2">
               Quem mais explica {run.dep_variable}
             </h2>
             <div className="overflow-x-auto">
@@ -203,7 +203,7 @@ function DemoPage() {
                         <td className="py-3 font-medium">
                           {t.variable}
                           {t.isMedia && (
-                            <span className="ml-2 text-[10px] uppercase tracking-widest text-brand-mustard">
+                            <span className="ml-2 text-[10px] uppercase tracking-widest text-violet">
                               mídia
                             </span>
                           )}
@@ -211,8 +211,8 @@ function DemoPage() {
                         <td className="py-3 text-right font-mono text-xs">{fmt(t.contribution)}</td>
                         <td className="py-3 text-right">
                           <div className="inline-flex items-center gap-2">
-                            <div className="w-24 h-1 bg-brand-navy/10 relative">
-                              <div className="absolute inset-y-0 left-0 bg-brand-navy" style={{ width: `${w}%` }} />
+                            <div className="w-24 h-1 bg-abyss/10 relative">
+                              <div className="absolute inset-y-0 left-0 bg-abyss" style={{ width: `${w}%` }} />
                             </div>
                             <span className="font-mono text-xs">{(t.share * 100).toFixed(1)}%</span>
                           </div>
@@ -227,8 +227,8 @@ function DemoPage() {
                 </tbody>
               </table>
             </div>
-            <p className="mt-4 text-[11px] text-brand-navy/60 leading-relaxed max-w-3xl">
-              <strong className="text-brand-navy">Nota metodológica.</strong> Os p-values são
+            <p className="mt-4 text-[11px] text-abyss/60 leading-relaxed max-w-3xl">
+              <strong className="text-abyss">Nota metodológica.</strong> Os p-values são
               <em> aproximações</em>. O Ridge encolhe coeficientes em direção a zero, o que
               enviesa a inferência clássica: usamos a variância residual com a matriz
               (X′X + αI)⁻¹, prática comum mas que <em>subestima</em> a incerteza real. Trate
@@ -242,7 +242,7 @@ function DemoPage() {
           {rois.length > 0 && (
             <section className="mt-16">
               <p className="eyebrow">ROI por canal de mídia</p>
-              <h2 className="font-display text-2xl text-brand-navy mt-2">
+              <h2 className="font-display text-2xl text-abyss mt-2">
                 Cada R$ investido virou quanto?
               </h2>
               <div className="overflow-x-auto">
@@ -262,7 +262,7 @@ function DemoPage() {
                         <td className="py-3 text-right font-mono text-xs">{fmt(r.spend)}</td>
                         <td className="py-3 text-right font-mono text-xs">{fmt(r.contribution)}</td>
                         <td className="py-3 text-right">
-                          <span className="font-display text-xl text-brand-navy">
+                          <span className="font-display text-xl text-abyss">
                             {r.roi!.toFixed(2)}×
                           </span>
                         </td>
@@ -277,7 +277,7 @@ function DemoPage() {
           <section className="mt-20 border-t hairline pt-10 flex flex-wrap items-center justify-between gap-6">
             <div>
               <p className="eyebrow">Gostou do que viu?</p>
-              <p className="mt-2 font-display text-2xl text-brand-navy">
+              <p className="mt-2 font-display text-2xl text-abyss">
                 Suba sua própria planilha e rode em minutos.
               </p>
             </div>
@@ -285,7 +285,7 @@ function DemoPage() {
               <Link
                 to="/login"
                 search={{ mode: "signup" }}
-                className="inline-flex items-center bg-brand-navy text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple"
+                className="inline-flex items-center bg-abyss text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-indigo"
               >
                 Rodar com meus dados
               </Link>
@@ -300,10 +300,10 @@ function DemoPage() {
 
 function Metric({ label, value, hint }: { label: string; value: string; hint: string }) {
   return (
-    <div className="bg-brand-creme p-6">
+    <div className="bg-indigo-soft p-6">
       <p className="eyebrow">{label}</p>
-      <p className="font-display text-4xl text-brand-navy mt-2">{value}</p>
-      <p className="text-[11px] text-brand-navy/60 mt-2 leading-snug">{hint}</p>
+      <p className="font-display text-4xl text-abyss mt-2">{value}</p>
+      <p className="text-[11px] text-abyss/60 mt-2 leading-snug">{hint}</p>
     </div>
   );
 }

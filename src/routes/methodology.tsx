@@ -17,15 +17,15 @@ export const Route = createFileRoute("/methodology")({
 
 function MethodologyPage() {
   return (
-    <div className="min-h-screen bg-brand-offwhite flex flex-col">
+    <div className="min-h-screen bg-paper flex flex-col">
       <SiteHeader />
       <main className="flex-1">
         <article className="mx-auto max-w-3xl px-6 lg:px-10 py-16">
           <p className="eyebrow">Documentação</p>
-          <h1 className="mt-2 font-display text-4xl font-light italic text-brand-ink">
+          <h1 className="mt-2 font-display text-4xl font-light italic text-indigo-ink">
             Metodologia
           </h1>
-          <p className="mt-4 text-sm text-brand-gray italic">
+          <p className="mt-4 text-sm text-mute italic">
             Por que o Prisma faz as escolhas que faz — e onde elas falham.
           </p>
 
@@ -89,7 +89,7 @@ function MethodologyPage() {
           </Section>
 
           <Section title="Referências">
-            <ul className="text-xs space-y-2 font-mono text-brand-gray leading-relaxed">
+            <ul className="text-xs space-y-2 font-mono text-mute leading-relaxed">
               <li>Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge regression: Biased estimation for nonorthogonal problems. <em>Technometrics</em>, 12(1), 55–67.</li>
               <li>Broadbent, S. (1979). One way TV advertisements work. <em>Journal of the Market Research Society</em>, 21(3), 139–166.</li>
               <li>Jin, Y., Wang, Y., Sun, Y., Chan, D., &amp; Koehler, J. (2017). Bayesian methods for media mix modeling with carryover and shape effects. <em>Google Research</em>.</li>
@@ -108,8 +108,8 @@ function MethodologyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <h2 className="font-display text-2xl text-brand-ink border-b hairline-strong pb-2">{title}</h2>
-      <div className="mt-4 text-sm leading-relaxed text-brand-ink/85 [&_strong]:text-brand-ink">
+      <h2 className="font-display text-2xl text-indigo-ink border-b hairline-strong pb-2">{title}</h2>
+      <div className="mt-4 text-sm leading-relaxed text-indigo-ink/85 [&_strong]:text-indigo-ink">
         {children}
       </div>
     </section>

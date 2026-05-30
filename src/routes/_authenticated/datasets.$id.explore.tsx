@@ -156,7 +156,7 @@ function ExplorePage() {
 
 
   if (dsQuery.isLoading || !ds) {
-    return <div className="mt-12 text-sm text-brand-navy/60">Carregando dataset...</div>;
+    return <div className="mt-12 text-sm text-abyss/60">Carregando dataset...</div>;
   }
 
   const goToModel = () => {
@@ -180,7 +180,7 @@ function ExplorePage() {
         <p className="eyebrow">Diagnóstico das colunas</p>
         <div className="mt-4 border hairline bg-white overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="text-xs uppercase tracking-widest text-brand-gray border-b hairline">
+            <thead className="text-xs uppercase tracking-widest text-mute border-b hairline">
               <tr>
                 <th className="text-left p-3">Coluna</th>
                 <th className="text-left p-3">Tipo</th>
@@ -196,14 +196,14 @@ function ExplorePage() {
             <tbody>
               {(ds.columns_json ?? []).map((c) => (
                 <tr key={c.name} className="border-b hairline last:border-0">
-                  <td className="p-3 font-medium text-brand-navy">{c.name}</td>
+                  <td className="p-3 font-medium text-abyss">{c.name}</td>
                   <td className="p-3">
                     <span className={
                       "text-[10px] uppercase tracking-widest px-2 py-0.5 border hairline-strong " +
-                      (c.kind === "number" ? "text-brand-green" : c.kind === "date" ? "text-brand-purple" : "text-brand-gray")
+                      (c.kind === "number" ? "text-success" : c.kind === "date" ? "text-indigo" : "text-mute")
                     }>{c.kind}</span>
                   </td>
-                  <td className="p-3 text-brand-navy/70 font-mono text-xs">
+                  <td className="p-3 text-abyss/70 font-mono text-xs">
                     {c.kind === "date" ? "data" : c.kind === "number" ? inferUnit(c.name) : "—"}
                   </td>
                   <td className="p-3 text-right font-mono text-xs">{c.missing}</td>
@@ -223,14 +223,14 @@ function ExplorePage() {
       <section>
         <div className="flex items-end justify-between gap-6 border-b hairline pb-4">
           <div>
-            <label htmlFor="focus-select" className="text-xs uppercase tracking-widest text-brand-gray">
+            <label htmlFor="focus-select" className="text-xs uppercase tracking-widest text-mute">
               Variável para visualizar no período
             </label>
             <select
               id="focus-select"
               value={activeFocus}
               onChange={(e) => setFocus(e.target.value)}
-              className="mt-2 bg-transparent border-b hairline-strong text-2xl font-semibold text-brand-navy focus:outline-none pr-4"
+              className="mt-2 bg-transparent border-b hairline-strong text-2xl font-semibold text-abyss focus:outline-none pr-4"
             >
               {numericCols.map((c) => (
                 <option key={c} value={c}>
@@ -241,7 +241,7 @@ function ExplorePage() {
           </div>
           <button
             onClick={goToModel}
-            className="px-6 py-3 bg-brand-navy text-brand-creme text-sm uppercase tracking-widest hover:bg-brand-navy/90 transition"
+            className="px-6 py-3 bg-abyss text-indigo-soft text-sm uppercase tracking-widest hover:bg-abyss/90 transition"
           >
             Ir para Modelo →
           </button>
@@ -250,7 +250,7 @@ function ExplorePage() {
         {summary && summary.timeSeries.length > 0 ? (
           <>
             {summary.trend && (
-              <p className="mt-4 text-sm text-brand-navy/70">
+              <p className="mt-4 text-sm text-abyss/70">
                 Variação no período: <strong>{pct(summary.trend.pctChangeOverWindow)}</strong> · inclinação por período: {fmt(summary.trend.slopePerPeriod)}
               </p>
             )}
@@ -268,7 +268,7 @@ function ExplorePage() {
             </div>
           </>
         ) : (
-          <p className="mt-6 text-sm text-brand-navy/60">
+          <p className="mt-6 text-sm text-abyss/60">
             {summaryQuery.isLoading ? "Calculando série..." : "Sem série temporal disponível."}
           </p>
         )}
@@ -281,43 +281,43 @@ function ExplorePage() {
           <button
             onClick={() => regen.mutate()}
             disabled={regen.isPending || insightsQuery.isLoading}
-            className="text-xs uppercase tracking-widest text-brand-navy/70 hover:text-brand-navy disabled:opacity-50"
+            className="text-xs uppercase tracking-widest text-abyss/70 hover:text-abyss disabled:opacity-50"
           >
             {regen.isPending ? "Analisando..." : "Reanalisar"}
           </button>
         </div>
         {insightsQuery.isLoading && !insights ? (
-          <p className="mt-6 text-sm text-brand-navy/60">A IA está lendo seus dados...</p>
+          <p className="mt-6 text-sm text-abyss/60">A IA está lendo seus dados...</p>
         ) : insights ? (
           <>
-            <h2 className="mt-4 text-xl font-semibold tracking-tight text-brand-navy leading-tight">
+            <h2 className="mt-4 text-xl font-semibold tracking-tight text-abyss leading-tight">
               {insights.headline}
             </h2>
             <ul className="mt-8 space-y-3">
               {insights.keyFindings.map((f, i) => (
-                <li key={i} className="flex gap-4 text-sm text-brand-navy leading-relaxed">
-                  <span className="font-mono font-bold text-brand-mustard">{String(i + 1).padStart(2, "0")}</span>
+                <li key={i} className="flex gap-4 text-sm text-abyss leading-relaxed">
+                  <span className="font-mono font-bold text-violet">{String(i + 1).padStart(2, "0")}</span>
                   <span>{f}</span>
                 </li>
               ))}
             </ul>
             {insights.dataQualityWarnings.length > 0 && (
               <div className="mt-8 border-t hairline pt-6">
-                <p className="eyebrow text-brand-mustard">Alertas de qualidade</p>
-                <ul className="mt-3 space-y-2 text-sm text-brand-navy/80">
+                <p className="eyebrow text-violet">Alertas de qualidade</p>
+                <ul className="mt-3 space-y-2 text-sm text-abyss/80">
                   {insights.dataQualityWarnings.map((w, i) => (
                     <li key={i}>· {w}</li>
                   ))}
                 </ul>
               </div>
             )}
-            <div className="mt-8 border-t hairline pt-6 text-sm text-brand-navy/80">
-              <span className="eyebrow text-brand-navy">Próximo passo</span>
+            <div className="mt-8 border-t hairline pt-6 text-sm text-abyss/80">
+              <span className="eyebrow text-abyss">Próximo passo</span>
               <p className="mt-2">{insights.nextStep}</p>
             </div>
           </>
         ) : (
-          <p className="mt-6 text-sm text-brand-navy/60">
+          <p className="mt-6 text-sm text-abyss/60">
             {insightsQuery.error instanceof Error ? insightsQuery.error.message : "Não foi possível gerar a leitura."}
           </p>
         )}
@@ -326,7 +326,7 @@ function ExplorePage() {
       {/* Cost per execution unit (CPP) */}
       <section>
         <p className="eyebrow">Custo por unidade de execução</p>
-        <p className="mt-2 text-sm text-brand-navy/70 max-w-2xl">
+        <p className="mt-2 text-sm text-abyss/70 max-w-2xl">
           Quando um canal está em unidades de execução (GRP, impressões, cliques), aponte qual coluna
           carrega o investimento (R$). O custo por unidade (CPP) entra na análise exploratória e o
           ROI dos modelos passa a usar o investimento real.
@@ -334,16 +334,16 @@ function ExplorePage() {
 
         <div className="mt-6 border hairline bg-white p-4 space-y-3">
           {Object.entries(currentMappings).length === 0 && (
-            <p className="text-xs text-brand-navy/60">Nenhum mapeamento configurado.</p>
+            <p className="text-xs text-abyss/60">Nenhum mapeamento configurado.</p>
           )}
           {Object.entries(currentMappings).map(([unit, cost]) => (
             <div key={unit} className="flex items-center gap-3 text-sm">
               <span className="font-mono">{unit}</span>
-              <span className="text-brand-gray text-xs">→</span>
+              <span className="text-mute text-xs">→</span>
               <span className="font-mono">{cost}</span>
               <button
                 onClick={() => removeMapping(unit)}
-                className="ml-auto text-[10px] uppercase tracking-widest text-brand-navy/60 hover:text-brand-navy"
+                className="ml-auto text-[10px] uppercase tracking-widest text-abyss/60 hover:text-abyss"
               >
                 Remover
               </button>
@@ -353,18 +353,18 @@ function ExplorePage() {
             <select
               value={newUnit}
               onChange={(e) => setNewUnit(e.target.value)}
-              className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+              className="flex-1 border border-abyss/20 bg-white px-2 py-1 text-xs"
             >
               <option value="">— coluna em unidades de execução —</option>
               {numericCols.filter((n) => !currentMappings[n]).map((n) => (
                 <option key={n} value={n}>{n}</option>
               ))}
             </select>
-            <span className="text-brand-gray text-xs">→</span>
+            <span className="text-mute text-xs">→</span>
             <select
               value={newCost}
               onChange={(e) => setNewCost(e.target.value)}
-              className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+              className="flex-1 border border-abyss/20 bg-white px-2 py-1 text-xs"
             >
               <option value="">— coluna de investimento (R$) —</option>
               {numericCols.filter((n) => n !== newUnit).map((n) => (
@@ -374,7 +374,7 @@ function ExplorePage() {
             <button
               onClick={addMapping}
               disabled={!newUnit || !newCost || saveMappings.isPending}
-              className="px-3 py-1 text-[10px] uppercase tracking-widest bg-brand-navy text-white disabled:opacity-40"
+              className="px-3 py-1 text-[10px] uppercase tracking-widest bg-abyss text-white disabled:opacity-40"
             >
               Adicionar
             </button>
@@ -386,7 +386,7 @@ function ExplorePage() {
             {cppQuery.data.series.map((s) => (
               <div key={s.unitColumn} className="border hairline bg-white p-4">
                 <p className="eyebrow">CPP · {s.unitColumn}</p>
-                <p className="text-xs text-brand-navy/60 mt-1 font-mono">
+                <p className="text-xs text-abyss/60 mt-1 font-mono">
                   Base: {s.costColumn} · médio {fmt(s.mean)} · min {fmt(s.min)} · max {fmt(s.max)}
                 </p>
                 <div className="h-56 mt-3">
@@ -411,7 +411,7 @@ function ExplorePage() {
       {summary && summary.correlations.length > 0 && (
         <section>
           <p className="eyebrow">Correlações com {activeFocus}</p>
-          <p className="mt-2 text-sm text-brand-navy/70">
+          <p className="mt-2 text-sm text-abyss/70">
             Pearson · marinho indica relação positiva, mostarda indica relação negativa.
           </p>
           <div className="mt-6 border hairline bg-white p-6 h-80">
@@ -439,7 +439,7 @@ function ExplorePage() {
       {summary && summary.vif && summary.vif.length >= 2 && (
         <section>
           <p className="eyebrow">Colinearidade entre variáveis (VIF)</p>
-          <p className="mt-2 text-sm text-brand-navy/70 max-w-3xl">
+          <p className="mt-2 text-sm text-abyss/70 max-w-3xl">
             VIF mede o quanto cada variável é explicada pelas <em>outras</em> variáveis independentes.
             Quando duas variáveis se movem juntas (ex.: Google e Meta crescem na mesma campanha),
             o modelo tem dificuldade de atribuir crédito separadamente e os coeficientes individuais
@@ -449,7 +449,7 @@ function ExplorePage() {
           </p>
           <div className="mt-6 border hairline bg-white overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="text-xs uppercase tracking-widest text-brand-gray border-b hairline">
+              <thead className="text-xs uppercase tracking-widest text-mute border-b hairline">
                 <tr>
                   <th className="text-left p-3">Variável</th>
                   <th className="text-right p-3">VIF</th>
@@ -460,10 +460,10 @@ function ExplorePage() {
                 {[...summary.vif].sort((a, b) => b.vif - a.vif).map((v) => {
                   const color =
                     v.severity === "high"
-                      ? "text-brand-mustard"
+                      ? "text-violet"
                       : v.severity === "moderate"
-                        ? "text-brand-purple"
-                        : "text-brand-green";
+                        ? "text-indigo"
+                        : "text-success";
                   const label =
                     v.severity === "high"
                       ? "Colinearidade severa · atribuição instável"
@@ -472,7 +472,7 @@ function ExplorePage() {
                         : "Independente o suficiente";
                   return (
                     <tr key={v.variable} className="border-b hairline last:border-0">
-                      <td className="p-3 font-medium text-brand-navy">{v.variable}</td>
+                      <td className="p-3 font-medium text-abyss">{v.variable}</td>
                       <td className="p-3 text-right font-mono text-xs">
                         {v.vif >= 999 ? "∞" : v.vif.toFixed(2)}
                       </td>
@@ -514,7 +514,7 @@ function ExplorePage() {
       <div className="border-t hairline pt-8 flex justify-end">
         <button
           onClick={goToModel}
-          className="px-8 py-4 bg-brand-navy text-brand-creme text-sm uppercase tracking-widest hover:bg-brand-navy/90 transition"
+          className="px-8 py-4 bg-abyss text-indigo-soft text-sm uppercase tracking-widest hover:bg-abyss/90 transition"
         >
           Configurar modelo MMM →
         </button>

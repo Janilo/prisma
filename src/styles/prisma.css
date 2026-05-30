@@ -864,3 +864,50 @@
    ============================================================ */
 .prisma-ico { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .prisma-ico-lg { width: 24px; height: 24px; }
+
+/* ============================================================
+   PRISMA — view panel (decomp / results tabs)
+   ============================================================ */
+.prisma-view {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+.prisma-view[data-active="false"] { display: none; }
+
+.prisma-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.prisma-panel-head h1 {
+  font-family: var(--jps-body);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--prisma-ink);
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+  margin: 0;
+}
+.prisma-panel-sub {
+  font-size: 13px;
+  color: var(--prisma-mute);
+  margin-top: 4px;
+  line-height: 1.4;
+}
+.prisma-panel-h3 {
+  font-family: var(--jps-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--prisma-ink);
+  letter-spacing: -0.008em;
+  margin: 0 0 4px;
+}
+.prisma-panel-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: var(--prisma-mute);
+}

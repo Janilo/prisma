@@ -1,3 +1,14 @@
+/* ============================================================
+   Prisma — folha de tokens oficial
+   ------------------------------------------------------------
+   Fonte da verdade: src/styles/prisma.css
+   Primitivos:  --prisma-*   (paleta, tipografia, spacing)
+   Semânticos:  --jps-*      (rebindados para o Prisma)
+   Tailwind:    @theme inline abaixo  (utilitários como bg-indigo,
+                text-abyss, bg-indigo-soft, text-mute, etc.)
+   Shadcn:      --primary/--card/--border/etc. usados apenas
+                por src/components/ui/* (sonner + internos)
+   ============================================================ */
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
@@ -28,18 +39,18 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
-  /* Brand tokens — rebind direto aos primitives do DS Prisma (src/styles/prisma.css) */
-  --color-brand-purple: var(--prisma-indigo);        /* #4A37B5 — brand primary */
-  --color-brand-purple-deep: var(--prisma-indigo-deep); /* #33268C — hover/press */
-  --color-brand-navy: var(--prisma-abyss);           /* #1C1547 */
-  --color-brand-green: var(--prisma-lift);           /* #2E9E5E */
-  --color-brand-mustard: var(--prisma-violet);       /* #7A5CF0 — violet accent */
-  --color-brand-creme: var(--prisma-indigo-soft);    /* #ECEAFB */
-  --color-brand-offwhite: var(--prisma-paper);       /* #F7F6FB */
-  --color-brand-stone: var(--prisma-stone);          /* #D7D4E2 */
-  --color-brand-gray: var(--prisma-mute);            /* #726E89 */
-  --color-brand-ink: var(--prisma-indigo-ink);       /* #241A5C */
-  --color-brand-white: var(--prisma-white);
+  /* Brand tokens — paleta Prisma com nomes honestos */
+  --color-indigo:      var(--prisma-indigo);       /* #4A37B5 — brand primary */
+  --color-indigo-deep: var(--prisma-indigo-deep);  /* #33268C — hover/press */
+  --color-abyss:       var(--prisma-abyss);        /* #1C1547 */
+  --color-success:     var(--prisma-lift);         /* #2E9E5E */
+  --color-violet:      var(--prisma-violet);       /* #7A5CF0 — violet accent */
+  --color-indigo-soft: var(--prisma-indigo-soft);  /* #ECEAFB */
+  --color-paper:       var(--prisma-paper);        /* #F7F6FB */
+  --color-stone:       var(--prisma-stone);        /* #D7D4E2 */
+  --color-mute:        var(--prisma-mute);         /* #726E89 */
+  --color-indigo-ink:  var(--prisma-indigo-ink);   /* #241A5C */
+  --color-white:       var(--prisma-white);
 
   /* Data viz palette — espectro Prisma (ch-1..ch-6) */
   --color-viz-1: var(--prisma-ch-1);
@@ -51,7 +62,7 @@
 
 
 
-  --font-display: "Fraunces", "Source Serif 4", Georgia, serif;
+  --font-display: "Fraunces", "Source Serif 4", ui-serif, serif;
   --font-sans: "Inter Tight", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "SF Mono", Consolas, ui-monospace, monospace;
 
@@ -107,11 +118,11 @@
 
 @layer utilities {
   .eyebrow {
-    font-size: 10px;
-    font-weight: 700;
+    font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.18em;
-    color: var(--color-brand-gray);
+    letter-spacing: 0.22em;
+    color: var(--prisma-mute);
   }
   .hairline { border-color: color-mix(in oklab, var(--prisma-ink) 10%, transparent); }
   .hairline-strong { border-color: color-mix(in oklab, var(--prisma-ink) 20%, transparent); }
