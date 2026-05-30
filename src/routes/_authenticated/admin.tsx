@@ -3,8 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { adminFetchData } from "@/lib/admin.functions";
-
-const ADMIN_EMAIL = "janilo@pereirasaraiva.com";
+import { ADMIN_EMAIL } from "@/lib/config";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin · Prisma" }, { name: "robots", content: "noindex" }] }),

@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-const ADMIN_EMAIL = "janilo@pereirasaraiva.com";
+import { ADMIN_EMAIL } from "./config";
 
 function assertAdmin(claims: { email?: string } | undefined) {
   if ((claims?.email ?? "").toLowerCase() !== ADMIN_EMAIL) throw new Error("Acesso negado.");
