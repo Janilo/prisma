@@ -40,21 +40,21 @@ function RunsPage() {
   return (
     <div className="p-12 max-w-5xl">
       <p className="eyebrow">Histórico</p>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-abyss">
         Modelos rodados
       </h1>
 
       {data.runs.length === 0 ? (
         <div className="mt-12 border hairline-strong bg-white p-12 text-center">
-          <p className="text-sm text-brand-navy/70">Nenhum modelo rodado ainda.</p>
-          <Link to="/upload" className="mt-6 inline-block bg-brand-navy text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple">
+          <p className="text-sm text-abyss/70">Nenhum modelo rodado ainda.</p>
+          <Link to="/upload" className="mt-6 inline-block bg-abyss text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-indigo">
             Começar
           </Link>
         </div>
       ) : (
         <>
           <div className="mt-6 flex items-center justify-between gap-4">
-            <p className="text-xs text-brand-navy/60">
+            <p className="text-xs text-abyss/60">
               Marque dois runs do mesmo dataset para comparar lado a lado.
               {selected.length > 0 && (
                 <span className="ml-2 font-mono">({selected.length}/2 selecionados)</span>
@@ -63,7 +63,7 @@ function RunsPage() {
             <button
               onClick={compare}
               disabled={selected.length !== 2}
-              className="text-xs uppercase tracking-widest bg-brand-navy text-white px-4 py-2 disabled:bg-brand-navy/20 disabled:cursor-not-allowed hover:bg-brand-purple"
+              className="text-xs uppercase tracking-widest bg-abyss text-white px-4 py-2 disabled:bg-abyss/20 disabled:cursor-not-allowed hover:bg-indigo"
             >
               Comparar selecionados
             </button>
@@ -87,25 +87,25 @@ function RunsPage() {
                 const isSelected = selected.includes(r.id);
                 const disabled = !isSelected && selectedDataset !== null && r.dataset_id !== selectedDataset;
                 return (
-                  <tr key={r.id} className={`border-b hairline ${disabled ? "opacity-30" : "hover:bg-brand-creme/50"}`}>
+                  <tr key={r.id} className={`border-b hairline ${disabled ? "opacity-30" : "hover:bg-indigo-soft/50"}`}>
                     <td className="py-4">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         disabled={disabled}
                         onChange={() => toggle(r.id, r.dataset_id)}
-                        className="accent-brand-purple"
+                        className="accent-indigo"
                       />
                     </td>
-                    <td className="py-4 font-medium text-brand-navy">{r.name}</td>
-                    <td className="py-4 text-brand-navy/70">{r.dep_variable}</td>
+                    <td className="py-4 font-medium text-abyss">{r.name}</td>
+                    <td className="py-4 text-abyss/70">{r.dep_variable}</td>
                     <td className="py-4 text-right font-mono text-xs">{m.r2 !== undefined ? (m.r2 * 100).toFixed(1) + "%" : "—"}</td>
                     <td className="py-4 text-right font-mono text-xs">{m.mape !== undefined ? (m.mape * 100).toFixed(1) + "%" : "—"}</td>
-                    <td className="py-4 pl-4 text-xs text-brand-navy/70 font-mono">
+                    <td className="py-4 pl-4 text-xs text-abyss/70 font-mono">
                       {new Date(r.created_at).toLocaleString("pt-BR")}
                     </td>
                     <td className="py-4 text-right">
-                      <Link to="/runs/$id" params={{ id: r.id }} className="text-xs uppercase tracking-widest border-b border-brand-mustard pb-0.5 text-brand-navy hover:text-brand-purple">
+                      <Link to="/runs/$id" params={{ id: r.id }} className="text-xs uppercase tracking-widest border-b border-violet pb-0.5 text-abyss hover:text-indigo">
                         Ver
                       </Link>
                     </td>

@@ -38,11 +38,11 @@ function ComparePage() {
     return (
       <div className="p-12 max-w-3xl">
         <p className="eyebrow">Comparativo</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-abyss">
           Selecione dois runs para comparar
         </h1>
-        <p className="mt-4 text-sm text-brand-navy/70">
-          Vá em <Link to="/runs" className="border-b border-brand-mustard">Modelos rodados</Link>,
+        <p className="mt-4 text-sm text-abyss/70">
+          Vá em <Link to="/runs" className="border-b border-violet">Modelos rodados</Link>,
           marque dois runs do mesmo dataset e clique em <strong>Comparar selecionados</strong>.
         </p>
       </div>
@@ -69,8 +69,8 @@ function CompareView({ aId, bId }: { aId: string; bId: string }) {
   return (
     <div className="p-12 max-w-7xl">
       <p className="eyebrow">Comparativo de runs</p>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
-        {runA.name} <span className="text-brand-navy/40">vs</span> {runB.name}
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-abyss">
+        {runA.name} <span className="text-abyss/40">vs</span> {runB.name}
       </h1>
       {!sameDataset && (
         <p className="mt-4 text-xs text-red-700 border border-red-700/30 bg-red-50 p-3">
@@ -89,14 +89,14 @@ function CompareView({ aId, bId }: { aId: string; bId: string }) {
         <Link
           to="/runs/$id"
           params={{ id: aId }}
-          className="text-xs uppercase tracking-widest border-b border-brand-mustard pb-0.5"
+          className="text-xs uppercase tracking-widest border-b border-violet pb-0.5"
         >
           Ver {runA.name} completo
         </Link>
         <Link
           to="/runs/$id"
           params={{ id: bId }}
-          className="text-xs uppercase tracking-widest border-b border-brand-mustard pb-0.5"
+          className="text-xs uppercase tracking-widest border-b border-violet pb-0.5"
         >
           Ver {runB.name} completo
         </Link>
@@ -136,7 +136,7 @@ function ConfigCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
         <tbody>
           {rows.map(([label, va, vb]) => (
             <tr key={label} className="border-b hairline">
-              <td className="py-2 text-xs text-brand-navy/60 uppercase tracking-widest">{label}</td>
+              <td className="py-2 text-xs text-abyss/60 uppercase tracking-widest">{label}</td>
               <td className="py-2 font-mono text-xs">{va}</td>
               <td className="py-2 font-mono text-xs pl-4">{vb}</td>
             </tr>
@@ -157,7 +157,7 @@ function MetricsCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
       : "tie";
     return (
       <tr key={label} className="border-b hairline">
-        <td className="py-2 text-xs uppercase tracking-widest text-brand-navy/60">{label}</td>
+        <td className="py-2 text-xs uppercase tracking-widest text-abyss/60">{label}</td>
         <td className={`py-2 text-right font-mono text-sm ${winner === "a" ? "text-emerald-700 font-bold" : ""}`}>
           {va !== undefined ? formatter(va) : "—"}
         </td>
@@ -172,8 +172,8 @@ function MetricsCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
   return (
     <section className="mt-12">
       <p className="eyebrow">Métricas</p>
-      <h2 className="text-xl font-semibold text-brand-navy mt-2">Qual modelo ajusta melhor?</h2>
-      <p className="mt-2 text-[11px] text-brand-navy/60">Verde = melhor desempenho.</p>
+      <h2 className="text-xl font-semibold text-abyss mt-2">Qual modelo ajusta melhor?</h2>
+      <p className="mt-2 text-[11px] text-abyss/60">Verde = melhor desempenho.</p>
       <table className="mt-4 w-full text-sm border-collapse">
         <thead>
           <tr className="border-b hairline-strong">
@@ -219,7 +219,7 @@ function DecompChart({ run }: { run: RunReportData }) {
   );
   return (
     <div>
-      <p className="text-xs font-bold text-brand-navy mb-2">{run.name}</p>
+      <p className="text-xs font-bold text-abyss mb-2">{run.name}</p>
       <div className="border hairline-strong bg-white p-3 h-72">
         <ResponsiveContainer>
           <AreaChart data={run.decomposition_json}>
@@ -262,7 +262,7 @@ function PredChart({ run }: { run: RunReportData }) {
   );
   return (
     <div>
-      <p className="text-xs font-bold text-brand-navy mb-2">{run.name}</p>
+      <p className="text-xs font-bold text-abyss mb-2">{run.name}</p>
       <div className="border hairline-strong bg-white p-3 h-64">
         <ResponsiveContainer>
           <LineChart data={data}>
@@ -292,7 +292,7 @@ function RoiCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
   return (
     <section className="mt-12">
       <p className="eyebrow">ROI por canal</p>
-      <h2 className="text-xl font-semibold text-brand-navy mt-2">Como a configuração mudou a leitura de cada canal?</h2>
+      <h2 className="text-xl font-semibold text-abyss mt-2">Como a configuração mudou a leitura de cada canal?</h2>
       <table className="mt-4 w-full text-sm border-collapse">
         <thead>
           <tr className="border-b hairline-strong">
@@ -328,7 +328,7 @@ function RoiCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
           })}
         </tbody>
       </table>
-      <p className="mt-3 text-[11px] text-brand-navy/60 max-w-2xl">
+      <p className="mt-3 text-[11px] text-abyss/60 max-w-2xl">
         Diferenças grandes de ROI para o mesmo canal entre runs indicam que a atribuição é
         sensível à configuração (α, adstock, saturação) — sinal de que os dados sozinhos não
         resolvem qual configuração é a “correta”. Use a validação out-of-sample para arbitrar.

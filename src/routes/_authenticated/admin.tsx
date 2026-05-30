@@ -82,9 +82,9 @@ function AdminPage() {
   return (
     <div className="p-10 space-y-10">
       <div>
-        <p className="eyebrow text-xs uppercase tracking-widest text-brand-gray">Admin</p>
-        <h1 className="mt-2 font-display text-2xl text-brand-navy">Painel de administração</h1>
-        <p className="mt-1 text-sm text-brand-gray">Visão geral da plataforma. Apenas para janilo@pereirasaraiva.com.</p>
+        <p className="eyebrow text-xs uppercase tracking-widest text-mute">Admin</p>
+        <h1 className="mt-2 font-display text-2xl text-abyss">Painel de administração</h1>
+        <p className="mt-1 text-sm text-mute">Visão geral da plataforma. Apenas para janilo@pereirasaraiva.com.</p>
       </div>
 
       {/* Stats */}
@@ -94,9 +94,9 @@ function AdminPage() {
           { label: "Datasets", value: datasets.length },
           { label: "Rodadas", value: runs.length },
         ].map(s => (
-          <div key={s.label} className="border border-brand-navy/20 bg-white p-5">
-            <p className="text-xs uppercase tracking-widest text-brand-gray">{s.label}</p>
-            <p className="mt-1 font-display text-3xl text-brand-navy">{loading ? "—" : s.value}</p>
+          <div key={s.label} className="border border-abyss/20 bg-white p-5">
+            <p className="text-xs uppercase tracking-widest text-mute">{s.label}</p>
+            <p className="mt-1 font-display text-3xl text-abyss">{loading ? "—" : s.value}</p>
           </div>
         ))}
       </div>
@@ -105,10 +105,10 @@ function AdminPage() {
 
       {/* Users table */}
       <div>
-        <p className="eyebrow text-xs uppercase tracking-widest text-brand-gray mb-3">Usuários</p>
-        <div className="border border-brand-navy/20 bg-white overflow-x-auto">
+        <p className="eyebrow text-xs uppercase tracking-widest text-mute mb-3">Usuários</p>
+        <div className="border border-abyss/20 bg-white overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-brand-navy/5 text-xs uppercase tracking-widest text-brand-gray">
+            <thead className="bg-abyss/5 text-xs uppercase tracking-widest text-mute">
               <tr>
                 <th className="text-left px-5 py-3">Nome</th>
                 <th className="text-left px-5 py-3">Email</th>
@@ -119,19 +119,19 @@ function AdminPage() {
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={5} className="px-5 py-10 text-center text-brand-gray">Carregando…</td></tr>
+                <tr><td colSpan={5} className="px-5 py-10 text-center text-mute">Carregando…</td></tr>
               )}
               {!loading && profiles.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-10 text-center text-brand-gray">Nenhum usuário ainda.</td></tr>
+                <tr><td colSpan={5} className="px-5 py-10 text-center text-mute">Nenhum usuário ainda.</td></tr>
               )}
               {!loading && profiles.map(p => {
                 const userDatasets = datasetsByUser.get(p.id) ?? [];
                 const runCount = runCountByUser.get(p.id) ?? 0;
                 return (
-                  <tr key={p.id} className="border-t border-brand-navy/10">
-                    <td className="px-5 py-3 font-medium text-brand-navy">{p.display_name || "—"}</td>
-                    <td className="px-5 py-3 text-brand-gray">{p.email || p.id.slice(0, 8) + "…"}</td>
-                    <td className="px-5 py-3 text-brand-gray">{fmt(p.created_at)}</td>
+                  <tr key={p.id} className="border-t border-abyss/10">
+                    <td className="px-5 py-3 font-medium text-abyss">{p.display_name || "—"}</td>
+                    <td className="px-5 py-3 text-mute">{p.email || p.id.slice(0, 8) + "…"}</td>
+                    <td className="px-5 py-3 text-mute">{fmt(p.created_at)}</td>
                     <td className="px-5 py-3 text-right tabular-nums">{userDatasets.length}</td>
                     <td className="px-5 py-3 text-right tabular-nums">{runCount}</td>
                   </tr>
@@ -145,10 +145,10 @@ function AdminPage() {
       {/* Recent datasets */}
       {!loading && datasets.length > 0 && (
         <div>
-          <p className="eyebrow text-xs uppercase tracking-widest text-brand-gray mb-3">Datasets recentes</p>
-          <div className="border border-brand-navy/20 bg-white overflow-x-auto">
+          <p className="eyebrow text-xs uppercase tracking-widest text-mute mb-3">Datasets recentes</p>
+          <div className="border border-abyss/20 bg-white overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-brand-navy/5 text-xs uppercase tracking-widest text-brand-gray">
+              <thead className="bg-abyss/5 text-xs uppercase tracking-widest text-mute">
                 <tr>
                   <th className="text-left px-5 py-3">Nome</th>
                   <th className="text-left px-5 py-3">Arquivo original</th>
@@ -164,14 +164,14 @@ function AdminPage() {
                   const owner = profiles.find(p => p.id === d.user_id);
                   const rCount = (runsByDataset.get(d.id) ?? []).length;
                   return (
-                    <tr key={d.id} className="border-t border-brand-navy/10">
-                      <td className="px-5 py-3 font-medium text-brand-navy">{d.name}</td>
-                      <td className="px-5 py-3 text-brand-gray text-xs font-mono">{d.original_filename}</td>
-                      <td className="px-5 py-3 text-brand-gray">{owner?.email || owner?.display_name || d.user_id.slice(0, 8) + "…"}</td>
+                    <tr key={d.id} className="border-t border-abyss/10">
+                      <td className="px-5 py-3 font-medium text-abyss">{d.name}</td>
+                      <td className="px-5 py-3 text-mute text-xs font-mono">{d.original_filename}</td>
+                      <td className="px-5 py-3 text-mute">{owner?.email || owner?.display_name || d.user_id.slice(0, 8) + "…"}</td>
                       <td className="px-5 py-3 text-right tabular-nums">{d.n_rows.toLocaleString("pt-BR")}</td>
                       <td className="px-5 py-3 text-right tabular-nums">{d.n_cols}</td>
                       <td className="px-5 py-3 text-right tabular-nums">{rCount}</td>
-                      <td className="px-5 py-3 text-right text-brand-gray">{fmt(d.created_at)}</td>
+                      <td className="px-5 py-3 text-right text-mute">{fmt(d.created_at)}</td>
                     </tr>
                   );
                 })}

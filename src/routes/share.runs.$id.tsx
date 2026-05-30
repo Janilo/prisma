@@ -26,17 +26,17 @@ function SharedRunPage() {
   const run = data.run as unknown as RunReportData;
 
   return (
-    <div className="min-h-screen bg-brand-creme">
+    <div className="min-h-screen bg-indigo-soft">
       <header className="border-b hairline-strong bg-white">
         <div className="max-w-7xl mx-auto px-12 py-4 flex items-center justify-between">
-          <Link to="/" className="font-display text-xl text-brand-navy">Prisma</Link>
+          <Link to="/" className="font-display text-xl text-abyss">Prisma</Link>
           <div className="flex items-center gap-3">
-            <span className="text-[10px] uppercase tracking-widest text-brand-gray">
+            <span className="text-[10px] uppercase tracking-widest text-mute">
               Modo compartilhado · read-only
             </span>
             <Link
               to="/signup"
-              className="text-xs uppercase tracking-widest border border-brand-navy/30 px-3 py-1.5 hover:bg-brand-navy hover:text-white transition-colors"
+              className="text-xs uppercase tracking-widest border border-abyss/30 px-3 py-1.5 hover:bg-abyss hover:text-white transition-colors"
             >
               Criar conta
             </Link>

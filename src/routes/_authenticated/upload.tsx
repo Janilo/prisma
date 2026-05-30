@@ -211,10 +211,10 @@ function UploadPage() {
   return (
     <div className="p-12 max-w-5xl">
       <p className="eyebrow">01 — Dados</p>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-brand-navy">
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-abyss">
         Suba sua planilha de vendas e gastos
       </h1>
-      <p className="mt-4 text-sm text-brand-navy/70 max-w-xl">
+      <p className="mt-4 text-sm text-abyss/70 max-w-xl">
         Aceita CSV ou XLSX. Cada linha = um período (semana ou mês). Cada coluna = uma variável
         (vendas, gasto em TV, gasto em Google, preço, promoção etc.). Prisma detecta data,
         variável dependente e candidatos a variáveis explicativas automaticamente.
@@ -222,7 +222,7 @@ function UploadPage() {
 
       <section className="mt-12" aria-labelledby="suba-heading">
         <h2 id="suba-heading" className="eyebrow">Suba seus dados</h2>
-        <label className="mt-3 block border hairline-strong border-dashed bg-white p-12 cursor-pointer hover:bg-brand-creme transition-colors">
+        <label className="mt-3 block border hairline-strong border-dashed bg-white p-12 cursor-pointer hover:bg-indigo-soft transition-colors">
           <input
             type="file"
             accept=".csv,.xlsx,.xls"
@@ -231,25 +231,25 @@ function UploadPage() {
             disabled={busy}
           />
           <div className="text-center space-y-2">
-            <p className="text-xl font-semibold text-brand-navy">
+            <p className="text-xl font-semibold text-abyss">
               {busy ? status || "Processando..." : "Selecionar arquivo"}
             </p>
-            <p className="text-xs text-brand-gray uppercase tracking-widest">
+            <p className="text-xs text-mute uppercase tracking-widest">
               CSV ou XLSX · até 10 MB
             </p>
           </div>
         </label>
-        <div className="mt-4 flex items-center gap-3 text-xs text-brand-navy/70">
+        <div className="mt-4 flex items-center gap-3 text-xs text-abyss/70">
           <span>Sem CSV em mãos?</span>
           <button
             type="button"
             onClick={onLoadExample}
             disabled={busy}
-            className="uppercase tracking-widest border border-brand-navy/30 px-3 py-1.5 hover:bg-brand-navy hover:text-white transition-colors disabled:opacity-40"
+            className="uppercase tracking-widest border border-abyss/30 px-3 py-1.5 hover:bg-abyss hover:text-white transition-colors disabled:opacity-40"
           >
             Carregar dataset de exemplo
           </button>
-          <span className="text-brand-gray">50 semanas · 3 canais · sintético</span>
+          <span className="text-mute">50 semanas · 3 canais · sintético</span>
         </div>
       </section>
 
@@ -257,7 +257,7 @@ function UploadPage() {
       <section className="mt-12" aria-labelledby="carregados-heading">
         <h2 id="carregados-heading" className="eyebrow">Seus dados carregados</h2>
         {datasets.length === 0 ? (
-          <p className="mt-4 text-sm text-brand-navy/60">Nenhum dataset ainda.</p>
+          <p className="mt-4 text-sm text-abyss/60">Nenhum dataset ainda.</p>
         ) : (
           <table className="mt-4 w-full text-sm border-collapse [&_th]:px-4 [&_td]:px-4 [&_th:first-child]:pl-0 [&_td:first-child]:pl-0 [&_th:last-child]:pr-0 [&_td:last-child]:pr-0">
             <thead>
@@ -275,20 +275,20 @@ function UploadPage() {
                 const hasNewer = hasChildren.has(d.id);
                 const baseName = d.name.replace(/ · v\d+$/, "");
                 return (
-                  <tr key={d.id} className="border-b hairline hover:bg-brand-creme/50">
-                    <td className="py-4 font-semibold text-brand-navy">
+                  <tr key={d.id} className="border-b hairline hover:bg-indigo-soft/50">
+                    <td className="py-4 font-semibold text-abyss">
                       {d.name}
                       {(d.version > 1 || hasNewer) && (
-                        <span className="ml-2 text-[10px] font-mono uppercase tracking-widest text-brand-mustard align-middle">
+                        <span className="ml-2 text-[10px] font-mono uppercase tracking-widest text-violet align-middle">
                           v{d.version}
-                          {hasNewer && <span className="ml-1 text-brand-gray">(superado)</span>}
+                          {hasNewer && <span className="ml-1 text-mute">(superado)</span>}
                         </span>
                       )}
                     </td>
-                    <td className="py-4 text-brand-navy/70">{d.granularity ?? "—"}</td>
+                    <td className="py-4 text-abyss/70">{d.granularity ?? "—"}</td>
                     <td className="py-4 text-right font-mono text-xs">{d.n_rows}</td>
                     <td className="py-4 text-right font-mono text-xs">{d.n_cols}</td>
-                    <td className="py-4 pl-4 text-xs text-brand-navy/70 font-mono">
+                    <td className="py-4 pl-4 text-xs text-abyss/70 font-mono">
                       {d.period_start ?? "?"} → {d.period_end ?? "?"}
                     </td>
                     <td className="py-4 text-right whitespace-nowrap">
@@ -297,7 +297,7 @@ function UploadPage() {
                           type="button"
                           onClick={() => setVersionTarget({ id: d.id, name: baseName, nextVersion: d.version + 1 })}
                           disabled={busy}
-                          className="mr-4 text-[10px] uppercase tracking-widest text-brand-navy/60 hover:text-brand-purple disabled:opacity-40"
+                          className="mr-4 text-[10px] uppercase tracking-widest text-abyss/60 hover:text-indigo disabled:opacity-40"
                           title="Subir uma planilha atualizada como nova versão"
                         >
                           Nova versão
@@ -306,7 +306,7 @@ function UploadPage() {
                       <Link
                         to="/datasets/$id/explore"
                         params={{ id: d.id }}
-                        className="text-xs uppercase tracking-widest border-b border-brand-mustard pb-0.5 text-brand-navy hover:text-brand-purple"
+                        className="text-xs uppercase tracking-widest border-b border-violet pb-0.5 text-abyss hover:text-indigo"
                       >
                         Abrir
                       </Link>
@@ -318,20 +318,20 @@ function UploadPage() {
           </table>
         )}
         {versionTarget && (
-          <div className="mt-4 border hairline-strong bg-brand-creme p-4 flex items-center justify-between gap-4">
-            <p className="text-xs text-brand-navy/80">
+          <div className="mt-4 border hairline-strong bg-indigo-soft p-4 flex items-center justify-between gap-4">
+            <p className="text-xs text-abyss/80">
               Nova versão de <strong>{versionTarget.name}</strong> — selecione a planilha atualizada (será salva como <span className="font-mono">v{versionTarget.nextVersion}</span>).
               Runs antigos ficam intactos; você poderá re-executá-los nesta versão.
             </p>
             <div className="flex items-center gap-2 shrink-0">
-              <label className="text-xs uppercase tracking-widest border border-brand-navy/30 px-3 py-1.5 hover:bg-brand-navy hover:text-white transition-colors cursor-pointer">
+              <label className="text-xs uppercase tracking-widest border border-abyss/30 px-3 py-1.5 hover:bg-abyss hover:text-white transition-colors cursor-pointer">
                 <input type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={onVersionFile} disabled={busy} />
                 Escolher arquivo
               </label>
               <button
                 type="button"
                 onClick={() => setVersionTarget(null)}
-                className="text-[10px] uppercase tracking-widest text-brand-navy/60 hover:text-brand-navy"
+                className="text-[10px] uppercase tracking-widest text-abyss/60 hover:text-abyss"
               >
                 Cancelar
               </button>
@@ -343,16 +343,16 @@ function UploadPage() {
 
       <section className="mt-12" aria-labelledby="como-heading">
         <h2 id="como-heading" className="eyebrow">Como funciona</h2>
-        <div className="mt-3 grid grid-cols-3 gap-px bg-brand-navy/10 border hairline">
+        <div className="mt-3 grid grid-cols-3 gap-px bg-abyss/10 border hairline">
         {[
           { n: "1", t: "Suba", d: "Planilha com data, vendas e gastos por canal." },
           { n: "2", t: "Diagnostique", d: "Veja colunas detectadas, missings e outliers." },
           { n: "3", t: "Rode", d: "Ridge + adstock + Hill. ROI por canal sai do outro lado." },
         ].map((s) => (
-          <div key={s.n} className="bg-brand-creme p-6">
-            <p className="text-xs font-bold text-brand-mustard uppercase tracking-widest">{s.n}</p>
-            <p className="text-base font-semibold text-brand-navy mt-1">{s.t}</p>
-            <p className="text-xs text-brand-navy/60 mt-2 leading-relaxed">{s.d}</p>
+          <div key={s.n} className="bg-indigo-soft p-6">
+            <p className="text-xs font-bold text-violet uppercase tracking-widest">{s.n}</p>
+            <p className="text-base font-semibold text-abyss mt-1">{s.t}</p>
+            <p className="text-xs text-abyss/60 mt-2 leading-relaxed">{s.d}</p>
           </div>
         ))}
         </div>

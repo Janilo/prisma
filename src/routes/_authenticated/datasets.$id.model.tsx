@@ -116,7 +116,7 @@ function ModelPage() {
             id="run-name"
             value={runName}
             onChange={(e) => setRunName(e.target.value)}
-            className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm"
+            className="w-full border border-abyss/20 bg-white px-3 py-2 text-sm"
           />
         </div>
 
@@ -126,7 +126,7 @@ function ModelPage() {
             id="dep-select"
             value={dep}
             onChange={(e) => setDep(e.target.value)}
-            className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm"
+            className="w-full border border-abyss/20 bg-white px-3 py-2 text-sm"
           >
             {numericCols.map((n) => <option key={n} value={n}>{n}</option>)}
           </select>
@@ -138,7 +138,7 @@ function ModelPage() {
             id="date-select"
             value={dateCol}
             onChange={(e) => setDateCol(e.target.value)}
-            className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm"
+            className="w-full border border-abyss/20 bg-white px-3 py-2 text-sm"
           >
             <option value="">— sem data —</option>
             {dateCols.map((n) => <option key={n} value={n}>{n}</option>)}
@@ -153,7 +153,7 @@ function ModelPage() {
         {media.length > 0 && (
           <div>
             <p className="eyebrow mb-2">Adstock por canal (carryover)</p>
-            <p className="text-[10px] text-brand-gray mb-3">
+            <p className="text-[10px] text-mute mb-3">
               Cada canal tem memória diferente. TV/OOH costuma ficar em 0,6–0,8 (efeito dura semanas).
               Google paid em 0,0–0,2 (efeito quase imediato). Meta/social em 0,2–0,4.
               Valores iniciais são sugeridos pelo nome — ajuste conforme seu conhecimento do canal.
@@ -171,7 +171,7 @@ function ModelPage() {
                     onChange={(e) =>
                       setDecays((d) => ({ ...d, [m]: parseFloat(e.target.value) }))
                     }
-                    className="flex-1 accent-brand-purple"
+                    className="flex-1 accent-indigo"
                   />
                   <span className="font-mono text-xs w-10 text-right">{decayFor(m).toFixed(2)}</span>
                 </div>
@@ -183,7 +183,7 @@ function ModelPage() {
         {media.length > 0 && (
           <div>
             <p className="eyebrow mb-2">Base de investimento (para ROI)</p>
-            <p className="text-[10px] text-brand-gray mb-3">
+            <p className="text-[10px] text-mute mb-3">
               Se o canal está em <strong>unidades de execução</strong> (GRP, impressões, cliques),
               aponte qual coluna tem o <strong>investimento real (R$)</strong> daquele canal.
               O ROI será calculado sobre esse investimento. Deixe em branco se a própria
@@ -205,7 +205,7 @@ function ModelPage() {
                           return next;
                         })
                       }
-                      className="flex-1 border border-brand-navy/20 bg-white px-2 py-1 text-xs"
+                      className="flex-1 border border-abyss/20 bg-white px-2 py-1 text-xs"
                     >
                       <option value="">— mesma coluna (já em R$) —</option>
                       {costOptions.map((c) => (
@@ -232,9 +232,9 @@ function ModelPage() {
             step={1}
             value={holdout}
             onChange={(e) => setHoldout(Math.max(0, Math.floor(Number(e.target.value) || 0)))}
-            className="w-full border border-brand-navy/20 bg-white px-3 py-2 text-sm font-mono"
+            className="w-full border border-abyss/20 bg-white px-3 py-2 text-sm font-mono"
           />
-          <p className="text-[10px] text-brand-gray mt-1">
+          <p className="text-[10px] text-mute mt-1">
             0 = treinar em tudo (só métricas in-sample). Com N{">"}0, o modelo treina nos primeiros
             períodos e prevê os últimos N — assim você vê se o R²/MAPE se sustentam fora da amostra.
             Padrão recomendado: 10–20% das observações (ex.: 8–12 semanas).
@@ -244,7 +244,7 @@ function ModelPage() {
         <button
           disabled={mut.isPending || !dep || indep.length === 0}
           onClick={() => mut.mutate()}
-          className="w-full bg-brand-navy text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-purple disabled:opacity-40"
+          className="w-full bg-abyss text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-indigo disabled:opacity-40"
         >
           {mut.isPending ? "Rodando modelo..." : "Rodar modelo"}
         </button>
@@ -252,7 +252,7 @@ function ModelPage() {
 
       <div>
         <h2 className="eyebrow">Variáveis explicativas</h2>
-        <p className="text-xs text-brand-navy/60 mt-2 mb-4">
+        <p className="text-xs text-abyss/60 mt-2 mb-4">
           Marque as colunas que devem explicar a dependente. Marque também as que são <em>mídia</em>{" "}
           (recebem adstock + saturação).
         </p>
@@ -273,7 +273,7 @@ function ModelPage() {
                   />
                   <span>{n}</span>
                 </label>
-                <label className="flex items-center gap-1 text-[10px] uppercase tracking-widest text-brand-gray cursor-pointer">
+                <label className="flex items-center gap-1 text-[10px] uppercase tracking-widest text-mute cursor-pointer">
                   <input
                     type="checkbox"
                     checked={isMedia}
@@ -297,9 +297,9 @@ function Slider({ label, value, min, max, step, onChange, hint }: {
   return (
     <div>
       <label className="eyebrow block mb-2">{label}</label>
-      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(parseFloat(e.target.value))} className="w-full accent-brand-purple" />
+      <input type="range" min={min} max={max} step={step} value={value} onChange={(e) => onChange(parseFloat(e.target.value))} className="w-full accent-indigo" />
       <p className="font-mono text-xs mt-1">{value}</p>
-      {hint && <p className="text-[10px] text-brand-gray mt-1">{hint}</p>}
+      {hint && <p className="text-[10px] text-mute mt-1">{hint}</p>}
     </div>
   );
 }
