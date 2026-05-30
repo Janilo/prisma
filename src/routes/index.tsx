@@ -4,7 +4,8 @@ import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { SiteFooter } from "@/components/marketing/SiteFooter";
 import { MethodSection } from "@/components/marketing/MethodSection";
 
-const OG_IMAGE = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png";
+const OG_IMAGE =
+  "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png";
 
 export const Route = createFileRoute("/")({
   beforeLoad: async () => {
@@ -17,7 +18,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Prisma · Marketing Mix Modeling" },
-      { name: "description", content: "Suba uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação e mostra contribuição em R$, ROI por canal e base vs. incremental." },
+      {
+        name: "description",
+        content:
+          "Suba uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação e mostra contribuição em R$, ROI por canal e base vs. incremental.",
+      },
       { property: "og:title", content: "Prisma · Marketing Mix Modeling" },
       { property: "og:description", content: "MMM com Ridge, adstock e saturação a partir da sua planilha." },
       { property: "og:url", content: "https://prisma.pereirasaraiva.com/" },
@@ -26,9 +31,7 @@ export const Route = createFileRoute("/")({
       { name: "twitter:description", content: "MMM com Ridge, adstock e saturação a partir da sua planilha." },
       { name: "twitter:image", content: OG_IMAGE },
     ],
-    links: [
-      { rel: "canonical", href: "https://prisma.pereirasaraiva.com/" },
-    ],
+    links: [{ rel: "canonical", href: "https://prisma.pereirasaraiva.com/" }],
   }),
   component: HomePage,
 });
@@ -48,6 +51,7 @@ function HomePage() {
               <p className="text-base text-abyss/70 leading-relaxed max-w-lg">
                 Você sobe uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação,
                 mostra contribuição em R$, ROI por canal e o quanto é base versus incremental.
+
               </p>
               <div className="flex flex-wrap gap-3">
                 <Link
