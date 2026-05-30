@@ -7,7 +7,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 bg-paper/80 backdrop-blur supports-[backdrop-filter]:bg-paper/70 border-b hairline h-[var(--header-height)]">
       <div className="mx-auto max-w-6xl px-8 h-full flex items-center justify-between">
         {/* Wordmark */}
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-center gap-3">
           <Link to="/" className="group" aria-label="Prisma — início">
             <img
               src="/prisma-assets/wordmark-prisma.svg"
