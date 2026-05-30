@@ -7,7 +7,7 @@ import { MethodSection } from "@/components/marketing/MethodSection";
 const OG_IMAGE =
   "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/")({  
   beforeLoad: async () => {
     if (typeof window === "undefined") return;
     const { data } = await supabase.auth.getUser();
@@ -56,20 +56,20 @@ function HomePage() {
               <div className="flex flex-wrap gap-3">
                 <Link
                   to="/demo"
-                  className="inline-flex items-center bg-violet text-abyss px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-violet/80"
+                  className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-semibold uppercase tracking-[0.18em] bg-violet text-abyss hover:bg-violet/80 transition-colors"
                 >
                   Rodar com dataset de exemplo
                 </Link>
                 <Link
                   to="/login"
                   search={{ mode: "signup" }}
-                  className="inline-flex items-center bg-abyss text-white px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-indigo"
+                  className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-semibold uppercase tracking-[0.18em] bg-abyss text-white hover:bg-indigo transition-colors"
                 >
                   Criar conta
                 </Link>
                 <Link
                   to="/login"
-                  className="inline-flex items-center border border-abyss/20 bg-white text-abyss px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-indigo-soft"
+                  className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-semibold uppercase tracking-[0.18em] border border-abyss/20 bg-white text-abyss hover:bg-indigo-soft transition-colors"
                 >
                   Entrar
                 </Link>
