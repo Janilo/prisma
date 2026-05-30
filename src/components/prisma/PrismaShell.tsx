@@ -46,7 +46,7 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
   const crumb = CRUMB[location.pathname];
 
   return (
-    <div className="prisma-shell prisma" style={{ height: "100vh" }}>
+    <div className="prisma-shell prisma jps" style={{ height: "100vh" }}>
       <PrismaIcons />
 
       <aside className="prisma-sidebar">
