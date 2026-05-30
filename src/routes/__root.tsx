@@ -15,19 +15,35 @@ import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-paper px-4">
-      <div className="max-w-md text-center">
-        <h1 className="font-display text-7xl font-light italic text-abyss">404</h1>
-        <p className="eyebrow mt-6">Página não encontrada</p>
-        <p className="mt-4 text-sm text-abyss/70">
-          A rota que você procurou não existe nesse projeto.
+    <div className="flex min-h-screen flex-col items-center justify-center bg-paper px-6 text-center">
+      <div className="max-w-md">
+        <p className="mb-6 text-[10px] font-bold uppercase tracking-[0.22em] text-gold">404</p>
+        <h1 className="font-display text-[44px] font-light italic leading-tight text-abyss">
+          Página não encontrada.
+        </h1>
+        <p className="mt-4 text-[16px] leading-relaxed text-abyss/60">
+          O link pode estar desatualizado ou a página foi movida.
         </p>
-        <div className="mt-8">
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <Link
+            to="/login"
+            className="inline-flex items-center bg-indigo px-6 py-3 text-[11px] font-bold uppercase tracking-[0.22em] text-white transition-opacity hover:opacity-85"
+          >
+            Entrar
+          </Link>
+          <a
+            href="https://pereirasaraiva.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center border border-abyss/20 px-6 py-3 text-[11px] font-bold uppercase tracking-[0.22em] text-abyss transition-opacity hover:opacity-85"
+          >
+            J P Saraiva
+          </a>
           <Link
             to="/"
-            className="inline-flex items-center justify-center bg-abyss px-6 py-2 text-xs font-bold uppercase tracking-widest text-white transition-colors hover:bg-indigo"
+            className="inline-flex items-center text-[11px] font-semibold uppercase tracking-[0.22em] text-abyss/50 hover:text-abyss"
           >
-            Voltar
+            Ir para o início
           </Link>
         </div>
       </div>

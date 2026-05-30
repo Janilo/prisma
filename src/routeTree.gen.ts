@@ -9,8 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermosRouteImport } from './routes/termos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
 import { Route as MethodologyRouteImport } from './routes/methodology'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
@@ -35,6 +37,11 @@ import { Route as AuthenticatedDatasetsIdIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedDatasetsIdModelRouteImport } from './routes/_authenticated/datasets.$id.model'
 import { Route as AuthenticatedDatasetsIdExploreRouteImport } from './routes/_authenticated/datasets.$id.explore'
 
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -43,6 +50,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MethodologyRoute = MethodologyRouteImport.update({
@@ -174,8 +186,10 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/methodology': typeof MethodologyRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/compare': typeof AuthenticatedCompareRoute
   '/explore': typeof AuthenticatedExploreRoute
@@ -200,8 +214,10 @@ export interface FileRoutesByTo {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/methodology': typeof MethodologyRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termos': typeof TermosRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/compare': typeof AuthenticatedCompareRoute
   '/explore': typeof AuthenticatedExploreRoute
@@ -227,8 +243,10 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/methodology': typeof MethodologyRoute
+  '/privacidade': typeof PrivacidadeRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/termos': typeof TermosRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/compare': typeof AuthenticatedCompareRoute
   '/_authenticated/explore': typeof AuthenticatedExploreRoute
@@ -255,8 +273,10 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/methodology'
+    | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/termos'
     | '/admin'
     | '/compare'
     | '/explore'
@@ -281,8 +301,10 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/methodology'
+    | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/termos'
     | '/admin'
     | '/compare'
     | '/explore'
@@ -307,8 +329,10 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/login'
     | '/methodology'
+    | '/privacidade'
     | '/reset-password'
     | '/sitemap.xml'
+    | '/termos'
     | '/_authenticated/admin'
     | '/_authenticated/compare'
     | '/_authenticated/explore'
@@ -335,13 +359,22 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   MethodologyRoute: typeof MethodologyRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermosRoute: typeof TermosRoute
   ShareRunsIdRoute: typeof ShareRunsIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -354,6 +387,13 @@ declare module '@tanstack/react-router' {
       path: '/reset-password'
       fullPath: '/reset-password'
       preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/methodology': {
@@ -581,8 +621,10 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   MethodologyRoute: MethodologyRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TermosRoute: TermosRoute,
   ShareRunsIdRoute: ShareRunsIdRoute,
 }
 export const routeTree = rootRouteImport
