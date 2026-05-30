@@ -10,11 +10,11 @@ export const Route = createFileRoute("/_authenticated/results/decomp")({
 function DecompView() {
   const [mode, setMode] = useState<"rs" | "share">("rs");
   return (
-    <section className="view" data-active="true" style={{ display: "grid", gap: 20, alignContent: "start" }}>
-      <div className="panel-head">
+    <section className="prisma-view" data-active="true" style={{ display: "grid", gap: 20, alignContent: "start" }}>
+      <div className="prisma-panel-head">
         <div>
           <h1>Decomposição da receita</h1>
-          <div className="sub">Onde a receita nasceu — baseline orgânico + 6 canais, 12 semanas.</div>
+          <div className="prisma-panel-sub">Onde a receita nasceu — baseline orgânico + 6 canais, 12 semanas.</div>
         </div>
         <div className="row" style={{ display: "flex", gap: 6 }}>
           <button className="prisma-chip" aria-pressed={mode === "rs"} onClick={() => setMode("rs")}>R$</button>
@@ -31,13 +31,13 @@ function DecompView() {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 16, alignItems: "start" }}>
         <div className="prisma-card" style={{ gap: 8 }}>
-          <div className="type-sample-h3">Receita por semana · R$ milhões</div>
+          <div className="prisma-panel-h3">Receita por semana · R$ milhões</div>
           <svg viewBox="0 0 760 300" style={{ width: "100%", height: "auto", fontFamily: "'Inter Tight',sans-serif" }}>
-            <g stroke="#D7D4E2" strokeWidth="0.5" strokeDasharray="3 4" opacity="0.7">
+            <g stroke="var(--prisma-stone)" strokeWidth="0.5" strokeDasharray="3 4" opacity="0.7">
               <line x1="50" y1="60" x2="660" y2="60" /><line x1="50" y1="120" x2="660" y2="120" /><line x1="50" y1="185" x2="660" y2="185" />
             </g>
             <g fontSize="10" fill="#726E89" textAnchor="end"><text x="42" y="64">1,8</text><text x="42" y="124">1,2</text><text x="42" y="189">0,6</text><text x="42" y="253">0</text></g>
-            <line x1="50" y1="250" x2="660" y2="250" stroke="#D7D4E2" strokeWidth="0.75" />
+            <line x1="50" y1="250" x2="660" y2="250" stroke="var(--prisma-stone)" strokeWidth="0.75" />
             <polygon fill="#B8B4D8" points="50,180 172,178 294,179 416,177 538,178 660,176 660,250 50,250" />
             <polygon fill="#C2562F" points="50,170 172,167 294,170 416,165 538,168 660,165 660,176 538,178 416,177 294,179 172,178 50,180" />
             <polygon fill="#E0A21E" points="50,156 172,157 294,148 416,153 538,159 660,147 660,165 538,168 416,165 294,170 172,167 50,170" />
@@ -49,8 +49,8 @@ function DecompView() {
             <g fontSize="10" fontWeight="600">
               <text x="666" y="73" fill="#6B4FE0">Brand / TV</text><text x="666" y="96" fill="#2D7BE0">Vídeo</text>
               <text x="666" y="116" fill="#0E97A8">Search</text><text x="666" y="139" fill="#4FA23E">Social</text>
-              <text x="666" y="160" fill="#B5810F">Promo</text><text x="666" y="173" fill="#C2562F">OOH</text>
-              <text x="666" y="218" fill="#6E6A86">Baseline</text>
+              <text x="666" y="160" fill="var(--prisma-ch-5)">Promo</text><text x="666" y="173" fill="var(--prisma-ch-6)">OOH</text>
+              <text x="666" y="218" fill="var(--prisma-mute)">Baseline</text>
             </g>
             <g fontSize="9.5" fill="#726E89" textAnchor="middle">
               <text x="50" y="266">Sem 1</text><text x="172" y="266">Sem 3</text><text x="294" y="266">Sem 5</text><text x="416" y="266">Sem 7</text><text x="538" y="266">Sem 9</text><text x="660" y="266">Sem 11</text>
@@ -68,7 +68,7 @@ function DecompView() {
         </div>
 
         <div className="prisma-card" style={{ gap: 14, alignContent: "start" }}>
-          <div className="type-sample-h3">Share da receita · 100%</div>
+          <div className="prisma-panel-h3">Share da receita · 100%</div>
           <div className="prisma-decomp-bar" role="img" aria-label="Share por canal">
             <span style={{ width: "38%", background: "var(--prisma-baseline)" }} />
             <span style={{ width: "16%", background: "var(--prisma-ch-1)" }} />
@@ -83,7 +83,7 @@ function DecompView() {
             <span><strong style={{ color: "var(--prisma-slate)" }}>62%</strong> mídia</span>
           </div>
           <div style={{ borderTop: "1px solid var(--prisma-stone-soft)", paddingTop: 12, display: "grid", gap: 8 }}>
-            <div className="type-sample-eyebrow">Leitura do modelo</div>
+            <div className="prisma-panel-eyebrow">Leitura do modelo</div>
             <p style={{ fontSize: 13, color: "var(--prisma-slate)", margin: 0, lineHeight: 1.55 }}>
               Brand carrega 16% da receita com só 9% do gasto — o adstock de 6 semanas estende o efeito além do flight.{" "}
               <strong style={{ color: "var(--prisma-ink)" }}>Search</strong> tem o maior ROI e ainda há folga na curva.
