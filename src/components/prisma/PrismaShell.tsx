@@ -2,8 +2,7 @@ import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PrismaIcons, Ico } from "./PrismaIcons";
-
-const ADMIN_EMAIL = "janilo@pereirasaraiva.com";
+import { ADMIN_EMAIL } from "@/lib/config";
 
 const VIEWS = [
   { to: "/results/decomp", label: "Decomposição", icon: "i-decompose" },

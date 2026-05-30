@@ -8,14 +8,14 @@
 /* Fraunces — variable display serif (Undercase Type) */
 @font-face {
   font-family: "Fraunces";
-  src: url("/src/assets/fonts/Fraunces-VariableFont_SOFT_WONK_opsz_wght.ttf") format("truetype-variations");
+  src: url("/fonts/Fraunces-VariableFont_SOFT_WONK_opsz_wght.ttf") format("truetype-variations");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Fraunces";
-  src: url("/src/assets/fonts/Fraunces-Italic-VariableFont_SOFT_WONK_opsz_wght.ttf") format("truetype-variations");
+  src: url("/fonts/Fraunces-Italic-VariableFont_SOFT_WONK_opsz_wght.ttf") format("truetype-variations");
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
@@ -24,14 +24,14 @@
 /* Inter Tight — variable body sans */
 @font-face {
   font-family: "Inter Tight";
-  src: url("/src/assets/fonts/InterTight-VariableFont_wght.ttf") format("truetype-variations");
+  src: url("/fonts/InterTight-VariableFont_wght.ttf") format("truetype-variations");
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Inter Tight";
-  src: url("/src/assets/fonts/InterTight-Italic-VariableFont_wght.ttf") format("truetype-variations");
+  src: url("/fonts/InterTight-Italic-VariableFont_wght.ttf") format("truetype-variations");
   font-weight: 100 900;
   font-style: italic;
   font-display: swap;
