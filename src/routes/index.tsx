@@ -45,7 +45,7 @@ function HomePage() {
 
         {/* Hero */}
         <section className="bg-indigo-soft border-b hairline">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 lg:py-28">
+          <div className="mx-auto max-w-5xl px-6 py-20 lg:py-28">
             <div className="max-w-3xl space-y-8">
               <p className="eyebrow">Marketing Mix Modeling</p>
               <h1 className="font-display text-4xl lg:text-6xl font-light italic text-abyss leading-tight">
@@ -90,7 +90,7 @@ function HomePage() {
 
         {/* O que você recebe */}
         <section className="border-b hairline">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20">
+          <div className="mx-auto max-w-5xl px-6 py-20">
             <div className="flex items-end justify-between gap-8 mb-10">
               <div>
                 <p className="eyebrow">O que você recebe</p>
@@ -181,7 +181,7 @@ function HomePage() {
 
         {/* Antes / depois */}
         <section className="border-b hairline">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20">
+          <div className="mx-auto max-w-5xl px-6 py-20">
             <p className="eyebrow">Antes / depois</p>
             <h2 className="font-display text-4xl lg:text-5xl font-light italic text-abyss mt-4 leading-tight max-w-3xl">
               Do chute ao número: contribuição por canal com base estatística.

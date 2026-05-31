@@ -5,7 +5,7 @@ const RESPONDENTS_HREF = "https://pereirasaraiva.com/respondentes";
 export function SiteFooter() {
   return (
     <footer className="border-t hairline">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <div className="mx-auto max-w-5xl px-6">
         <div className="flex flex-row flex-nowrap items-center justify-between gap-3 border-b hairline py-6">
           <p className="min-w-0 flex-1 truncate text-sm text-mute">
             Quer participar como respondente de pesquisas?
