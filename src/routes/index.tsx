@@ -49,7 +49,7 @@ function HomePage() {
           <div className="mx-auto max-w-5xl px-6 pt-24 pb-16">
             <div className="max-w-3xl space-y-8">
               <p className="eyebrow">Marketing Mix Modeling</p>
-              <h1 className="font-display text-4xl lg:text-6xl font-light italic text-abyss leading-tight">
+              <h1 className="font-display lg:text-6xl font-light italic text-abyss leading-tight text-7xl">
                 Decomponha suas vendas no canal que realmente moveu o ponteiro.
               </h1>
               <p className="text-base text-abyss/70 leading-relaxed max-w-lg">
