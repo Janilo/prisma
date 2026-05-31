@@ -44,7 +44,8 @@ function HomePage() {
       <main className="flex-1">
 
         {/* Hero */}
-        <section className="bg-indigo-soft border-b hairline">
+        <section className="bg-paper border-b hairline">
+
           <div className="mx-auto max-w-5xl px-6 pt-24 pb-16">
             <div className="max-w-3xl space-y-8">
               <p className="eyebrow">Marketing Mix Modeling</p>
