@@ -45,8 +45,8 @@ function HomePage() {
 
         {/* Hero */}
         <section className="bg-indigo-soft border-b hairline">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 lg:py-28 grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20 lg:py-28">
+            <div className="max-w-3xl space-y-8">
               <p className="eyebrow">Marketing Mix Modeling</p>
               <h1 className="font-display text-4xl lg:text-6xl font-light italic text-abyss leading-tight">
                 Decomponha suas vendas no canal que realmente moveu o ponteiro.
@@ -55,7 +55,7 @@ function HomePage() {
                 Você sobe uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação,
                 mostra contribuição em R$, ROI por canal e o quanto é base versus incremental.
               </p>
-              <div className="flex flex-wrap items-start gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <Link
                   to="/login"
                   search={{ mode: "signup" }}
@@ -63,16 +63,18 @@ function HomePage() {
                 >
                   Criar conta
                 </Link>
-                <div className="inline-flex flex-col gap-1">
+                <div className="inline-flex flex-col gap-1.5">
                   <Link
                     to="/demo"
-                    className="inline-flex items-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-widest border border-abyss text-abyss hover:bg-abyss hover:text-white transition-colors"
+                    className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-widest border-[1.5px] border-abyss text-abyss hover:bg-abyss hover:text-white transition-colors"
                   >
                     <Eye className="w-4 h-4" />
                     Ver demo
                   </Link>
-                  <p className="text-[10px] text-abyss/60">
-                    Dados fictícios · sem cadastro · roda em segundos
+                  <p className="text-[11px] text-[#5F5B55] leading-[1.7]">
+                    Dados fictícios<br />
+                    sem cadastro<br />
+                    roda em segundos
                   </p>
                 </div>
                 <Link
@@ -83,7 +85,25 @@ function HomePage() {
                 </Link>
               </div>
             </div>
-            <figure className="bg-indigo-soft border hairline p-6 lg:p-8">
+          </div>
+        </section>
+
+        {/* O que você recebe */}
+        <section className="border-b hairline">
+          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20">
+            <div className="flex items-end justify-between gap-8 mb-10">
+              <div>
+                <p className="eyebrow">O que você recebe</p>
+                <h2 className="font-display text-4xl lg:text-5xl font-light italic text-abyss mt-4 leading-tight max-w-2xl">
+                  ROI por canal, decomposição no tempo e base vs. incremental.
+                </h2>
+              </div>
+              <p className="hidden lg:block text-sm text-abyss/60 max-w-xs">
+                Cada canal de mídia com sua contribuição em R$, ROI e ranking de robustez — exportável como relatório.
+              </p>
+            </div>
+
+            <figure className="border hairline bg-indigo-soft p-6 lg:p-8 mb-6">
               <figcaption className="flex items-baseline justify-between mb-6">
                 <p className="eyebrow">Contribuição por canal</p>
                 <p className="text-[10px] text-mute uppercase tracking-widest">R$ · últimos 12 meses</p>
@@ -130,23 +150,6 @@ function HomePage() {
                 </div>
               </div>
             </figure>
-          </div>
-        </section>
-
-        {/* O que você recebe */}
-        <section className="border-b hairline">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20">
-            <div className="flex items-end justify-between gap-8 mb-10">
-              <div>
-                <p className="eyebrow">O que você recebe</p>
-                <h2 className="font-display text-4xl lg:text-5xl font-light italic text-abyss mt-4 leading-tight max-w-2xl">
-                  ROI por canal, decomposição no tempo e base vs. incremental.
-                </h2>
-              </div>
-              <p className="hidden lg:block text-sm text-abyss/60 max-w-xs">
-                Cada canal de mídia com sua contribuição em R$, ROI e ranking de robustez — exportável como relatório.
-              </p>
-            </div>
 
             <div className="border hairline bg-white overflow-hidden">
               <div className="px-6 py-3 border-b hairline bg-indigo-soft flex items-center justify-between">
