@@ -19,7 +19,7 @@ const STEPS = [
 export function MethodSection() {
   return (
     <section className="border-t hairline bg-paper">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
+      <div className="mx-auto max-w-5xl px-6 py-16">
         <p className="eyebrow mb-10">Método</p>
         <div className="grid gap-px bg-abyss/10 md:grid-cols-3 border hairline">
           {STEPS.map((s) => (
