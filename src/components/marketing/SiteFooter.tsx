@@ -21,8 +21,22 @@ export function SiteFooter() {
         </div>
         <div className="flex flex-row flex-wrap items-center gap-x-6 gap-y-1 border-t hairline py-5 text-[10px] uppercase tracking-[0.18em] text-mute sm:text-xs">
           <span className="font-semibold">Outros produtos</span>
-          <a href="https://cascata.pereirasaraiva.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-abyss">Cascata</a>
-          <a href="https://lente.pereirasaraiva.com" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-abyss">Lente</a>
+          <a
+            href="https://cascata.pereirasaraiva.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-abyss"
+          >
+            Cascata
+          </a>
+          <a
+            href="https://lente.pereirasaraiva.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-abyss"
+          >
+            Lente · Pesquisa Qualitativa
+          </a>
         </div>
         <div className="flex flex-row flex-nowrap items-center justify-between gap-3 border-t hairline py-6">
           <a
@@ -34,8 +48,12 @@ export function SiteFooter() {
             J P Saraiva
           </a>
           <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.18em] text-mute sm:text-xs">
-            <Link to="/privacidade" className="transition-colors hover:text-abyss">Privacidade</Link>
-            <Link to="/termos" className="transition-colors hover:text-abyss">Termos</Link>
+            <Link to="/privacidade" className="transition-colors hover:text-abyss">
+              Privacidade
+            </Link>
+            <Link to="/termos" className="transition-colors hover:text-abyss">
+              Termos
+            </Link>
             <span>&copy; {new Date().getFullYear()}</span>
           </div>
         </div>
