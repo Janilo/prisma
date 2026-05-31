@@ -19,17 +19,17 @@ const STEPS = [
 export function MethodSection() {
   return (
     <section className="border-t hairline bg-paper">
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 pt-14 pb-4">
-        <p className="eyebrow">Método</p>
-      </div>
-      <div className="mx-auto max-w-7xl px-6 lg:px-10 pb-16 grid gap-px bg-abyss/10 md:grid-cols-3 border-y hairline">
-        {STEPS.map((s) => (
-          <div key={s.n} className="bg-paper p-8">
-            <p className="font-display text-3xl text-violet">{s.n}</p>
-            <h3 className="mt-6 font-display text-lg text-abyss">{s.title}</h3>
-            <p className="mt-3 text-sm text-abyss/70 leading-relaxed">{s.body}</p>
-          </div>
-        ))}
+      <div className="mx-auto max-w-7xl px-6 lg:px-10 py-16">
+        <p className="eyebrow mb-10">Método</p>
+        <div className="grid gap-px bg-abyss/10 md:grid-cols-3 border hairline">
+          {STEPS.map((s) => (
+            <div key={s.n} className="bg-paper p-8">
+              <p className="font-display text-3xl text-violet">{s.n}</p>
+              <h3 className="mt-6 font-display text-lg text-abyss">{s.title}</h3>
+              <p className="mt-3 text-sm text-abyss/70 leading-relaxed">{s.body}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

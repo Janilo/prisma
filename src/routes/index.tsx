@@ -201,16 +201,16 @@ function HomePage() {
                 <p className="eyebrow text-violet">Depois — MMM com adstock e saturação</p>
                 <div className="mt-4 space-y-4">
                   <div>
-                    <p className="text-[10px] font-mono text-abyss/40 uppercase tracking-widest">CONTRIBUIÇÃO REAL</p>
-                    <p className="mt-1 text-sm text-abyss leading-snug">Google: 14% · Meta: 11% · TV: 8% · OOH: 5% · Base: 58%</p>
+                    <p className="text-xs font-mono text-mute">CONTRIBUIÇÃO REAL</p>
+                    <p className="mt-1 text-base text-abyss leading-snug">Google: 14% · Meta: 11% · TV: 8% · OOH: 5% · Base: 58%</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-mono text-abyss/40 uppercase tracking-widest">EFEITO DEFASADO</p>
-                    <p className="mt-1 text-sm text-abyss leading-snug">TV e OOH contribuem nas semanas seguintes à veiculação (adstock).</p>
+                    <p className="text-xs font-mono text-mute">EFEITO DEFASADO</p>
+                    <p className="mt-1 text-base text-abyss leading-snug">TV e OOH contribuem nas semanas seguintes à veiculação (adstock).</p>
                   </div>
                   <div>
-                    <p className="text-[10px] font-mono text-abyss/40 uppercase tracking-widest">SATURAÇÃO</p>
-                    <p className="mt-1 text-sm text-abyss leading-snug">Google atinge retorno decrescente acima de R$ 60k/semana.</p>
+                    <p className="text-xs font-mono text-mute">SATURAÇÃO</p>
+                    <p className="mt-1 text-base text-abyss leading-snug">Google atinge retorno decrescente acima de R$ 60k/semana.</p>
                   </div>
                 </div>
               </div>
