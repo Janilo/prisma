@@ -73,9 +73,7 @@ function HomePage() {
                     Ver demo
                   </Link>
                   <p className="text-[11px] text-[#5F5B55] leading-[1.7]">
-                    Dados fictícios<br />
-                    sem cadastro<br />
-                    roda em segundos
+                    Não precisa de cadastro
                   </p>
                 </div>
                 <Link
