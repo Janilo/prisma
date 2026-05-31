@@ -34,6 +34,9 @@ export const Route = createFileRoute("/demo")({
         content: "Dataset de exemplo já carregado: rode o MMM e veja contribuição, ROI e decomposição.",
       },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png" },
+      { property: "og:url", content: "https://prisma.pereirasaraiva.com/demo" },
+      { property: "og:type", content: "website" },
+      { property: "og:locale", content: "pt_BR" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png" },
       { name: "robots", content: "noindex" },
@@ -45,7 +48,7 @@ export const Route = createFileRoute("/demo")({
 import { CHANNEL_COLORS, BASELINE, CHART_GRID } from "@/lib/prisma-tokens";
 
 const SERIES_COLORS = CHANNEL_COLORS.slice(0, 5);
-const SAT_AMBER = CHANNEL_COLORS[4];
+const SAT_AMBER = CHANNEL_COLORS[5];
 
 type Totals = {
   variable: string;
@@ -148,9 +151,9 @@ function DemoPage() {
               <ResponsiveContainer>
                 <AreaChart data={run.decomposition_json}>
                   <CartesianGrid stroke={CHART_GRID} />
-                  <XAxis dataKey="period" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
-                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
+                  <XAxis dataKey="period" tick={{ fontSize: 10 }} interval={7} />
+                  <YAxis tick={{ fontSize: 10 }} tickFormatter={(v: number) => "R$ " + fmt(v)} />
+                  <Tooltip formatter={(v: number) => "R$ " + fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   <Area type="monotone" dataKey="base" stackId="1" stroke={BASELINE} fill={BASELINE} name="Base" fillOpacity={0.5} />
                   {variableNames.map((name, i) => (
@@ -170,9 +173,9 @@ function DemoPage() {
               <ResponsiveContainer>
                 <LineChart data={predData}>
                   <CartesianGrid stroke={CHART_GRID} />
-                  <XAxis dataKey="period" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
-                  <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
+                  <XAxis dataKey="period" tick={{ fontSize: 10 }} interval={7} />
+                  <YAxis tick={{ fontSize: 10 }} tickFormatter={(v: number) => "R$ " + fmt(v)} />
+                  <Tooltip formatter={(v: number) => "R$ " + fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
                   <Line type="monotone" dataKey="Real" stroke={CHANNEL_COLORS[0]} strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="Predito" stroke={SAT_AMBER} strokeWidth={2} strokeDasharray="4 3" dot={false} />
@@ -211,7 +214,7 @@ function DemoPage() {
                             </span>
                           )}
                         </td>
-                        <td className="py-3 text-right font-mono text-xs">{fmt(t.contribution)}</td>
+                        <td className="py-3 text-right font-mono text-xs">R$ {fmt(t.contribution)}</td>
                         <td className="py-3 text-right">
                           <div className="inline-flex items-center gap-2">
                             <div className="w-24 h-1 bg-abyss/10 relative">
@@ -262,8 +265,8 @@ function DemoPage() {
                     {rois.map((r) => (
                       <tr key={r.variable} className="border-b hairline">
                         <td className="py-3 font-medium">{r.variable}</td>
-                        <td className="py-3 text-right font-mono text-xs">{fmt(r.spend)}</td>
-                        <td className="py-3 text-right font-mono text-xs">{fmt(r.contribution)}</td>
+                        <td className="py-3 text-right font-mono text-xs">R$ {fmt(r.spend)}</td>
+                        <td className="py-3 text-right font-mono text-xs">R$ {fmt(r.contribution)}</td>
                         <td className="py-3 text-right">
                           <span className="font-display text-xl text-abyss">
                             {r.roi!.toFixed(2)}×
