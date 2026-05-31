@@ -12,7 +12,7 @@ export function SiteHeader() {
             <img
               src="/prisma-assets/wordmark-prisma.svg"
               alt="Prisma"
-              className="h-7 w-auto group-hover:opacity-80 transition-opacity"
+              className="h-7 w-auto block group-hover:opacity-80 transition-opacity"
             />
           </Link>
           <a href={PARENT} target="_blank" rel="noopener noreferrer" className="eyebrow hidden sm:inline hover:opacity-70 transition-opacity">
