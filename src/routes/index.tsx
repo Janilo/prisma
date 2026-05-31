@@ -45,7 +45,7 @@ function HomePage() {
 
         {/* Hero */}
         <section className="bg-indigo-soft border-b hairline">
-          <div className="mx-auto max-w-5xl px-6 py-20 lg:py-28">
+          <div className="mx-auto max-w-5xl px-6 pt-24 pb-16">
             <div className="max-w-3xl space-y-8">
               <p className="eyebrow">Marketing Mix Modeling</p>
               <h1 className="font-display text-4xl lg:text-6xl font-light italic text-abyss leading-tight">
