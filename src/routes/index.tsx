@@ -89,7 +89,8 @@ function HomePage() {
         </section>
 
         {/* O que você recebe */}
-        <section className="border-b hairline">
+        <section className="bg-indigo-soft border-b hairline">
+
           <div className="mx-auto max-w-5xl px-6 py-20">
             <div className="flex items-end justify-between gap-8 mb-10">
               <div>
