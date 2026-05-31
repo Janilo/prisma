@@ -55,7 +55,7 @@ function HomePage() {
                 Você sobe uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação,
                 mostra contribuição em R$, ROI por canal e o quanto é base versus incremental.
               </p>
-              <div className="flex flex-wrap items-start gap-3">
+              <div className="flex flex-wrap items-center gap-3">
                 <Link
                   to="/login"
                   search={{ mode: "signup" }}
@@ -63,16 +63,18 @@ function HomePage() {
                 >
                   Criar conta
                 </Link>
-                <div className="inline-flex flex-col gap-1">
+                <div className="inline-flex flex-col gap-1.5">
                   <Link
                     to="/demo"
-                    className="inline-flex items-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-widest border border-abyss text-abyss hover:bg-abyss hover:text-white transition-colors"
+                    className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-widest border-[1.5px] border-abyss text-abyss hover:bg-abyss hover:text-white transition-colors"
                   >
                     <Eye className="w-4 h-4" />
                     Ver demo
                   </Link>
-                  <p className="text-[10px] text-abyss/60">
-                    Dados fictícios · sem cadastro · roda em segundos
+                  <p className="text-[11px] text-[#5F5B55] leading-[1.7]">
+                    Dados fictícios<br />
+                    sem cadastro<br />
+                    roda em segundos
                   </p>
                 </div>
                 <Link

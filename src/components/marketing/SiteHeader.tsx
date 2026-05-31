@@ -7,7 +7,7 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 bg-paper/80 backdrop-blur supports-[backdrop-filter]:bg-paper/70 border-b hairline h-[var(--header-height)]">
       <div className="mx-auto max-w-6xl px-8 h-full flex items-center justify-between">
         {/* Wordmark */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-baseline gap-3">
           <Link to="/" className="group" aria-label="Prisma — início">
             <img
               src="/prisma-assets/wordmark-prisma.svg"
@@ -15,7 +15,7 @@ export function SiteHeader() {
               className="h-7 w-auto block group-hover:opacity-80 transition-opacity"
             />
           </Link>
-          <a href={PARENT} target="_blank" rel="noopener noreferrer" className="eyebrow hidden sm:inline hover:opacity-70 transition-opacity">
+          <a href={PARENT} target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-[13px] font-normal text-[#5F5B55] tracking-normal normal-case hover:opacity-70 transition-opacity">
             por J P Saraiva
           </a>
         </div>
