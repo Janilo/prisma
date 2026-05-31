@@ -27,7 +27,7 @@ export function SiteFooter() {
             rel="noopener noreferrer"
             className="transition-colors hover:text-abyss"
           >
-            Cascata
+            Cascata · Price Waterfall
           </a>
           <a
             href="https://lente.pereirasaraiva.com"
