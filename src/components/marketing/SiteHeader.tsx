@@ -15,9 +15,10 @@ export function SiteHeader() {
               className="h-[22px] w-auto block group-hover:opacity-80 transition-opacity"
             />
           </Link>
-          <a href={PARENT} target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-[13px] font-normal text-[#5F5B55] tracking-normal normal-case hover:opacity-70 transition-opacity">
+          <a href={PARENT} target="_blank" rel="noopener noreferrer" className="hidden sm:inline text-[13px] font-normal text-mute tracking-normal normal-case hover:opacity-70 transition-opacity">
             por J P Saraiva
           </a>
+
         </div>
 
         {/* Right actions */}

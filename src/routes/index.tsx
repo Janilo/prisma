@@ -60,29 +60,30 @@ function HomePage() {
                 <Link
                   to="/login"
                   search={{ mode: "signup" }}
-                  className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-widest bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-[0.18em] bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
                 >
                   Criar conta
                 </Link>
                 <div className="inline-flex flex-col gap-1.5">
                   <Link
                     to="/demo"
-                    className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-widest border-[1.5px] border-abyss text-abyss hover:bg-abyss hover:text-white transition-colors"
+                    className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-[0.18em] border-[1.5px] border-abyss text-abyss hover:bg-abyss hover:text-white transition-colors"
                   >
                     <Eye className="w-4 h-4" />
                     Ver demo
                   </Link>
-                  <p className="text-[11px] text-[#5F5B55] leading-[1.7]">
+                  <p className="text-[11px] text-mute leading-[1.7]">
                     Não precisa de cadastro
                   </p>
                 </div>
                 <Link
                   to="/login"
-                  className="inline-flex items-center self-start mt-3 text-xs font-bold uppercase tracking-widest text-abyss/60 hover:text-abyss transition-colors"
+                  className="inline-flex items-center self-start mt-3 text-xs font-bold uppercase tracking-[0.18em] text-abyss/60 hover:text-abyss transition-colors"
                 >
                   Entrar
                 </Link>
               </div>
+
             </div>
           </div>
         </section>
