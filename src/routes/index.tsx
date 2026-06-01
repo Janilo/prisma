@@ -49,8 +49,9 @@ function HomePage() {
           <div className="mx-auto max-w-5xl px-6 pt-24 pb-16">
             <div className="max-w-3xl space-y-8">
               <p className="eyebrow">Marketing Mix Modeling</p>
-              <h1 className="font-display lg:text-6xl font-light italic text-abyss leading-tight text-7xl">
-                Decomponha suas vendas no canal que realmente moveu o ponteiro.
+              <h1 className="font-display lg:text-6xl font-light italic leading-tight text-7xl">
+                <span className="text-abyss">A receita entra inteira.</span>{" "}
+                <span className="text-violet">Sai decomposta em canais.</span>
               </h1>
               <p className="text-base text-abyss/70 leading-relaxed max-w-lg">
                 Você sobe uma planilha de gastos e vendas. Prisma roda Ridge com adstock e saturação,
@@ -60,10 +61,11 @@ function HomePage() {
                 <Link
                   to="/login"
                   search={{ mode: "signup" }}
-                  className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-[0.18em] bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+                  className="inline-flex items-center justify-center gap-2 h-10 px-8 text-xs font-bold uppercase tracking-[0.18em] bg-abyss text-white hover:bg-indigo-deep transition-colors"
                 >
                   Criar conta
                 </Link>
+
                 <div className="inline-flex flex-col gap-1.5">
                   <Link
                     to="/demo"
