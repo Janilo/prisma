@@ -93,8 +93,9 @@ function UploadPage() {
     const granularity = detectGranularity(parsed.data, dateCol);
 
     setStatus("Enviando para o backend...");
-    const { data: userData } = await supabase.auth.getUser();
-    const uid = userData.user!.id;
+    const { data: userData, error: userErr } = await supabase.auth.getUser();
+    if (userErr || !userData.user) throw new Error("Sessão expirada. Faça login novamente.");
+    const uid = userData.user.id;
     const storagePath = `${uid}/${Date.now()}-${filename.replace(/[^\w.-]/g, "_")}`;
     const { error: upErr } = await supabase.storage
       .from("datasets")
@@ -127,7 +128,10 @@ function UploadPage() {
       })
       .select("id")
       .single();
-    if (insErr) throw insErr;
+    if (insErr) {
+      await supabase.storage.from("datasets").remove([storagePath]);
+      throw insErr;
+    }
 
     void refetch();
     return ds.id as string;

@@ -15,6 +15,8 @@ export const Route = createFileRoute("/_authenticated")({
     meta: [{ name: "robots", content: "noindex, nofollow" }],
   }),
   beforeLoad: async ({ location }) => {
+    // Auth uses localStorage — session is unavailable on the server.
+    // The guard only runs client-side; server functions protect data via requireSupabaseAuth.
     if (typeof window === "undefined") return;
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) {
