@@ -11,8 +11,9 @@ import { SiteHeader } from "@/components/marketing/SiteHeader";
 const OG_IMAGE = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png";
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (search: Record<string, unknown>) => ({
-    mode: search.mode === "signup" ? ("signup" as const) : ("signin" as const),
+  validateSearch: (search: Record<string, unknown>): { mode?: "signin" | "signup"; redirect?: string } => ({
+    mode: search.mode === "signup" ? "signup" : search.mode === "signin" ? "signin" : undefined,
+    redirect: typeof search.redirect === "string" ? search.redirect : undefined,
   }),
   head: () => ({
     meta: [
@@ -36,7 +37,7 @@ export const Route = createFileRoute("/login")({
 function LoginPage() {
   const navigate = useNavigate();
   const { mode: searchMode } = Route.useSearch();
-  const [mode, setMode] = useState<"signin" | "signup">(searchMode);
+  const [mode, setMode] = useState<"signin" | "signup">(searchMode ?? "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
