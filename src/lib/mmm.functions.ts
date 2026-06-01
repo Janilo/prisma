@@ -91,7 +91,7 @@ async function findLatestVersionId(datasetId: string, userId: string): Promise<{
     .from("datasets")
     .select("id, version, parent_dataset_id")
     .eq("user_id", userId);
-  if (!allDs?.length) return { id: datasetId, version: 1 };
+  if (!allDs || allDs.length === 0) return { id: datasetId, version: 1 };
   const childOf = new Map<string, { id: string; version: number }>();
   for (const ds of allDs) {
     if (!ds.parent_dataset_id) continue;
