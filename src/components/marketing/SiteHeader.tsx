@@ -38,7 +38,7 @@ export function SiteHeader() {
           <Link
             to="/login"
             search={{ mode: "signup" }}
-            className="inline-flex items-center gap-2 bg-abyss text-white px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] hover:bg-indigo-deep transition-colors"
+            className="inline-flex items-center gap-2 bg-abyss text-white px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] hover:opacity-90 transition-opacity"
           >
             Criar conta <span aria-hidden>→</span>
           </Link>
