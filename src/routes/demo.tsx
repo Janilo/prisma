@@ -106,7 +106,7 @@ function DemoPage() {
       <main className="flex-1">
         {/* Demo banner */}
         <div className="border-b hairline bg-violet/10">
-          <div className="mx-auto max-w-7xl px-6 lg:px-10 py-2.5 flex flex-wrap items-center justify-between gap-4 text-xs">
+          <div className="mx-auto max-w-5xl px-6 lg:px-10 py-2.5 flex flex-wrap items-center justify-between gap-4 text-xs">
             <div className="flex items-center gap-2 text-abyss">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-abyss/60" />
@@ -125,7 +125,7 @@ function DemoPage() {
           </div>
         </div>
 
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 py-12">
+        <div className="mx-auto max-w-5xl px-6 lg:px-10 py-12">
           <p className="eyebrow">Resultado da Demo</p>
           <h1 className="mt-2 font-display text-4xl font-light italic text-abyss">
             {run.name}
