@@ -1,36 +1,24 @@
-## Auditoria — Landing × Prisma DS
+## Mudanças
 
-A landing já consome a maior parte do DS (`bg-paper`, `bg-indigo-soft`, `text-abyss`, `text-violet`, `text-mute`, `eyebrow`, `hairline`, `font-display`, `bg-primary`). As opacidades `text-abyss/70`, `border-violet/40`, etc. **são válidas** — Tailwind v4 deriva alpha a partir dos color tokens. Não são hardcode.
+### 1. Botões "Criar conta" → cor abyss (escura)
 
-### Violações reais encontradas
+Hoje usam `bg-primary` (#4A37B5 indigo). Trocar pelo tom escuro do "Ver demo" no hover: `bg-abyss text-white` com `hover:bg-indigo-deep` (ou `hover:opacity-90`).
 
-1. `src/routes/index.tsx:75` — `text-[#5F5B55]` (cinza do JPS antigo, fora da paleta Prisma).
-2. `src/components/marketing/SiteHeader.tsx:18` — mesmo `text-[#5F5B55]`.
+- `src/routes/index.tsx` L63 — botão hero "Criar conta"
+- `src/components/marketing/SiteHeader.tsx` L40 — botão header "Criar conta"
 
-Esses dois pontos contornam o token system com cor literal de outra marca (J P Saraiva core). Em Prisma o equivalente é `--prisma-mute` (#726E89) → utilitário `text-mute`.
+### 2. Hero: novo texto bicolor
 
-### Inconsistência de tracking (eyebrow scale)
+Substituir o `<h1>` atual por:
+- "A receita entra inteira." em `text-abyss`
+- "Sai decomposta em canais." em `text-violet` (#7A5CF0)
 
-O DS define `--jps-tracking-eyebrow: 0.18em` e o Header já usa `tracking-[0.18em]` nos uppercase labels. No Hero (`index.tsx`) os botões "Criar conta", "Ver demo", "Entrar" usam `tracking-widest` (Tailwind = 0.1em), quebrando o ritmo tipográfico contra o Header.
+Ambos no mesmo `<h1>` Fraunces italic light (mantém `font-display font-light italic`). Quebra natural entre as duas frases via `<span>` separados — sem `<br>` forçado, deixa o flow tipográfico.
 
-### Mudanças
+O parágrafo descritivo abaixo do h1 continua como está.
 
-**`src/routes/index.tsx`**
-- L63, L70, L81: `tracking-widest` → `tracking-[0.18em]` (alinha com Header / eyebrow scale do DS).
-- L75: `text-[11px] text-[#5F5B55] leading-[1.7]` → `text-[11px] text-mute leading-[1.7]`.
+### Fora de escopo
 
-**`src/components/marketing/SiteHeader.tsx`**
-- L18: `text-[#5F5B55]` → `text-mute`.
-
-### Fora de escopo (não tocar)
-
-- Estrutura, hierarquia, copy.
-- Tamanho/peso do `<h1>` do hero (já ajustado em turnos anteriores).
-- Classes `*/<alpha>` (abyss/70, indigo/40, etc.) — são derivações válidas de tokens.
-- `bg-white` — `--color-white: var(--prisma-white)` está mapeado.
-- `border-[1.5px]` — espessura, não cor.
-- Hero, Method, Footer, demais componentes do produto.
-
-### Verificação
-
-Após aplicar: rodar `rg "#[0-9A-Fa-f]{3,8}" src/routes/index.tsx src/components/marketing/` e confirmar zero hits.
+- Botão "Ver demo" e "Entrar" (sem mudança).
+- Tamanho/escala do h1 (mantém `text-7xl lg:text-6xl`).
+- Eyebrow "Marketing Mix Modeling" continua.
