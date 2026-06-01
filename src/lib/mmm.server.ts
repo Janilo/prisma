@@ -71,15 +71,37 @@ export function choleskySolve(A: Matrix, b: number[]): number[] {
   return x;
 }
 
-// Invert SPD matrix via Cholesky (column by column).
+// Invert SPD matrix via Cholesky — factor once, then n triangular back-solves: O(n³) total.
 export function choleskyInverse(A: Matrix): Matrix {
   const n = A.length;
+  const L: Matrix = Array.from({ length: n }, () => new Array(n).fill(0));
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j <= i; j++) {
+      let s = A[i][j];
+      for (let k = 0; k < j; k++) s -= L[i][k] * L[j][k];
+      if (i === j) {
+        if (s <= 0) throw new Error("Matriz não positiva definida; aumente alpha.");
+        L[i][j] = Math.sqrt(s);
+      } else {
+        L[i][j] = s / L[j][j];
+      }
+    }
+  }
   const inv: Matrix = Array.from({ length: n }, () => new Array(n).fill(0));
   for (let j = 0; j < n; j++) {
-    const e = new Array(n).fill(0);
-    e[j] = 1;
-    const col = choleskySolve(A, e);
-    for (let i = 0; i < n; i++) inv[i][j] = col[i];
+    const y = new Array(n).fill(0);
+    for (let i = 0; i < n; i++) {
+      let s = i === j ? 1 : 0;
+      for (let k = 0; k < i; k++) s -= L[i][k] * y[k];
+      y[i] = s / L[i][i];
+    }
+    const x = new Array(n).fill(0);
+    for (let i = n - 1; i >= 0; i--) {
+      let s = y[i];
+      for (let k = i + 1; k < n; k++) s -= L[k][i] * x[k];
+      x[i] = s / L[i][i];
+    }
+    for (let i = 0; i < n; i++) inv[i][j] = x[i];
   }
   return inv;
 }

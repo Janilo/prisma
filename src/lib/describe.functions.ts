@@ -17,7 +17,11 @@ function parseCSV(text: string): { columns: string[]; rows: Record<string, unkno
     let q = false;
     for (let i = 0; i < line.length; i++) {
       const ch = line[i];
-      if (ch === '"') { q = !q; continue; }
+      if (ch === '"') {
+        if (q && line[i + 1] === '"') { cur += '"'; i++; continue; } // RFC-4180 escaped quote
+        q = !q;
+        continue;
+      }
       if (ch === "," && !q) { out.push(cur); cur = ""; continue; }
       cur += ch;
     }
@@ -138,7 +142,9 @@ export const interpretDataset = createServerFn({ method: "POST" })
     const apiKey = process.env.LOVABLE_API_KEY;
     if (!apiKey) throw new Error("LOVABLE_API_KEY não configurada.");
     const gateway = createLovableAiGatewayProvider(apiKey);
-    const model = gateway("google/gemini-3-flash-preview");
+    // TODO: verify model ID against Lovable AI gateway — "gemini-3" was not a released Google model;
+    // consider "google/gemini-2.5-flash-preview" or check https://ai.gateway.lovable.dev for current IDs.
+    const model = gateway("google/gemini-2.5-flash-preview");
 
     const system =
       "Você é um analista sênior de Marketing Mix Modeling. Escreva sempre em português do Brasil, com tom direto, executivo e específico. Cite NÚMEROS reais (médias, % de variação, correlações) ao tirar conclusões. Nunca invente colunas ou números que não estão no JSON. Quando sugerir variáveis de mídia, escolha colunas cujo nome remeta a gasto, investimento, impressões ou canais (TV, Google, Meta, etc.).";

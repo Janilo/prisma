@@ -11,6 +11,9 @@ import { SiteHeader } from "@/components/marketing/SiteHeader";
 const OG_IMAGE = "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/47fc7d9a-9d0b-4fdd-b478-43819dd6f0fb/id-preview-024b0073--08173dd6-2e41-4abf-a10f-3a3bb04241da.lovable.app-1779934609120.png";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    mode: search.mode === "signup" ? ("signup" as const) : ("signin" as const),
+  }),
   head: () => ({
     meta: [
       { title: "Entrar · Prisma" },
@@ -32,11 +35,8 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const initialMode: "signin" | "signup" =
-    typeof window !== "undefined" && new URLSearchParams(window.location.search).get("mode") === "signup"
-      ? "signup"
-      : "signin";
-  const [mode, setMode] = useState<"signin" | "signup">(initialMode);
+  const { mode: searchMode } = Route.useSearch();
+  const [mode, setMode] = useState<"signin" | "signup">(searchMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

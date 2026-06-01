@@ -56,7 +56,11 @@ function parseCSV(text: string): { columns: string[]; rows: Record<string, unkno
     let q = false;
     for (let i = 0; i < line.length; i++) {
       const ch = line[i];
-      if (ch === '"') { q = !q; continue; }
+      if (ch === '"') {
+        if (q && line[i + 1] === '"') { cur += '"'; i++; continue; } // RFC-4180 escaped quote
+        q = !q;
+        continue;
+      }
       if (ch === "," && !q) { out.push(cur); cur = ""; continue; }
       cur += ch;
     }
@@ -80,33 +84,29 @@ function parseCSV(text: string): { columns: string[]; rows: Record<string, unkno
 
 type RunInputType = z.infer<typeof RunInput>;
 
-// Walks the parent_dataset_id chain forward to find the newest version
-// (linear chain assumption — fork tolerated, picks highest version on each step).
+// Walks the parent_dataset_id chain forward to find the newest version.
+// Single query — fetches all user datasets and traverses in memory instead of N+1 round-trips.
 async function findLatestVersionId(datasetId: string, userId: string): Promise<{ id: string; version: number }> {
-  let current = datasetId;
-  let version = 1;
-  // Read current version once
-  const { data: head } = await supabaseAdmin
+  const { data: allDs } = await supabaseAdmin
     .from("datasets")
-    .select("version")
-    .eq("id", current)
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (head?.version) version = head.version;
-  for (let i = 0; i < 50; i++) {
-    const { data: child } = await supabaseAdmin
-      .from("datasets")
-      .select("id, version")
-      .eq("parent_dataset_id", current)
-      .eq("user_id", userId)
-      .order("version", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (!child) return { id: current, version };
-    current = child.id;
-    version = child.version;
+    .select("id, version, parent_dataset_id")
+    .eq("user_id", userId);
+  if (!allDs?.length) return { id: datasetId, version: 1 };
+  const childOf = new Map<string, { id: string; version: number }>();
+  for (const ds of allDs) {
+    if (!ds.parent_dataset_id) continue;
+    const prev = childOf.get(ds.parent_dataset_id);
+    if (!prev || ds.version > prev.version) childOf.set(ds.parent_dataset_id, { id: ds.id, version: ds.version });
   }
-  return { id: current, version };
+  let cur = datasetId;
+  let version = allDs.find((d) => d.id === datasetId)?.version ?? 1;
+  for (let i = 0; i < 50; i++) {
+    const next = childOf.get(cur);
+    if (!next) break;
+    cur = next.id;
+    version = next.version;
+  }
+  return { id: cur, version };
 }
 
 // Core MMM execution — shared between runMmm and rerunOnLatestVersion.
@@ -129,6 +129,10 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
 
   if (rows.length < 8) throw new Error("Poucas linhas para rodar o modelo (mínimo 8).");
 
+  if (rows.length > 0 && !(data.depVariable in rows[0])) {
+    const available = Object.keys(rows[0]).join(", ");
+    throw new Error(`Coluna dependente "${data.depVariable}" não encontrada. Colunas disponíveis: ${available}.`);
+  }
   const y = rows.map((r) => toNumber(r[data.depVariable]));
   const featureNames: string[] = [];
   const rawColumns: number[][] = [];
@@ -178,7 +182,7 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
   // Resample residuals with replacement, refit Ridge, collect contribution & ROI per feature.
   // Provides honest uncertainty bands; complements (and partially mitigates) Ridge's known
   // p-value underestimation.
-  const B = 200;
+  const B = n * p > 3000 ? 100 : 200;
   const residualsFit = y.map((v, i) => v - fit.yPred[i]);
   // Mulligan PRNG seeded so CI is reproducible for the same dataset/params.
   let seed = (data.alpha * 1e6 + n * 31 + p) >>> 0 || 1;
