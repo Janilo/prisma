@@ -2,15 +2,20 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { adminFetchData } from "@/lib/admin.functions";
-import { ADMIN_EMAIL } from "@/lib/config";
+import { adminFetchData, getIsAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({ meta: [{ title: "Admin · Prisma" }, { name: "robots", content: "noindex" }] }),
   beforeLoad: async () => {
     if (typeof window === "undefined") return;
     const { data } = await supabase.auth.getUser();
-    if (!data.user || data.user.email !== ADMIN_EMAIL) throw redirect({ to: "/upload" });
+    if (!data.user) throw redirect({ to: "/upload" });
+    try {
+      const { isAdmin } = await getIsAdmin();
+      if (!isAdmin) throw redirect({ to: "/upload" });
+    } catch {
+      throw redirect({ to: "/upload" });
+    }
   },
   component: AdminPage,
 });
@@ -21,7 +26,8 @@ type Run = { id: string; dataset_id: string; created_at: string };
 
 function AdminPage() {
   const navigate = useNavigate();
-  const fetch = useServerFn(adminFetchData);
+  const fetchData = useServerFn(adminFetchData);
+  const checkAdmin = useServerFn(getIsAdmin);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [datasets, setDatasets] = useState<Dataset[]>([]);
   const [runs, setRuns] = useState<Run[]>([]);
@@ -29,28 +35,25 @@ function AdminPage() {
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (!data.user || data.user.email !== ADMIN_EMAIL) navigate({ to: "/upload", replace: true });
-    });
-  }, [navigate]);
+    checkAdmin()
+      .then(r => { if (!r.isAdmin) navigate({ to: "/upload", replace: true }); })
+      .catch(() => navigate({ to: "/upload", replace: true }));
+  }, [navigate, checkAdmin]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: sessionData }) => {
-      if (!sessionData.session) return;
+    (async () => {
       try {
-        const result = await fetch({
-          headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
-        } as never);
+        const result = await fetchData();
         setProfiles(result.profiles as Profile[]);
         setDatasets(result.datasets as Dataset[]);
         setRuns(result.runs as Run[]);
-      } catch (e) {
-        setErr(e instanceof Error ? e.message : "Erro ao carregar dados.");
+      } catch {
+        setErr("Não foi possível carregar os dados. Tente novamente.");
       } finally {
         setLoading(false);
       }
-    });
-  }, [fetch]);
+    })();
+  }, [fetchData]);
 
   const datasetsByUser = new Map<string, Dataset[]>();
   for (const d of datasets) {
@@ -83,7 +86,7 @@ function AdminPage() {
       <div>
         <p className="eyebrow text-xs uppercase tracking-widest text-mute">Admin</p>
         <h1 className="mt-2 font-display text-2xl text-abyss">Painel de administração</h1>
-        <p className="mt-1 text-sm text-mute">Visão geral da plataforma. Apenas para janilo@pereirasaraiva.com.</p>
+        <p className="mt-1 text-sm text-mute">Visão geral da plataforma. Acesso restrito.</p>
       </div>
 
       {/* Stats */}

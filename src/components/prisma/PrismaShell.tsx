@@ -29,10 +29,13 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
   const { location } = useRouterState();
   const navigate = useNavigate();
   const [email, setEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const checkAdmin = useServerFn(getIsAdmin);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
-  }, []);
+    checkAdmin().then(r => setIsAdmin(r.isAdmin)).catch(() => setIsAdmin(false));
+  }, [checkAdmin]);
 
   const isActive = (to: string) =>
     location.pathname === to || location.pathname.startsWith(to + "/");
@@ -90,7 +93,7 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
               {v.label}
             </Link>
           ))}
-          {email === ADMIN_EMAIL && (
+          {isAdmin && (
             <>
               <div className="group-label">Sistema</div>
               <Link to="/admin" aria-current={isActive("/admin") ? "page" : undefined}>
