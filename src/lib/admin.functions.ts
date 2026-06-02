@@ -2,11 +2,18 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
-import { ADMIN_EMAIL } from "./config";
+import { isAdminEmail } from "./admin.server";
 
 function assertAdmin(claims: { email?: string } | undefined) {
-  if ((claims?.email ?? "").toLowerCase() !== ADMIN_EMAIL) throw new Error("Acesso negado.");
+  if (!isAdminEmail(claims?.email)) throw new Error("Acesso negado.");
 }
+
+export const getIsAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const claims = context.claims as { email?: string } | undefined;
+    return { isAdmin: isAdminEmail(claims?.email) };
+  });
 
 export const adminFetchData = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
