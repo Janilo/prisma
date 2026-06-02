@@ -372,7 +372,7 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     })
     .select("id")
     .single();
-  if (insErr || !runRow) throw new Error(insErr?.message ?? "Falha ao salvar run.");
+  if (insErr || !runRow) { console.error("runMmm insert failed:", insErr); throw new Error("Falha ao salvar run. Tente novamente."); }
   return { runId: runRow.id as string };
 }
 
@@ -446,7 +446,7 @@ export const listDatasets = createServerFn({ method: "GET" })
       .from("datasets")
       .select("id, name, original_filename, n_rows, n_cols, granularity, period_start, period_end, created_at, parent_dataset_id, version")
       .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
+    if (error) { console.error("listDatasets failed:", error); throw new Error("Falha ao carregar datasets."); }
     return { datasets: data ?? [] };
   });
 
@@ -459,7 +459,7 @@ export const listRuns = createServerFn({ method: "GET" })
       .from("runs")
       .select("id, name, status, dep_variable, metrics_json, created_at, dataset_id")
       .order("created_at", { ascending: false });
-    if (error) throw new Error(error.message);
+    if (error) { console.error("listRuns failed:", error); throw new Error("Falha ao carregar rodadas."); }
     return { runs: data ?? [] };
   });
 
@@ -529,7 +529,7 @@ export const updateUnitCosts = createServerFn({ method: "POST" })
       .from("datasets")
       .update({ unit_costs_json: data.mappings })
       .eq("id", data.id);
-    if (error) throw new Error(error.message);
+    if (error) { console.error("updateUnitCosts failed:", error); throw new Error("Falha ao salvar. Tente novamente."); }
     return { ok: true };
   });
 
