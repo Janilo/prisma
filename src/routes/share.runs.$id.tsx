@@ -35,7 +35,7 @@ function SharedRunPage() {
               Modo compartilhado · read-only
             </span>
             <Link
-              to="/signup"
+              to="/login"
               className="text-xs uppercase tracking-widest border border-abyss/30 px-3 py-1.5 hover:bg-abyss hover:text-white transition-colors"
             >
               Criar conta
