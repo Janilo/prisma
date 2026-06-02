@@ -1,8 +1,9 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PrismaIcons, Ico } from "./PrismaIcons";
-import { ADMIN_EMAIL } from "@/lib/config";
+import { getIsAdmin } from "@/lib/admin.functions";
 
 const VIEWS = [
   { to: "/results/decomp", label: "Decomposição", icon: "i-decompose" },
@@ -28,10 +29,13 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
   const { location } = useRouterState();
   const navigate = useNavigate();
   const [email, setEmail] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const checkAdmin = useServerFn(getIsAdmin);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
-  }, []);
+    checkAdmin().then(r => setIsAdmin(r.isAdmin)).catch(() => setIsAdmin(false));
+  }, [checkAdmin]);
 
   const isActive = (to: string) =>
     location.pathname === to || location.pathname.startsWith(to + "/");
@@ -89,7 +93,7 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
               {v.label}
             </Link>
           ))}
-          {email === ADMIN_EMAIL && (
+          {isAdmin && (
             <>
               <div className="group-label">Sistema</div>
               <Link to="/admin" aria-current={isActive("/admin") ? "page" : undefined}>
