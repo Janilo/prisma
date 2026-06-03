@@ -13,10 +13,12 @@ export default defineConfig({
     tailwindcss(),
     tsConfigPaths(),
   ],
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+  vite: {
+    resolve: {
+      alias: {
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
+      },
+      dedupe: ["react", "react-dom", "@tanstack/react-router"],
     },
-    dedupe: ["react", "react-dom", "@tanstack/react-router"],
   },
 });
