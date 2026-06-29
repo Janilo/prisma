@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
+import { createAiGatewayProvider } from "./ai-gateway.server";
 import { compactForLlm, summarizeDataset, type DatasetSummary } from "./describe.server";
 
 // Minimal CSV parser (matches mmm.functions.ts)
@@ -139,9 +139,9 @@ export const interpretDataset = createServerFn({ method: "POST" })
     });
     const compact = compactForLlm(summary);
 
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("LOVABLE_API_KEY não configurada.");
-    const gateway = createLovableAiGatewayProvider(apiKey);
+    const apiKey = process.env.AI_API_KEY ?? process.env.LOVABLE_API_KEY;
+    if (!apiKey) throw new Error("AI_API_KEY (ou LOVABLE_API_KEY) não configurada.");
+    const gateway = createAiGatewayProvider(apiKey);
     // TODO: verify model ID against Lovable AI gateway — "gemini-3" was not a released Google model;
     // consider "google/gemini-2.5-flash-preview" or check https://ai.gateway.lovable.dev for current IDs.
     const model = gateway("google/gemini-2.5-flash-preview");
