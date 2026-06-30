@@ -139,12 +139,10 @@ export const interpretDataset = createServerFn({ method: "POST" })
     });
     const compact = compactForLlm(summary);
 
-    const apiKey = process.env.AI_API_KEY ?? process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("AI_API_KEY (ou LOVABLE_API_KEY) não configurada.");
+    const apiKey = process.env.AI_API_KEY;
+    if (!apiKey) throw new Error("AI_API_KEY não configurada.");
     const gateway = createAiGatewayProvider(apiKey);
-    // TODO: verify model ID against Lovable AI gateway — "gemini-3" was not a released Google model;
-    // consider "google/gemini-2.5-flash-preview" or check https://ai.gateway.lovable.dev for current IDs.
-    const model = gateway("google/gemini-2.5-flash-preview");
+    const model = gateway("gemini-2.5-flash");
 
     const system =
       "Você é um analista sênior de Marketing Mix Modeling. Escreva sempre em português do Brasil, com tom direto, executivo e específico. Cite NÚMEROS reais (médias, % de variação, correlações) ao tirar conclusões. Nunca invente colunas ou números que não estão no JSON. Quando sugerir variáveis de mídia, escolha colunas cujo nome remeta a gasto, investimento, impressões ou canais (TV, Google, Meta, etc.).";
