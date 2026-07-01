@@ -9,7 +9,10 @@ export const Route = createFileRoute("/_authenticated/datasets/$id")({
   head: ({ params }) => ({
     meta: [
       { title: "Dataset · Prisma" },
-      { name: "description", content: "Diagnóstico do dataset e configuração do modelo Marketing Mix Modeling." },
+      {
+        name: "description",
+        content: "Diagnóstico do dataset e configuração do modelo Marketing Mix Modeling.",
+      },
       { property: "og:url", content: `https://prisma.pereirasaraiva.com/datasets/${params.id}` },
       { name: "robots", content: "noindex" },
     ],
@@ -47,7 +50,9 @@ function DatasetLayout() {
           <span>{ds.n_cols} colunas</span>
           {ds.granularity && <span>{ds.granularity}</span>}
           {ds.period_start && ds.period_end && (
-            <span>{ds.period_start} → {ds.period_end}</span>
+            <span>
+              {ds.period_start} → {ds.period_end}
+            </span>
           )}
         </div>
       </div>

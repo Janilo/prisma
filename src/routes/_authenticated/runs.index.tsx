@@ -11,9 +11,7 @@ export const Route = createFileRoute("/_authenticated/runs/")({
 function RunsPage() {
   const fn = useServerFn(listRuns);
   const navigate = useNavigate();
-  const { data } = useSuspenseQuery(
-    queryOptions({ queryKey: ["runs"], queryFn: () => fn() }),
-  );
+  const { data } = useSuspenseQuery(queryOptions({ queryKey: ["runs"], queryFn: () => fn() }));
   const [selected, setSelected] = useState<string[]>([]);
 
   const selectedDataset = useMemo(() => {
@@ -40,14 +38,15 @@ function RunsPage() {
   return (
     <div className="p-12 max-w-5xl">
       <p className="eyebrow">Histórico</p>
-      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-abyss">
-        Modelos rodados
-      </h1>
+      <h1 className="mt-2 text-2xl font-semibold tracking-tight text-abyss">Modelos rodados</h1>
 
       {data.runs.length === 0 ? (
         <div className="mt-12 border hairline-strong bg-white p-12 text-center">
           <p className="text-sm text-abyss/70">Nenhum modelo rodado ainda.</p>
-          <Link to="/upload" className="mt-6 inline-block bg-abyss text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-indigo">
+          <Link
+            to="/upload"
+            className="mt-6 inline-block bg-abyss text-white px-6 py-2 text-xs font-bold uppercase tracking-widest hover:bg-indigo"
+          >
             Começar
           </Link>
         </div>
@@ -85,9 +84,13 @@ function RunsPage() {
               {data.runs.map((r) => {
                 const m = (r.metrics_json as { r2?: number; mape?: number }) ?? {};
                 const isSelected = selected.includes(r.id);
-                const disabled = !isSelected && selectedDataset !== null && r.dataset_id !== selectedDataset;
+                const disabled =
+                  !isSelected && selectedDataset !== null && r.dataset_id !== selectedDataset;
                 return (
-                  <tr key={r.id} className={`border-b hairline ${disabled ? "opacity-30" : "hover:bg-indigo-soft/50"}`}>
+                  <tr
+                    key={r.id}
+                    className={`border-b hairline ${disabled ? "opacity-30" : "hover:bg-indigo-soft/50"}`}
+                  >
                     <td className="py-4">
                       <input
                         type="checkbox"
@@ -99,13 +102,21 @@ function RunsPage() {
                     </td>
                     <td className="py-4 font-medium text-abyss">{r.name}</td>
                     <td className="py-4 text-abyss/70">{r.dep_variable}</td>
-                    <td className="py-4 text-right font-mono text-xs">{m.r2 !== undefined ? (m.r2 * 100).toFixed(1) + "%" : "—"}</td>
-                    <td className="py-4 text-right font-mono text-xs">{m.mape !== undefined ? (m.mape * 100).toFixed(1) + "%" : "—"}</td>
+                    <td className="py-4 text-right font-mono text-xs">
+                      {m.r2 !== undefined ? (m.r2 * 100).toFixed(1) + "%" : "—"}
+                    </td>
+                    <td className="py-4 text-right font-mono text-xs">
+                      {m.mape !== undefined ? (m.mape * 100).toFixed(1) + "%" : "—"}
+                    </td>
                     <td className="py-4 pl-4 text-xs text-abyss/70 font-mono">
                       {new Date(r.created_at).toLocaleString("pt-BR")}
                     </td>
                     <td className="py-4 text-right">
-                      <Link to="/runs/$id" params={{ id: r.id }} className="text-xs uppercase tracking-widest border-b border-violet pb-0.5 text-abyss hover:text-indigo">
+                      <Link
+                        to="/runs/$id"
+                        params={{ id: r.id }}
+                        className="text-xs uppercase tracking-widest border-b border-violet pb-0.5 text-abyss hover:text-indigo"
+                      >
                         Ver
                       </Link>
                     </td>

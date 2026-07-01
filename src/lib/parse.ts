@@ -56,11 +56,17 @@ function isLikelyDate(value: unknown): boolean {
 
 export function analyzeColumns(rows: Record<string, unknown>[], columns: string[]): ColumnInfo[] {
   return columns.map((col) => {
-    let nNum = 0, nDate = 0, nStr = 0, missing = 0;
+    let nNum = 0,
+      nDate = 0,
+      nStr = 0,
+      missing = 0;
     const values: unknown[] = [];
     for (const row of rows) {
       const v = row[col];
-      if (v === null || v === undefined || v === "") { missing++; continue; }
+      if (v === null || v === undefined || v === "") {
+        missing++;
+        continue;
+      }
       values.push(v);
       if (typeof v === "number" && Number.isFinite(v)) nNum++;
       else if (isLikelyDate(v)) nDate++;
@@ -98,7 +104,25 @@ export function analyzeColumns(rows: Record<string, unknown>[], columns: string[
 }
 
 const DEP_HINTS = ["venda", "vendas", "revenue", "receita", "sales", "faturamento", "target"];
-const INDEP_HINTS = ["gasto", "spend", "investimento", "invest", "impress", "click", "media", "tv", "meta", "google", "social", "ooh", "radio", "preco", "price", "discount", "promo"];
+const INDEP_HINTS = [
+  "gasto",
+  "spend",
+  "investimento",
+  "invest",
+  "impress",
+  "click",
+  "media",
+  "tv",
+  "meta",
+  "google",
+  "social",
+  "ooh",
+  "radio",
+  "preco",
+  "price",
+  "discount",
+  "promo",
+];
 
 export function guessDependentVariable(cols: ColumnInfo[]): string | null {
   const numeric = cols.filter((c) => c.kind === "number");
@@ -125,7 +149,10 @@ export function detectDateColumn(cols: ColumnInfo[]): string | null {
   return cols.find((c) => c.kind === "date")?.name ?? null;
 }
 
-export function detectGranularity(rows: Record<string, unknown>[], dateCol: string | null): "diária" | "semanal" | "mensal" | "desconhecida" {
+export function detectGranularity(
+  rows: Record<string, unknown>[],
+  dateCol: string | null,
+): "diária" | "semanal" | "mensal" | "desconhecida" {
   if (!dateCol || rows.length < 2) return "desconhecida";
   const ts: number[] = [];
   for (const r of rows) {

@@ -9,7 +9,10 @@ export const Route = createFileRoute("/share/runs/$id")({
   head: () => ({
     meta: [
       { title: "Resultado compartilhado · Prisma" },
-      { name: "description", content: "Resultado de modelo Marketing Mix Modeling compartilhado em modo leitura." },
+      {
+        name: "description",
+        content: "Resultado de modelo Marketing Mix Modeling compartilhado em modo leitura.",
+      },
       { name: "robots", content: "noindex, nofollow" },
     ],
   }),
@@ -29,7 +32,9 @@ function SharedRunPage() {
     <div className="min-h-screen bg-indigo-soft">
       <header className="border-b hairline-strong bg-white">
         <div className="max-w-7xl mx-auto px-12 py-4 flex items-center justify-between">
-          <Link to="/" className="font-display text-xl text-abyss">Prisma</Link>
+          <Link to="/" className="font-display text-xl text-abyss">
+            Prisma
+          </Link>
           <div className="flex items-center gap-3">
             <span className="text-[10px] uppercase tracking-widest text-mute">
               Modo compartilhado · read-only

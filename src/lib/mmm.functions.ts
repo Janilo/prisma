@@ -4,16 +4,8 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import {
-  adstock,
-  hill,
-  mape,
-  median,
-  r2,
-  ridgeFit,
-  rmse,
-  type Matrix,
-} from "./mmm.server";
+import { adstock, hill, mape, median, r2, ridgeFit, rmse, type Matrix } from "./mmm.server";
+import { parseCSV } from "./csv.server";
 
 const RunInput = z.object({
   datasetId: z.string().uuid(),
@@ -35,7 +27,6 @@ const RunInput = z.object({
   // column that holds the actual investment. When provided, ROI uses the investment sum
   // instead of summing the execution-unit values.
   spendBasis: z.record(z.string(), z.string()).optional(),
-
 });
 
 function toNumber(v: unknown): number {
@@ -45,48 +36,14 @@ function toNumber(v: unknown): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-function parseCSV(text: string): { columns: string[]; rows: Record<string, unknown>[] } {
-  // Lightweight CSV parser. We round-trip uploaded data via JSON in the dataset blob,
-  // so this is mostly a fallback if a raw CSV ends up in storage.
-  const lines = text.split(/\r?\n/).filter((l) => l.length > 0);
-  if (lines.length === 0) return { columns: [], rows: [] };
-  const split = (line: string) => {
-    const out: string[] = [];
-    let cur = "";
-    let q = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        if (q && line[i + 1] === '"') { cur += '"'; i++; continue; } // RFC-4180 escaped quote
-        q = !q;
-        continue;
-      }
-      if (ch === "," && !q) { out.push(cur); cur = ""; continue; }
-      cur += ch;
-    }
-    out.push(cur);
-    return out;
-  };
-  const columns = split(lines[0]);
-  const rows: Record<string, unknown>[] = [];
-  for (let i = 1; i < lines.length; i++) {
-    const parts = split(lines[i]);
-    const row: Record<string, unknown> = {};
-    columns.forEach((c, idx) => {
-      const raw = parts[idx];
-      const n = Number(raw);
-      row[c] = raw === "" || raw === undefined ? null : Number.isFinite(n) && raw !== "" ? n : raw;
-    });
-    rows.push(row);
-  }
-  return { columns, rows };
-}
-
 type RunInputType = z.infer<typeof RunInput>;
 
 // Walks the parent_dataset_id chain forward to find the newest version.
 // Single query — fetches all user datasets and traverses in memory instead of N+1 round-trips.
-async function findLatestVersionId(datasetId: string, userId: string): Promise<{ id: string; version: number }> {
+async function findLatestVersionId(
+  datasetId: string,
+  userId: string,
+): Promise<{ id: string; version: number }> {
   const { data: allDs } = await supabaseAdmin
     .from("datasets")
     .select("id, version, parent_dataset_id")
@@ -96,7 +53,8 @@ async function findLatestVersionId(datasetId: string, userId: string): Promise<{
   for (const ds of allDs) {
     if (!ds.parent_dataset_id) continue;
     const prev = childOf.get(ds.parent_dataset_id);
-    if (!prev || ds.version > prev.version) childOf.set(ds.parent_dataset_id, { id: ds.id, version: ds.version });
+    if (!prev || ds.version > prev.version)
+      childOf.set(ds.parent_dataset_id, { id: ds.id, version: ds.version });
   }
   let cur = datasetId;
   let version = allDs.find((d) => d.id === datasetId)?.version ?? 1;
@@ -131,7 +89,9 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
 
   if (rows.length > 0 && !(data.depVariable in rows[0])) {
     const available = Object.keys(rows[0]).join(", ");
-    throw new Error(`Coluna dependente "${data.depVariable}" não encontrada. Colunas disponíveis: ${available}.`);
+    throw new Error(
+      `Coluna dependente "${data.depVariable}" não encontrada. Colunas disponíveis: ${available}.`,
+    );
   }
   const y = rows.map((r) => toNumber(r[data.depVariable]));
   const featureNames: string[] = [];
@@ -155,9 +115,11 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     return fallbackArr.reduce((a, b) => a + b, 0);
   }
 
-
   // Cache per-channel transform metadata so we can later rebuild response curves.
-  const channelMeta: Record<string, { decay: number; k: number; rawSeries: number[]; featureIdx: number }> = {};
+  const channelMeta: Record<
+    string,
+    { decay: number; k: number; rawSeries: number[]; featureIdx: number }
+  > = {};
 
   const transformedColumns: number[][] = rawColumns.map((arr, idx) => {
     const name = featureNames[idx];
@@ -169,12 +131,9 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     return hill(ad, data.saturationAlpha, med);
   });
 
-
   const n = rows.length;
   const p = transformedColumns.length;
-  const X: Matrix = Array.from({ length: n }, (_, i) =>
-    transformedColumns.map((col) => col[i])
-  );
+  const X: Matrix = Array.from({ length: n }, (_, i) => transformedColumns.map((col) => col[i]));
 
   const fit = ridgeFit({ X, y, alpha: data.alpha, featureNames });
 
@@ -193,7 +152,7 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
   const contribSamples: number[][] = Array.from({ length: p }, () => []);
   const roiSamples: number[][] = Array.from({ length: p }, () => []);
   const channelSpends = featureNames.map((name, j) =>
-    mediaSet.has(name) ? channelSpendTotal(name, rawColumns[j]) : 0
+    mediaSet.has(name) ? channelSpendTotal(name, rawColumns[j]) : 0,
   );
   for (let b = 0; b < B; b++) {
     const yb = new Array<number>(n);
@@ -217,7 +176,8 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     if (arr.length === 0) return NaN;
     const sorted = [...arr].sort((a, b) => a - b);
     const idx = (sorted.length - 1) * q;
-    const lo = Math.floor(idx), hi = Math.ceil(idx);
+    const lo = Math.floor(idx),
+      hi = Math.ceil(idx);
     if (lo === hi) return sorted[lo];
     return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
   }
@@ -226,12 +186,19 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     high: percentile(s, 0.95),
   }));
   const roiCI = roiSamples.map((s) =>
-    s.length > 0 ? { low: percentile(s, 0.05), high: percentile(s, 0.95) } : null
+    s.length > 0 ? { low: percentile(s, 0.05), high: percentile(s, 0.95) } : null,
   );
 
-
   const k = Math.min(data.holdoutPeriods, Math.max(0, n - Math.max(8, p + 2)));
-  let holdout: { n: number; r2: number; mape: number; rmse: number; labels: string[]; actual: number[]; predicted: number[] } | null = null;
+  let holdout: {
+    n: number;
+    r2: number;
+    mape: number;
+    rmse: number;
+    labels: string[];
+    actual: number[];
+    predicted: number[];
+  } | null = null;
   let trainMetrics: { r2: number; mape: number; rmse: number; n: number } | null = null;
   if (k > 0) {
     const nTrain = n - k;
@@ -246,8 +213,21 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
       for (let j = 0; j < p; j++) s += fitTr.beta[j] * row[j];
       return s;
     });
-    trainMetrics = { r2: r2(ytr, yPredTr), mape: mape(ytr, yPredTr), rmse: rmse(ytr, yPredTr), n: nTrain };
-    holdout = { n: k, r2: r2(yte, yPredTe), mape: mape(yte, yPredTe), rmse: rmse(yte, yPredTe), labels: [], actual: yte, predicted: yPredTe };
+    trainMetrics = {
+      r2: r2(ytr, yPredTr),
+      mape: mape(ytr, yPredTr),
+      rmse: rmse(ytr, yPredTr),
+      n: nTrain,
+    };
+    holdout = {
+      n: k,
+      r2: r2(yte, yPredTe),
+      mape: mape(yte, yPredTe),
+      rmse: rmse(yte, yPredTe),
+      labels: [],
+      actual: yte,
+      predicted: yPredTe,
+    };
   }
 
   let labels: string[] = [];
@@ -271,18 +251,36 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
 
   type CurvePoint = { spend: number; contribution: number };
   type Total = {
-    variable: string; contribution: number; share: number; pValue: number; zStat: number;
-    isMedia: boolean; spend: number; roi: number | null; curve?: CurvePoint[];
-    contribLow?: number; contribHigh?: number;
-    roiLow?: number | null; roiHigh?: number | null;
+    variable: string;
+    contribution: number;
+    share: number;
+    pValue: number;
+    zStat: number;
+    isMedia: boolean;
+    spend: number;
+    roi: number | null;
+    curve?: CurvePoint[];
+    contribLow?: number;
+    contribHigh?: number;
+    roiLow?: number | null;
+    roiHigh?: number | null;
   };
   const totals: Total[] = [];
   const sumPredicted = fit.yPred.reduce((a, b) => a + b, 0) || 1;
   const baseTotal = fit.intercept * n;
-  totals.push({ variable: "Base (sazonalidade + intercepto)", contribution: baseTotal, share: baseTotal / sumPredicted, pValue: 0, zStat: 0, isMedia: false, spend: 0, roi: null });
+  totals.push({
+    variable: "Base (sazonalidade + intercepto)",
+    contribution: baseTotal,
+    share: baseTotal / sumPredicted,
+    pValue: 0,
+    zStat: 0,
+    isMedia: false,
+    spend: 0,
+    roi: null,
+  });
 
   // Response curve factors: 0 → 1.5× current spend, 16 points.
-  const curveFactors = Array.from({ length: 16 }, (_, i) => (i / 10)); // 0, 0.1, ..., 1.5
+  const curveFactors = Array.from({ length: 16 }, (_, i) => i / 10); // 0, 0.1, ..., 1.5
 
   for (let j = 0; j < p; j++) {
     const name = featureNames[j];
@@ -321,8 +319,6 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     });
   }
 
-
-
   if (holdout) holdout.labels = labels.slice(n - holdout.n);
 
   const metrics = {
@@ -333,7 +329,9 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     p,
     holdoutPeriods: k,
     train: trainMetrics,
-    holdout: holdout ? { n: holdout.n, r2: holdout.r2, mape: holdout.mape, rmse: holdout.rmse } : null,
+    holdout: holdout
+      ? { n: holdout.n, r2: holdout.r2, mape: holdout.mape, rmse: holdout.rmse }
+      : null,
   };
 
   const { data: runRow, error: insErr } = await supabaseAdmin
@@ -372,7 +370,10 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     })
     .select("id")
     .single();
-  if (insErr || !runRow) { console.error("runMmm insert failed:", insErr); throw new Error("Falha ao salvar run. Tente novamente."); }
+  if (insErr || !runRow) {
+    console.error("runMmm insert failed:", insErr);
+    throw new Error("Falha ao salvar run. Tente novamente.");
+  }
   return { runId: runRow.id as string };
 }
 
@@ -424,7 +425,6 @@ export const rerunOnLatestVersion = createServerFn({ method: "POST" })
       spendBasis: params.spendBasis ?? undefined,
     });
 
-
     return executeMmm(input, userId);
   });
 
@@ -444,9 +444,14 @@ export const listDatasets = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("datasets")
-      .select("id, name, original_filename, n_rows, n_cols, granularity, period_start, period_end, created_at, parent_dataset_id, version")
+      .select(
+        "id, name, original_filename, n_rows, n_cols, granularity, period_start, period_end, created_at, parent_dataset_id, version",
+      )
       .order("created_at", { ascending: false });
-    if (error) { console.error("listDatasets failed:", error); throw new Error("Falha ao carregar datasets."); }
+    if (error) {
+      console.error("listDatasets failed:", error);
+      throw new Error("Falha ao carregar datasets.");
+    }
     return { datasets: data ?? [] };
   });
 
@@ -459,10 +464,12 @@ export const listRuns = createServerFn({ method: "GET" })
       .from("runs")
       .select("id, name, status, dep_variable, metrics_json, created_at, dataset_id")
       .order("created_at", { ascending: false });
-    if (error) { console.error("listRuns failed:", error); throw new Error("Falha ao carregar rodadas."); }
+    if (error) {
+      console.error("listRuns failed:", error);
+      throw new Error("Falha ao carregar rodadas.");
+    }
     return { runs: data ?? [] };
   });
-
 
 // Get a single run
 export const getRun = createServerFn({ method: "POST" })
@@ -479,6 +486,25 @@ export const getRun = createServerFn({ method: "POST" })
     return { run };
   });
 
+// Most recent run for the current user (or null). Powers the /results/* views so
+// they show the user's real latest model instead of static placeholders. Scoped to
+// the caller by RLS (context.supabase), same as listRuns/getRun.
+export const getLatestRun = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase } = context;
+    const { data: run, error } = await supabase
+      .from("runs")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      console.error("getLatestRun failed:", error);
+      throw new Error("Falha ao carregar a última rodada.");
+    }
+    return { run: run ?? null };
+  });
 
 // Public read-only access to a single run. The UUID itself is the access token —
 // unguessable (122 bits of entropy) and the response strips user_id and ownership info.
@@ -496,7 +522,6 @@ export const getPublicRun = createServerFn({ method: "POST" })
     if (error || !run) throw new Error("Run não encontrado.");
     return { run };
   });
-
 
 // Get a single dataset
 export const getDataset = createServerFn({ method: "POST" })
@@ -518,10 +543,12 @@ export const getDataset = createServerFn({ method: "POST" })
 export const updateUnitCosts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({
-      id: z.string().uuid(),
-      mappings: z.record(z.string().min(1).max(200), z.string().min(1).max(200)),
-    }).parse(input),
+    z
+      .object({
+        id: z.string().uuid(),
+        mappings: z.record(z.string().min(1).max(200), z.string().min(1).max(200)),
+      })
+      .parse(input),
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
@@ -529,7 +556,9 @@ export const updateUnitCosts = createServerFn({ method: "POST" })
       .from("datasets")
       .update({ unit_costs_json: data.mappings })
       .eq("id", data.id);
-    if (error) { console.error("updateUnitCosts failed:", error); throw new Error("Falha ao salvar. Tente novamente."); }
+    if (error) {
+      console.error("updateUnitCosts failed:", error);
+      throw new Error("Falha ao salvar. Tente novamente.");
+    }
     return { ok: true };
   });
-

@@ -20,9 +20,9 @@ export const CHANNEL_COLORS = [
 ] as const;
 
 // Reservadas — estados analíticos do MMM
-export const LIFT = "#2E9E5E";        // contribuição incremental, "bom"
-export const SAT = "#DB5A45";         // saturação / retorno decrescente
-export const SAT_DEEP = "#A8371F";    // texto sobre claro
+export const LIFT = "#2E9E5E"; // contribuição incremental, "bom"
+export const SAT = "#DB5A45"; // saturação / retorno decrescente
+export const SAT_DEEP = "#A8371F"; // texto sobre claro
 
 // Baseline — demanda orgânica (fora do espectro)
 export const BASELINE = "#B8B4D8";

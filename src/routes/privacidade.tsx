@@ -4,7 +4,10 @@ export const Route = createFileRoute("/privacidade")({
   head: () => ({
     meta: [
       { title: "Política de Privacidade · Prisma" },
-      { name: "description", content: "Como coletamos, usamos e protegemos seus dados pessoais de acordo com a LGPD." },
+      {
+        name: "description",
+        content: "Como coletamos, usamos e protegemos seus dados pessoais de acordo com a LGPD.",
+      },
       { property: "og:title", content: "Política de Privacidade · Prisma" },
       { name: "robots", content: "noindex" },
     ],
@@ -31,7 +34,10 @@ function PrivacidadePage() {
           </p>
           <p className="mt-3">
             Dúvidas:{" "}
-            <a href="mailto:janilo@pereirasaraiva.com" className="underline underline-offset-4 hover:text-indigo transition-colors">
+            <a
+              href="mailto:janilo@pereirasaraiva.com"
+              className="underline underline-offset-4 hover:text-indigo transition-colors"
+            >
               janilo@pereirasaraiva.com
             </a>
           </p>
@@ -68,8 +74,13 @@ function PrivacidadePage() {
 
         <Section title="3. Base legal (LGPD)">
           <ul className="mt-2 space-y-2">
-            <li><strong>Autenticação e execução do modelo</strong> — execução de contrato (art. 7º, V da Lei 13.709/2018).</li>
-            <li><strong>Logs e melhoria</strong> — legítimo interesse (art. 7º, IX).</li>
+            <li>
+              <strong>Autenticação e execução do modelo</strong> — execução de contrato (art. 7º, V
+              da Lei 13.709/2018).
+            </li>
+            <li>
+              <strong>Logs e melhoria</strong> — legítimo interesse (art. 7º, IX).
+            </li>
           </ul>
         </Section>
 
@@ -79,13 +90,15 @@ function PrivacidadePage() {
             <li>Supabase (banco de dados e autenticação)</li>
             <li>Cloudflare (hospedagem e CDN)</li>
           </ul>
-          <p className="mt-3">Não vendemos nem cedemos dados pessoais a terceiros para fins de marketing.</p>
+          <p className="mt-3">
+            Não vendemos nem cedemos dados pessoais a terceiros para fins de marketing.
+          </p>
         </Section>
 
         <Section title="5. Retenção">
           <p>
-            Dados de conta e planilhas mantidos enquanto a conta estiver ativa.
-            Excluídos em até 30 dias após solicitação de encerramento.
+            Dados de conta e planilhas mantidos enquanto a conta estiver ativa. Excluídos em até 30
+            dias após solicitação de encerramento.
           </p>
         </Section>
 
@@ -93,7 +106,10 @@ function PrivacidadePage() {
           <p>
             Nos termos do art. 18 da LGPD, você pode solicitar acesso, correção, exclusão e
             portabilidade dos seus dados. Envie para{" "}
-            <a href="mailto:janilo@pereirasaraiva.com" className="underline underline-offset-4 hover:text-indigo transition-colors">
+            <a
+              href="mailto:janilo@pereirasaraiva.com"
+              className="underline underline-offset-4 hover:text-indigo transition-colors"
+            >
               janilo@pereirasaraiva.com
             </a>
             . Responderemos em até 15 dias úteis.
@@ -101,7 +117,10 @@ function PrivacidadePage() {
         </Section>
 
         <div className="border-t hairline pt-8">
-          <Link to="/" className="text-[11px] font-semibold uppercase tracking-[0.18em] text-mute hover:text-abyss transition-colors">
+          <Link
+            to="/"
+            className="text-[11px] font-semibold uppercase tracking-[0.18em] text-mute hover:text-abyss transition-colors"
+          >
             ← Voltar para o início
           </Link>
         </div>

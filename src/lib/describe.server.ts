@@ -56,7 +56,6 @@ export interface DatasetSummary {
   vif: VifEntry[];
 }
 
-
 function toNum(v: unknown): number | null {
   if (typeof v === "number") return Number.isFinite(v) ? v : null;
   if (v === null || v === undefined || v === "") return null;
@@ -265,32 +264,40 @@ export function summarizeDataset(
     const y = numericData[focus];
     const granularity = opts.granularity ?? null;
     const kind: "month" | "weekday" | null =
-      granularity === "monthly" ? "month" : granularity === "weekly" || granularity === "daily" ? "weekday" : "month";
+      granularity === "monthly"
+        ? "month"
+        : granularity === "weekly" || granularity === "daily"
+          ? "weekday"
+          : "month";
     const bucketsMap: Record<string, number[]> = {};
     for (let i = 0; i < rows.length; i++) {
       const d = new Date(labels[i]);
       if (isNaN(d.getTime())) continue;
       const key =
         kind === "month"
-          ? ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"][d.getUTCMonth()]
-          : ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"][d.getUTCDay()];
+          ? ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"][
+              d.getUTCMonth()
+            ]
+          : ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"][d.getUTCDay()];
       bucketsMap[key] = bucketsMap[key] ?? [];
       if (y[i] !== undefined) bucketsMap[key].push(y[i]);
     }
     const order =
       kind === "month"
-        ? ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"]
-        : ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+        ? ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"]
+        : ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
     const buckets = order
       .filter((k) => bucketsMap[k]?.length)
       .map((k) => ({ label: k, mean: mean(bucketsMap[k]), count: bucketsMap[k].length }));
     seasonality = { kind, buckets };
   }
 
-
   // VIF — collinearity between independent (numeric) variables, excluding the focus/dependent
   const vifNames = Object.keys(numericData).filter((k) => k !== focus);
-  const vif: VifEntry[] = computeVif(vifNames.map((n) => numericData[n]), vifNames);
+  const vif: VifEntry[] = computeVif(
+    vifNames.map((n) => numericData[n]),
+    vifNames,
+  );
 
   return {
     overview: {
@@ -341,7 +348,8 @@ function computeVif(cols: number[][], names: string[]): VifEntry[] {
 
   return names.map((variable, i) => {
     const v = inv ? Math.max(1, inv[i][i]) : Infinity;
-    const severity: VifEntry["severity"] = !Number.isFinite(v) || v > 10 ? "high" : v > 5 ? "moderate" : "ok";
+    const severity: VifEntry["severity"] =
+      !Number.isFinite(v) || v > 10 ? "high" : v > 5 ? "moderate" : "ok";
     return { variable, vif: Number.isFinite(v) ? round(v, 2) : 999, severity };
   });
 }
@@ -380,7 +388,6 @@ function choleskyInverseLocal(A: number[][]): number[][] {
   return inv;
 }
 
-
 // Compact JSON for sending to the LLM (no sparklines, no full series).
 export function compactForLlm(s: DatasetSummary) {
   return {
@@ -403,11 +410,12 @@ export function compactForLlm(s: DatasetSummary) {
       slopePerPeriod: round(s.trend.slopePerPeriod),
       pctChangeOverWindow: round(s.trend.pctChangeOverWindow, 3),
     },
-    correlations: s.correlations.slice(0, 12).map((c) => ({ variable: c.variable, r: round(c.r, 3) })),
+    correlations: s.correlations
+      .slice(0, 12)
+      .map((c) => ({ variable: c.variable, r: round(c.r, 3) })),
     seasonality: s.seasonality,
     vif: s.vif.map((v) => ({ variable: v.variable, vif: v.vif, severity: v.severity })),
   };
-
 }
 
 function round(n: number, d = 2): number {

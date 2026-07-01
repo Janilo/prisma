@@ -117,10 +117,7 @@ export function PrismaKpi({
 }
 
 /* ---------- Table ---------- */
-export function PrismaTable({
-  className,
-  ...rest
-}: TableHTMLAttributes<HTMLTableElement>) {
+export function PrismaTable({ className, ...rest }: TableHTMLAttributes<HTMLTableElement>) {
   return <table className={cx("prisma-table", className)} {...rest} />;
 }
 export function PrismaTh({
@@ -181,10 +178,7 @@ export function PrismaSection({
         {title}
       </h2>
       {description ? (
-        <p
-          className="mt-2 max-w-2xl text-xs"
-          style={{ color: "var(--prisma-mute)" }}
-        >
+        <p className="mt-2 max-w-2xl text-xs" style={{ color: "var(--prisma-mute)" }}>
           {description}
         </p>
       ) : null}

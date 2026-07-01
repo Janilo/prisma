@@ -6,7 +6,9 @@ import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/reset-password")({
-  head: () => ({ meta: [{ title: "Redefinir senha · Prisma" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Redefinir senha · Prisma" }, { name: "robots", content: "noindex" }],
+  }),
   component: ResetPasswordPage,
 });
 
@@ -20,21 +22,34 @@ function ResetPasswordPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === "PASSWORD_RECOVERY" || event === "SIGNED_IN") setReady(true);
     });
-    supabase.auth.getSession().then(({ data }) => { if (data.session) setReady(true); });
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) setReady(true);
+    });
     return () => subscription.unsubscribe();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.length < 8) { toast.error("Senha precisa ter ao menos 8 caracteres."); return; }
-    if (password !== confirm) { toast.error("As senhas não coincidem."); return; }
+    if (password.length < 8) {
+      toast.error("Senha precisa ter ao menos 8 caracteres.");
+      return;
+    }
+    if (password !== confirm) {
+      toast.error("As senhas não coincidem.");
+      return;
+    }
     setBusy(true);
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success("Senha atualizada.");
     navigate({ to: "/upload" });
   };
@@ -49,9 +64,15 @@ function ResetPasswordPage() {
 
           {!ready ? (
             <p className="mt-6 text-sm text-mute">
-              Validando seu link… Se esta página não avançar em alguns segundos, o link pode ter expirado.
+              Validando seu link… Se esta página não avançar em alguns segundos, o link pode ter
+              expirado.
               <br />
-              <Link to="/forgot-password" className="mt-3 inline-block text-abyss underline underline-offset-4">Pedir novo link</Link>
+              <Link
+                to="/forgot-password"
+                className="mt-3 inline-block text-abyss underline underline-offset-4"
+              >
+                Pedir novo link
+              </Link>
             </p>
           ) : (
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">

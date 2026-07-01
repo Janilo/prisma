@@ -21,20 +21,32 @@ export const Route = createFileRoute("/_authenticated/upload")({
   head: () => ({
     meta: [
       { title: "Upload de dados · Prisma" },
-      { name: "description", content: "Suba uma planilha CSV ou XLSX com vendas e gastos por canal. Prisma detecta data, dependente e variáveis explicativas automaticamente." },
+      {
+        name: "description",
+        content:
+          "Suba uma planilha CSV ou XLSX com vendas e gastos por canal. Prisma detecta data, dependente e variáveis explicativas automaticamente.",
+      },
       { property: "og:title", content: "Importação de dados MMM" },
-      { property: "og:description", content: "Suba CSV ou XLSX no Prisma e rode Marketing Mix Modeling sem montar pipeline." },
+      {
+        property: "og:description",
+        content: "Suba CSV ou XLSX no Prisma e rode Marketing Mix Modeling sem montar pipeline.",
+      },
       { property: "og:url", content: "https://prisma.pereirasaraiva.com/upload" },
       { name: "robots", content: "noindex" },
     ],
-    links: [
-      { rel: "canonical", href: "https://prisma.pereirasaraiva.com/upload" },
-    ],
+    links: [{ rel: "canonical", href: "https://prisma.pereirasaraiva.com/upload" }],
   }),
   component: UploadPage,
 });
 
-function buildSampleCsv(): { csv: string; filename: string; nRows: number; nCols: number; periodStart: string; periodEnd: string } {
+function buildSampleCsv(): {
+  csv: string;
+  filename: string;
+  nRows: number;
+  nCols: number;
+  periodStart: string;
+  periodEnd: string;
+} {
   const N = 50;
   let s = 42 >>> 0;
   const rand = () => {
@@ -58,7 +70,9 @@ function buildSampleCsv(): { csv: string; filename: string; nRows: number; nCols
     const revenue = Math.max(0, Math.round(180000 + trend + seasonY + mediaY + noise));
     rows.push({ data: d, receita: revenue, google_ads: google, meta_ads: meta, tv_aberta: tv });
   }
-  const csv = Papa.unparse(rows, { columns: ["data", "receita", "google_ads", "meta_ads", "tv_aberta"] });
+  const csv = Papa.unparse(rows, {
+    columns: ["data", "receita", "google_ads", "meta_ads", "tv_aberta"],
+  });
   return {
     csv,
     filename: "exemplo-mmm-50-semanas.csv",
@@ -73,7 +87,11 @@ function UploadPage() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string>("");
-  const [versionTarget, setVersionTarget] = useState<{ id: string; name: string; nextVersion: number } | null>(null);
+  const [versionTarget, setVersionTarget] = useState<{
+    id: string;
+    name: string;
+    nextVersion: number;
+  } | null>(null);
   const listFn = useServerFn(listDatasets);
   const { data: dsList, refetch } = useQuery({
     queryKey: ["datasets"],
@@ -86,7 +104,11 @@ function UploadPage() {
     parent?: { id: string; nextVersion: number; name: string },
   ) => {
     setStatus("Analisando colunas...");
-    const parsed = Papa.parse<Record<string, unknown>>(csv, { header: true, dynamicTyping: true, skipEmptyLines: true });
+    const parsed = Papa.parse<Record<string, unknown>>(csv, {
+      header: true,
+      dynamicTyping: true,
+      skipEmptyLines: true,
+    });
     const columns = parsed.meta.fields ?? [];
     const cols = analyzeColumns(parsed.data, columns);
     const dateCol = detectDateColumn(cols);
@@ -103,7 +125,10 @@ function UploadPage() {
     if (upErr) throw upErr;
 
     const periods = dateCol
-      ? parsed.data.map((r) => String(r[dateCol] ?? "")).filter(Boolean).sort()
+      ? parsed.data
+          .map((r) => String(r[dateCol] ?? ""))
+          .filter(Boolean)
+          .sort()
       : [];
 
     const datasetName = parent
@@ -137,7 +162,10 @@ function UploadPage() {
     return ds.id as string;
   };
 
-  const processFile = async (file: File, parent?: { id: string; nextVersion: number; name: string }) => {
+  const processFile = async (
+    file: File,
+    parent?: { id: string; nextVersion: number; name: string },
+  ) => {
     setBusy(true);
     setStatus("Lendo arquivo...");
     try {
@@ -154,7 +182,11 @@ function UploadPage() {
       });
       const csv = Papa.unparse(rowsForCsv, { columns: parsed.columns });
       const id = await ingestCsv(csv, file.name, parent);
-      toast.success(parent ? `Nova versão (v${parent.nextVersion}) carregada.` : "Dataset carregado. Gerando análise...");
+      toast.success(
+        parent
+          ? `Nova versão (v${parent.nextVersion}) carregada.`
+          : "Dataset carregado. Gerando análise...",
+      );
       navigate({ to: "/datasets/$id/explore", params: { id } });
     } catch (err) {
       console.error(err);
@@ -208,10 +240,6 @@ function UploadPage() {
     return s;
   }, [datasets]);
 
-
-
-
-
   return (
     <div className="p-12 max-w-5xl">
       <p className="eyebrow">01 — Dados</p>
@@ -220,12 +248,14 @@ function UploadPage() {
       </h1>
       <p className="mt-4 text-sm text-abyss/70 max-w-xl">
         Aceita CSV ou XLSX. Cada linha = um período (semana ou mês). Cada coluna = uma variável
-        (vendas, gasto em TV, gasto em Google, preço, promoção etc.). Prisma detecta data,
-        variável dependente e candidatos a variáveis explicativas automaticamente.
+        (vendas, gasto em TV, gasto em Google, preço, promoção etc.). Prisma detecta data, variável
+        dependente e candidatos a variáveis explicativas automaticamente.
       </p>
 
       <section className="mt-12" aria-labelledby="suba-heading">
-        <h2 id="suba-heading" className="eyebrow">Suba seus dados</h2>
+        <h2 id="suba-heading" className="eyebrow">
+          Suba seus dados
+        </h2>
         <label className="mt-3 block border hairline-strong border-dashed bg-white p-12 cursor-pointer hover:bg-indigo-soft transition-colors">
           <input
             type="file"
@@ -238,9 +268,7 @@ function UploadPage() {
             <p className="text-xl font-semibold text-abyss">
               {busy ? status || "Processando..." : "Selecionar arquivo"}
             </p>
-            <p className="text-xs text-mute uppercase tracking-widest">
-              CSV ou XLSX · até 10 MB
-            </p>
+            <p className="text-xs text-mute uppercase tracking-widest">CSV ou XLSX · até 10 MB</p>
           </div>
         </label>
         <div className="mt-4 flex items-center gap-3 text-xs text-abyss/70">
@@ -257,9 +285,10 @@ function UploadPage() {
         </div>
       </section>
 
-
       <section className="mt-12" aria-labelledby="carregados-heading">
-        <h2 id="carregados-heading" className="eyebrow">Seus dados carregados</h2>
+        <h2 id="carregados-heading" className="eyebrow">
+          Seus dados carregados
+        </h2>
         {datasets.length === 0 ? (
           <p className="mt-4 text-sm text-abyss/60">Nenhum dataset ainda.</p>
         ) : (
@@ -299,7 +328,13 @@ function UploadPage() {
                       {!hasNewer && (
                         <button
                           type="button"
-                          onClick={() => setVersionTarget({ id: d.id, name: baseName, nextVersion: d.version + 1 })}
+                          onClick={() =>
+                            setVersionTarget({
+                              id: d.id,
+                              name: baseName,
+                              nextVersion: d.version + 1,
+                            })
+                          }
                           disabled={busy}
                           className="mr-4 text-[10px] uppercase tracking-widest text-abyss/60 hover:text-indigo disabled:opacity-40"
                           title="Subir uma planilha atualizada como nova versão"
@@ -324,12 +359,19 @@ function UploadPage() {
         {versionTarget && (
           <div className="mt-4 border hairline-strong bg-indigo-soft p-4 flex items-center justify-between gap-4">
             <p className="text-xs text-abyss/80">
-              Nova versão de <strong>{versionTarget.name}</strong> — selecione a planilha atualizada (será salva como <span className="font-mono">v{versionTarget.nextVersion}</span>).
+              Nova versão de <strong>{versionTarget.name}</strong> — selecione a planilha atualizada
+              (será salva como <span className="font-mono">v{versionTarget.nextVersion}</span>).
               Runs antigos ficam intactos; você poderá re-executá-los nesta versão.
             </p>
             <div className="flex items-center gap-2 shrink-0">
               <label className="text-xs uppercase tracking-widest border border-abyss/30 px-3 py-1.5 hover:bg-abyss hover:text-white transition-colors cursor-pointer">
-                <input type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={onVersionFile} disabled={busy} />
+                <input
+                  type="file"
+                  accept=".csv,.xlsx,.xls"
+                  className="hidden"
+                  onChange={onVersionFile}
+                  disabled={busy}
+                />
                 Escolher arquivo
               </label>
               <button
@@ -344,21 +386,22 @@ function UploadPage() {
         )}
       </section>
 
-
       <section className="mt-12" aria-labelledby="como-heading">
-        <h2 id="como-heading" className="eyebrow">Como funciona</h2>
+        <h2 id="como-heading" className="eyebrow">
+          Como funciona
+        </h2>
         <div className="mt-3 grid grid-cols-3 gap-px bg-abyss/10 border hairline">
-        {[
-          { n: "1", t: "Suba", d: "Planilha com data, vendas e gastos por canal." },
-          { n: "2", t: "Diagnostique", d: "Veja colunas detectadas, missings e outliers." },
-          { n: "3", t: "Rode", d: "Ridge + adstock + Hill. ROI por canal sai do outro lado." },
-        ].map((s) => (
-          <div key={s.n} className="bg-indigo-soft p-6">
-            <p className="text-xs font-bold text-violet uppercase tracking-widest">{s.n}</p>
-            <p className="text-base font-semibold text-abyss mt-1">{s.t}</p>
-            <p className="text-xs text-abyss/60 mt-2 leading-relaxed">{s.d}</p>
-          </div>
-        ))}
+          {[
+            { n: "1", t: "Suba", d: "Planilha com data, vendas e gastos por canal." },
+            { n: "2", t: "Diagnostique", d: "Veja colunas detectadas, missings e outliers." },
+            { n: "3", t: "Rode", d: "Ridge + adstock + Hill. ROI por canal sai do outro lado." },
+          ].map((s) => (
+            <div key={s.n} className="bg-indigo-soft p-6">
+              <p className="text-xs font-bold text-violet uppercase tracking-widest">{s.n}</p>
+              <p className="text-base font-semibold text-abyss mt-1">{s.t}</p>
+              <p className="text-xs text-abyss/60 mt-2 leading-relaxed">{s.d}</p>
+            </div>
+          ))}
         </div>
       </section>
     </div>

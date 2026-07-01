@@ -31,7 +31,8 @@ export const Route = createFileRoute("/demo")({
       { property: "og:title", content: "Prisma · Demo ao vivo" },
       {
         property: "og:description",
-        content: "Dataset de exemplo já carregado: rode o MMM e veja contribuição, ROI e decomposição.",
+        content:
+          "Dataset de exemplo já carregado: rode o MMM e veja contribuição, ROI e decomposição.",
       },
       { property: "og:image", content: "https://prisma.pereirasaraiva.com/og-social.png" },
       { property: "og:url", content: "https://prisma.pereirasaraiva.com/demo" },
@@ -46,6 +47,7 @@ export const Route = createFileRoute("/demo")({
 });
 
 import { CHANNEL_COLORS, BASELINE, CHART_GRID } from "@/lib/prisma-tokens";
+import { fmt, pConfidence } from "@/lib/format";
 
 const SERIES_COLORS = CHANNEL_COLORS.slice(0, 5);
 const SAT_AMBER = CHANNEL_COLORS[5];
@@ -63,9 +65,7 @@ type Totals = {
 
 function DemoPage() {
   const fn = useServerFn(getDemoRun);
-  const { data } = useSuspenseQuery(
-    queryOptions({ queryKey: ["demo-run"], queryFn: () => fn() }),
-  );
+  const { data } = useSuspenseQuery(queryOptions({ queryKey: ["demo-run"], queryFn: () => fn() }));
   const run = data.run;
 
   const totals = run.contributions_json as Totals[];
@@ -81,10 +81,7 @@ function DemoPage() {
     [totals],
   );
   const rois = useMemo(
-    () =>
-      (run.roi_json as Totals[])
-        .filter((r) => r.roi !== null)
-        .sort((a, b) => (b.roi! - a.roi!)),
+    () => (run.roi_json as Totals[]).filter((r) => r.roi !== null).sort((a, b) => b.roi! - a.roi!),
     [run.roi_json],
   );
 
@@ -113,7 +110,9 @@ function DemoPage() {
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-abyss" />
               </span>
               <span className="font-mono uppercase tracking-wider">Demo-ready</span>
-              <span className="text-abyss/60 hidden sm:inline">· dataset de exemplo: 50 semanas de receita + 3 canais (Google, Meta, TV)</span>
+              <span className="text-abyss/60 hidden sm:inline">
+                · dataset de exemplo: 50 semanas de receita + 3 canais (Google, Meta, TV)
+              </span>
             </div>
             <Link
               to="/login"
@@ -127,19 +126,29 @@ function DemoPage() {
 
         <div className="mx-auto max-w-5xl px-6 lg:px-10 py-12">
           <p className="eyebrow">Resultado da Demo</p>
-          <h1 className="mt-2 font-display text-4xl font-light italic text-abyss">
-            {run.name}
-          </h1>
+          <h1 className="mt-2 font-display text-4xl font-light italic text-abyss">{run.name}</h1>
           <p className="mt-3 text-xs text-abyss/60 font-mono">
             Alvo: {run.dep_variable} · α={run.params_json.alpha} · adstock=
             {run.params_json.adstockDecay} · saturação={run.params_json.saturationAlpha}
           </p>
 
           <section className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-px bg-abyss/10 border hairline">
-            <Metric label="R²" value={(metrics.r2 * 100).toFixed(1) + "%"} hint="Quanto da variação foi explicada." />
-            <Metric label="MAPE" value={(metrics.mape * 100).toFixed(1) + "%"} hint="Erro percentual médio." />
+            <Metric
+              label="R²"
+              value={(metrics.r2 * 100).toFixed(1) + "%"}
+              hint="Quanto da variação foi explicada."
+            />
+            <Metric
+              label="MAPE"
+              value={(metrics.mape * 100).toFixed(1) + "%"}
+              hint="Erro percentual médio."
+            />
             <Metric label="RMSE" value={fmt(metrics.rmse)} hint="Erro absoluto típico." />
-            <Metric label="n / p" value={`${metrics.n} / ${metrics.p}`} hint="Períodos / variáveis." />
+            <Metric
+              label="n / p"
+              value={`${metrics.n} / ${metrics.p}`}
+              hint="Períodos / variáveis."
+            />
           </section>
 
           <section className="mt-16">
@@ -153,11 +162,34 @@ function DemoPage() {
                   <CartesianGrid stroke={CHART_GRID} />
                   <XAxis dataKey="period" tick={{ fontSize: 10 }} interval={7} />
                   <YAxis tick={{ fontSize: 10 }} tickFormatter={(v: number) => "R$ " + fmt(v)} />
-                  <Tooltip formatter={(v: number) => "R$ " + fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
+                  <Tooltip
+                    formatter={(v: number) => "R$ " + fmt(v)}
+                    contentStyle={{
+                      fontSize: 12,
+                      border: `1px solid ${CHART_GRID}`,
+                      borderRadius: 0,
+                    }}
+                  />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Area type="monotone" dataKey="base" stackId="1" stroke={BASELINE} fill={BASELINE} name="Base" fillOpacity={0.5} />
+                  <Area
+                    type="monotone"
+                    dataKey="base"
+                    stackId="1"
+                    stroke={BASELINE}
+                    fill={BASELINE}
+                    name="Base"
+                    fillOpacity={0.5}
+                  />
                   {variableNames.map((name, i) => (
-                    <Area key={name} type="monotone" dataKey={name} stackId="1" stroke={SERIES_COLORS[i % SERIES_COLORS.length]} fill={SERIES_COLORS[i % SERIES_COLORS.length]} fillOpacity={0.7} />
+                    <Area
+                      key={name}
+                      type="monotone"
+                      dataKey={name}
+                      stackId="1"
+                      stroke={SERIES_COLORS[i % SERIES_COLORS.length]}
+                      fill={SERIES_COLORS[i % SERIES_COLORS.length]}
+                      fillOpacity={0.7}
+                    />
                   ))}
                 </AreaChart>
               </ResponsiveContainer>
@@ -175,10 +207,30 @@ function DemoPage() {
                   <CartesianGrid stroke={CHART_GRID} />
                   <XAxis dataKey="period" tick={{ fontSize: 10 }} interval={7} />
                   <YAxis tick={{ fontSize: 10 }} tickFormatter={(v: number) => "R$ " + fmt(v)} />
-                  <Tooltip formatter={(v: number) => "R$ " + fmt(v)} contentStyle={{ fontSize: 12, border: `1px solid ${CHART_GRID}`, borderRadius: 0 }} />
+                  <Tooltip
+                    formatter={(v: number) => "R$ " + fmt(v)}
+                    contentStyle={{
+                      fontSize: 12,
+                      border: `1px solid ${CHART_GRID}`,
+                      borderRadius: 0,
+                    }}
+                  />
                   <Legend wrapperStyle={{ fontSize: 11 }} />
-                  <Line type="monotone" dataKey="Real" stroke={CHANNEL_COLORS[0]} strokeWidth={2} dot={false} />
-                  <Line type="monotone" dataKey="Predito" stroke={SAT_AMBER} strokeWidth={2} strokeDasharray="4 3" dot={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="Real"
+                    stroke={CHANNEL_COLORS[0]}
+                    strokeWidth={2}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="Predito"
+                    stroke={SAT_AMBER}
+                    strokeWidth={2}
+                    strokeDasharray="4 3"
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -214,11 +266,16 @@ function DemoPage() {
                             </span>
                           )}
                         </td>
-                        <td className="py-3 text-right font-mono text-xs">R$ {fmt(t.contribution)}</td>
+                        <td className="py-3 text-right font-mono text-xs">
+                          R$ {fmt(t.contribution)}
+                        </td>
                         <td className="py-3 text-right">
                           <div className="inline-flex items-center gap-2">
                             <div className="w-24 h-1 bg-abyss/10 relative">
-                              <div className="absolute inset-y-0 left-0 bg-abyss" style={{ width: `${w}%` }} />
+                              <div
+                                className="absolute inset-y-0 left-0 bg-abyss"
+                                style={{ width: `${w}%` }}
+                              />
                             </div>
                             <span className="font-mono text-xs">{(t.share * 100).toFixed(1)}%</span>
                           </div>
@@ -235,15 +292,14 @@ function DemoPage() {
             </div>
             <p className="mt-4 text-[11px] text-abyss/60 leading-relaxed max-w-3xl">
               <strong className="text-abyss">Nota metodológica.</strong> Os p-values são
-              <em> aproximações</em>. O Ridge encolhe coeficientes em direção a zero, o que
-              enviesa a inferência clássica: usamos a variância residual com a matriz
-              (X′X + αI)⁻¹, prática comum mas que <em>subestima</em> a incerteza real. Trate
-              as estrelas como <em>ranking de robustez</em>, não como teste formal. Para
-              inferência rigorosa, rode com <strong>α = 0</strong> (OLS puro) — aí os
-              p-values são válidos no sentido clássico.
+              <em> aproximações</em>. O Ridge encolhe coeficientes em direção a zero, o que enviesa
+              a inferência clássica: usamos a variância residual com a matriz (X′X + αI)⁻¹, prática
+              comum mas que <em>subestima</em> a incerteza real. Trate as estrelas como{" "}
+              <em>ranking de robustez</em>, não como teste formal. Para inferência rigorosa, rode
+              com <strong>α = 0</strong> (OLS puro) — aí os p-values são válidos no sentido
+              clássico.
             </p>
           </section>
-
 
           {rois.length > 0 && (
             <section className="mt-16">
@@ -266,7 +322,9 @@ function DemoPage() {
                       <tr key={r.variable} className="border-b hairline">
                         <td className="py-3 font-medium">{r.variable}</td>
                         <td className="py-3 text-right font-mono text-xs">R$ {fmt(r.spend)}</td>
-                        <td className="py-3 text-right font-mono text-xs">R$ {fmt(r.contribution)}</td>
+                        <td className="py-3 text-right font-mono text-xs">
+                          R$ {fmt(r.contribution)}
+                        </td>
                         <td className="py-3 text-right">
                           <span className="font-display text-xl text-abyss">
                             {r.roi!.toFixed(2)}×
@@ -312,20 +370,4 @@ function Metric({ label, value, hint }: { label: string; value: string; hint: st
       <p className="text-[11px] text-abyss/60 mt-2 leading-snug">{hint}</p>
     </div>
   );
-}
-
-function pConfidence(p: number, name: string): string {
-  if (name.startsWith("Base")) return "—";
-  if (p < 0.01) return "Muito alta (★★★)";
-  if (p < 0.05) return "Alta (★★)";
-  if (p < 0.1) return "Moderada (★)";
-  return "Baixa";
-}
-
-function fmt(n: number): string {
-  if (!Number.isFinite(n)) return "—";
-  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + "B";
-  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + "M";
-  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "k";
-  return n.toFixed(1);
 }

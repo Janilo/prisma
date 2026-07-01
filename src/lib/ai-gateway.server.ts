@@ -8,6 +8,7 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 export const createAiGatewayProvider = (apiKey: string) =>
   createOpenAICompatible({
     name: "ai-gateway",
-    baseURL: process.env.AI_GATEWAY_URL ?? "https://generativelanguage.googleapis.com/v1beta/openai",
+    baseURL:
+      process.env.AI_GATEWAY_URL ?? "https://generativelanguage.googleapis.com/v1beta/openai",
     headers: { Authorization: `Bearer ${apiKey}` },
   });

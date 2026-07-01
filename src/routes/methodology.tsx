@@ -6,9 +6,16 @@ export const Route = createFileRoute("/methodology")({
   head: () => ({
     meta: [
       { title: "Metodologia — Prisma" },
-      { name: "description", content: "Decisões metodológicas do Prisma: Ridge vs OLS, adstock geométrico, saturação Hill e limites do modelo." },
+      {
+        name: "description",
+        content:
+          "Decisões metodológicas do Prisma: Ridge vs OLS, adstock geométrico, saturação Hill e limites do modelo.",
+      },
       { property: "og:title", content: "Metodologia do Prisma" },
-      { property: "og:description", content: "Ridge vs OLS, adstock geométrico, saturação Hill e os limites do MMM." },
+      {
+        property: "og:description",
+        content: "Ridge vs OLS, adstock geométrico, saturação Hill e os limites do MMM.",
+      },
     ],
     links: [{ rel: "canonical", href: "https://prisma.pereirasaraiva.com/methodology" }],
   }),
@@ -31,31 +38,32 @@ function MethodologyPage() {
 
           <Section title="Ridge vs OLS">
             <p>
-              O Prisma estima coeficientes por <strong>regressão Ridge</strong> (Tikhonov) por padrão.
-              Em MMM, as variáveis de mídia tendem a ser <em>colineares</em>: campanhas sobem juntas
-              em datas comerciais, e a separação dos efeitos individuais por OLS fica instável — pequenas
-              mudanças nos dados produzem grandes mudanças nos coeficientes. Ridge adiciona uma
-              penalização <span className="font-mono">α‖β‖²</span> que <em>encolhe</em> os coeficientes
-              em direção a zero, trocando um pouco de viés por bastante redução de variância (Hoerl &
-              Kennard, 1970). O custo é que a inferência clássica deixa de valer: os p-values exibidos
-              são aproximações usando a variância residual e (X′X+αI)⁻¹, e <em>subestimam</em> a
-              incerteza. Para inferência rigorosa, rode novamente com <span className="font-mono">α=0</span>{" "}
-              (OLS puro) — quando a colinearidade permite — e use os p-values dessa rodada.
+              O Prisma estima coeficientes por <strong>regressão Ridge</strong> (Tikhonov) por
+              padrão. Em MMM, as variáveis de mídia tendem a ser <em>colineares</em>: campanhas
+              sobem juntas em datas comerciais, e a separação dos efeitos individuais por OLS fica
+              instável — pequenas mudanças nos dados produzem grandes mudanças nos coeficientes.
+              Ridge adiciona uma penalização <span className="font-mono">α‖β‖²</span> que{" "}
+              <em>encolhe</em> os coeficientes em direção a zero, trocando um pouco de viés por
+              bastante redução de variância (Hoerl & Kennard, 1970). O custo é que a inferência
+              clássica deixa de valer: os p-values exibidos são aproximações usando a variância
+              residual e (X′X+αI)⁻¹, e <em>subestimam</em> a incerteza. Para inferência rigorosa,
+              rode novamente com <span className="font-mono">α=0</span> (OLS puro) — quando a
+              colinearidade permite — e use os p-values dessa rodada.
             </p>
           </Section>
 
           <Section title="Adstock geométrico">
             <p>
-              Mídia tem efeito que persiste: um spot de TV impacta vendas por semanas. O Prisma modela
-              esse carryover com <strong>adstock geométrico</strong>:{" "}
+              Mídia tem efeito que persiste: um spot de TV impacta vendas por semanas. O Prisma
+              modela esse carryover com <strong>adstock geométrico</strong>:{" "}
               <span className="font-mono">aₜ = xₜ + λ·aₜ₋₁</span>, com{" "}
-              <span className="font-mono">λ ∈ [0,1)</span>. É a forma funcional original do MMM moderno
-              (Broadbent, 1979) e continua sendo o baseline de praticamente toda a literatura —
-              incluindo o framework Robyn (Meta, 2021) e o LightweightMMM (Google, 2022). Tem dois
-              parâmetros conceituais (decay e meia-vida) que são equivalentes e interpretáveis. O
-              Prisma permite <strong>λ por canal</strong>, porque TV tende a λ ≈ 0.5–0.8 (semanas de
-              eco) enquanto search paid tende a λ ≈ 0 (consumo imediato). Usar um λ global achata
-              esses contrastes e enviesa a atribuição.
+              <span className="font-mono">λ ∈ [0,1)</span>. É a forma funcional original do MMM
+              moderno (Broadbent, 1979) e continua sendo o baseline de praticamente toda a
+              literatura — incluindo o framework Robyn (Meta, 2021) e o LightweightMMM (Google,
+              2022). Tem dois parâmetros conceituais (decay e meia-vida) que são equivalentes e
+              interpretáveis. O Prisma permite <strong>λ por canal</strong>, porque TV tende a λ ≈
+              0.5–0.8 (semanas de eco) enquanto search paid tende a λ ≈ 0 (consumo imediato). Usar
+              um λ global achata esses contrastes e enviesa a atribuição.
             </p>
           </Section>
 
@@ -80,22 +88,39 @@ function MethodologyPage() {
               dado o que foi observado. Quatro limites práticos: (1) <strong>colinearidade</strong>{" "}
               residual após Ridge — canais que sempre sobem juntos têm atribuição instável; use VIF
               no <em>explore</em> para diagnosticar; (2) <strong>variáveis omitidas</strong>{" "}
-              (concorrência, distribuição, preço) entram na base ou poluem coeficientes;
-              (3) <strong>poucos pontos</strong> — semanas &lt; 2× variáveis é overfit garantido,
-              mesmo com R² alto; valide com holdout out-of-sample; (4) <strong>regime</strong>{" "}
-              — o modelo aprende a relação histórica; mudanças estruturais (pandemia, novo canal,
-              rebrand) quebram a extrapolação.
+              (concorrência, distribuição, preço) entram na base ou poluem coeficientes; (3){" "}
+              <strong>poucos pontos</strong> — semanas &lt; 2× variáveis é overfit garantido, mesmo
+              com R² alto; valide com holdout out-of-sample; (4) <strong>regime</strong> — o modelo
+              aprende a relação histórica; mudanças estruturais (pandemia, novo canal, rebrand)
+              quebram a extrapolação.
             </p>
           </Section>
 
           <Section title="Referências">
             <ul className="text-xs space-y-2 font-mono text-mute leading-relaxed">
-              <li>Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge regression: Biased estimation for nonorthogonal problems. <em>Technometrics</em>, 12(1), 55–67.</li>
-              <li>Broadbent, S. (1979). One way TV advertisements work. <em>Journal of the Market Research Society</em>, 21(3), 139–166.</li>
-              <li>Jin, Y., Wang, Y., Sun, Y., Chan, D., &amp; Koehler, J. (2017). Bayesian methods for media mix modeling with carryover and shape effects. <em>Google Research</em>.</li>
-              <li>Chan, D., &amp; Perry, M. (2017). Challenges and opportunities in media mix modeling. <em>Google Research</em>.</li>
-              <li>Meta Open Source (2021). <em>Robyn: Automated Marketing Mix Modeling</em>. facebookexperimental.github.io/Robyn.</li>
-              <li>Google (2022). <em>LightweightMMM</em>. github.com/google/lightweight_mmm.</li>
+              <li>
+                Hoerl, A. E., &amp; Kennard, R. W. (1970). Ridge regression: Biased estimation for
+                nonorthogonal problems. <em>Technometrics</em>, 12(1), 55–67.
+              </li>
+              <li>
+                Broadbent, S. (1979). One way TV advertisements work.{" "}
+                <em>Journal of the Market Research Society</em>, 21(3), 139–166.
+              </li>
+              <li>
+                Jin, Y., Wang, Y., Sun, Y., Chan, D., &amp; Koehler, J. (2017). Bayesian methods for
+                media mix modeling with carryover and shape effects. <em>Google Research</em>.
+              </li>
+              <li>
+                Chan, D., &amp; Perry, M. (2017). Challenges and opportunities in media mix
+                modeling. <em>Google Research</em>.
+              </li>
+              <li>
+                Meta Open Source (2021). <em>Robyn: Automated Marketing Mix Modeling</em>.
+                facebookexperimental.github.io/Robyn.
+              </li>
+              <li>
+                Google (2022). <em>LightweightMMM</em>. github.com/google/lightweight_mmm.
+              </li>
             </ul>
           </Section>
         </article>
@@ -108,7 +133,9 @@ function MethodologyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-10">
-      <h2 className="font-display text-2xl text-indigo-ink border-b hairline-strong pb-2">{title}</h2>
+      <h2 className="font-display text-2xl text-indigo-ink border-b hairline-strong pb-2">
+        {title}
+      </h2>
       <div className="mt-4 text-sm leading-relaxed text-indigo-ink/85 [&_strong]:text-indigo-ink">
         {children}
       </div>
