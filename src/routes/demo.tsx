@@ -46,6 +46,7 @@ export const Route = createFileRoute("/demo")({
 });
 
 import { CHANNEL_COLORS, BASELINE, CHART_GRID } from "@/lib/prisma-tokens";
+import { fmt, pConfidence } from "@/lib/format";
 
 const SERIES_COLORS = CHANNEL_COLORS.slice(0, 5);
 const SAT_AMBER = CHANNEL_COLORS[5];
@@ -314,18 +315,3 @@ function Metric({ label, value, hint }: { label: string; value: string; hint: st
   );
 }
 
-function pConfidence(p: number, name: string): string {
-  if (name.startsWith("Base")) return "—";
-  if (p < 0.01) return "Muito alta (★★★)";
-  if (p < 0.05) return "Alta (★★)";
-  if (p < 0.1) return "Moderada (★)";
-  return "Baixa";
-}
-
-function fmt(n: number): string {
-  if (!Number.isFinite(n)) return "—";
-  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + "B";
-  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + "M";
-  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "k";
-  return n.toFixed(1);
-}

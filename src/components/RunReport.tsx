@@ -29,6 +29,7 @@ import {
   PrismaTd,
   PrismaBadge,
 } from "@/components/prisma";
+import { fmt, pConfidence } from "@/lib/format";
 
 const SAT_AMBER = "#E0A21E"; // = CHANNEL_COLORS[4]; alias for outlier highlight
 
@@ -669,18 +670,3 @@ function BudgetSimulator({ rois, depVariable }: { rois: RunTotals[]; depVariable
   );
 }
 
-function pConfidence(p: number, name: string): string {
-  if (name.startsWith("Base")) return "—";
-  if (p < 0.01) return "Muito alta (★★★)";
-  if (p < 0.05) return "Alta (★★)";
-  if (p < 0.1) return "Moderada (★)";
-  return "Baixa";
-}
-
-function fmt(n: number): string {
-  if (!Number.isFinite(n)) return "—";
-  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + "B";
-  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + "M";
-  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "k";
-  return n.toFixed(1);
-}

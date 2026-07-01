@@ -18,6 +18,8 @@ import {
 
 import { getRun } from "@/lib/mmm.functions";
 import type { RunReportData } from "@/components/RunReport";
+import { BASELINE } from "@/lib/prisma-tokens";
+import { fmt } from "@/lib/format";
 
 const searchSchema = z.object({
   a: z.string().uuid().optional(),
@@ -227,7 +229,7 @@ function DecompChart({ run }: { run: RunReportData }) {
             <XAxis dataKey="period" tick={{ fontSize: 9 }} />
             <YAxis tick={{ fontSize: 9 }} tickFormatter={fmt} />
             <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 11, border: "1px solid #D7D4E2", borderRadius: 0 }} />
-            <Area type="monotone" dataKey="base" stackId="1" stroke="#94908a" fill="#94908a" name="Base" fillOpacity={0.5} />
+            <Area type="monotone" dataKey="base" stackId="1" stroke={BASELINE} fill={BASELINE} name="Base" fillOpacity={0.5} />
             {variableNames.map((name, i) => (
               <Area key={name} type="monotone" dataKey={name} stackId="1" stroke={SERIES_COLORS[i % SERIES_COLORS.length]} fill={SERIES_COLORS[i % SERIES_COLORS.length]} fillOpacity={0.7} />
             ))}
@@ -337,12 +339,4 @@ function RoiCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
   );
 }
 
-// Local helpers (mirrored from RunReport to avoid exporting internals)
-function fmt(n: number): string {
-  if (!Number.isFinite(n)) return "—";
-  if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + "B";
-  if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(2) + "M";
-  if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1) + "k";
-  return n.toFixed(1);
-}
 
