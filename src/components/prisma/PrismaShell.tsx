@@ -5,12 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { PrismaIcons, Ico } from "./PrismaIcons";
 import { getIsAdmin } from "@/lib/admin.functions";
 
-const VIEWS = [
-  { to: "/results/decomp", label: "Decomposição", icon: "i-decompose" },
-  { to: "/results/response", label: "Curvas de resposta", icon: "i-curve" },
-  { to: "/results/roi", label: "ROI por canal", icon: "i-roi" },
-  { to: "/results/optimizer", label: "Otimizador", icon: "i-budget" },
-] as const;
+// A single honest entry to the user's real results. The former four tabs
+// (Decomposição / Curvas / ROI / Otimizador) were static mockups; splitting the
+// real RunReport back into four focused views is the P-02 follow-up.
+const VIEWS = [{ to: "/results/decomp", label: "Resultados", icon: "i-decompose" }] as const;
 
 const MODEL = [
   { to: "/upload", label: "Dados & fontes", icon: "i-data" },
@@ -19,10 +17,10 @@ const MODEL = [
 ] as const;
 
 const CRUMB: Record<string, string> = {
-  "/results/decomp": "Decomposição · 2026 H1",
-  "/results/response": "Curvas de resposta · 2026 H1",
-  "/results/roi": "ROI por canal · 2026 H1",
-  "/results/optimizer": "Otimizador · 2026 H1",
+  "/results/decomp": "Resultados",
+  "/results/response": "Resultados",
+  "/results/roi": "Resultados",
+  "/results/optimizer": "Resultados",
 };
 
 export function PrismaShell({ children }: { children: React.ReactNode }) {
@@ -134,9 +132,6 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
             )}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span className="prisma-badge" data-tone="success">
-              <span className="dot"></span>Convergiu · R² 0,91
-            </span>
             <button className="prisma-btn" data-variant="secondary" data-size="sm">
               <Ico id="i-download" />Exportar
             </button>

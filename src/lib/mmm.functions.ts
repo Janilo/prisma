@@ -444,6 +444,27 @@ export const getRun = createServerFn({ method: "POST" })
   });
 
 
+// Most recent run for the current user (or null). Powers the /results/* views so
+// they show the user's real latest model instead of static placeholders. Scoped to
+// the caller by RLS (context.supabase), same as listRuns/getRun.
+export const getLatestRun = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase } = context;
+    const { data: run, error } = await supabase
+      .from("runs")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) {
+      console.error("getLatestRun failed:", error);
+      throw new Error("Falha ao carregar a última rodada.");
+    }
+    return { run: run ?? null };
+  });
+
+
 // Public read-only access to a single run. The UUID itself is the access token —
 // unguessable (122 bits of entropy) and the response strips user_id and ownership info.
 // Anyone with the link can view the run; no login required.
