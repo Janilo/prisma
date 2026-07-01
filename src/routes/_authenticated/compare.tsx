@@ -31,7 +31,16 @@ export const Route = createFileRoute("/_authenticated/compare")({
   component: ComparePage,
 });
 
-const SERIES_COLORS = ["#6B4FE0", "#2D7BE0", "#0E97A8", "#E0A21E", "#4FA23E", "#C2562F", "#B8B4D8", "#7A5CF0"];
+const SERIES_COLORS = [
+  "#6B4FE0",
+  "#2D7BE0",
+  "#0E97A8",
+  "#E0A21E",
+  "#4FA23E",
+  "#C2562F",
+  "#B8B4D8",
+  "#7A5CF0",
+];
 
 function ComparePage() {
   const { a, b } = Route.useSearch();
@@ -44,8 +53,11 @@ function ComparePage() {
           Selecione dois runs para comparar
         </h1>
         <p className="mt-4 text-sm text-abyss/70">
-          Vá em <Link to="/runs" className="border-b border-violet">Modelos rodados</Link>,
-          marque dois runs do mesmo dataset e clique em <strong>Comparar selecionados</strong>.
+          Vá em{" "}
+          <Link to="/runs" className="border-b border-violet">
+            Modelos rodados
+          </Link>
+          , marque dois runs do mesmo dataset e clique em <strong>Comparar selecionados</strong>.
         </p>
       </div>
     );
@@ -76,8 +88,8 @@ function CompareView({ aId, bId }: { aId: string; bId: string }) {
       </h1>
       {!sameDataset && (
         <p className="mt-4 text-xs text-red-700 border border-red-700/30 bg-red-50 p-3">
-          Atenção: variáveis-alvo diferentes ({runA.dep_variable} vs {runB.dep_variable}).
-          A comparação direta pode não fazer sentido.
+          Atenção: variáveis-alvo diferentes ({runA.dep_variable} vs {runB.dep_variable}). A
+          comparação direta pode não fazer sentido.
         </p>
       )}
 
@@ -111,17 +123,29 @@ function ConfigCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
   const rows: Array<[string, string, string]> = [
     ["Alvo", a.dep_variable, b.dep_variable],
     ["α (ridge)", String(a.params_json.alpha), String(b.params_json.alpha)],
-    ["Saturação (Hill)", String(a.params_json.saturationAlpha), String(b.params_json.saturationAlpha)],
+    [
+      "Saturação (Hill)",
+      String(a.params_json.saturationAlpha),
+      String(b.params_json.saturationAlpha),
+    ],
     [
       "Adstock",
       a.params_json.adstockDecays && Object.keys(a.params_json.adstockDecays).length
-        ? Object.entries(a.params_json.adstockDecays).map(([k, v]) => `${k}=${v}`).join(", ")
+        ? Object.entries(a.params_json.adstockDecays)
+            .map(([k, v]) => `${k}=${v}`)
+            .join(", ")
         : `global=${a.params_json.adstockDecay}`,
       b.params_json.adstockDecays && Object.keys(b.params_json.adstockDecays).length
-        ? Object.entries(b.params_json.adstockDecays).map(([k, v]) => `${k}=${v}`).join(", ")
+        ? Object.entries(b.params_json.adstockDecays)
+            .map(([k, v]) => `${k}=${v}`)
+            .join(", ")
         : `global=${b.params_json.adstockDecay}`,
     ],
-    ["Quando", new Date(a.created_at).toLocaleString("pt-BR"), new Date(b.created_at).toLocaleString("pt-BR")],
+    [
+      "Quando",
+      new Date(a.created_at).toLocaleString("pt-BR"),
+      new Date(b.created_at).toLocaleString("pt-BR"),
+    ],
   ];
 
   return (
@@ -151,19 +175,39 @@ function ConfigCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
 
 function MetricsCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
   const m = (run: RunReportData) => run.metrics_json;
-  const metric = (label: string, getter: (m: RunReportData["metrics_json"]) => number | undefined, formatter: (n: number) => string, higherIsBetter: boolean) => {
+  const metric = (
+    label: string,
+    getter: (m: RunReportData["metrics_json"]) => number | undefined,
+    formatter: (n: number) => string,
+    higherIsBetter: boolean,
+  ) => {
     const va = getter(m(a));
     const vb = getter(m(b));
-    const winner = va !== undefined && vb !== undefined
-      ? (higherIsBetter ? (va > vb ? "a" : va < vb ? "b" : "tie") : (va < vb ? "a" : va > vb ? "b" : "tie"))
-      : "tie";
+    const winner =
+      va !== undefined && vb !== undefined
+        ? higherIsBetter
+          ? va > vb
+            ? "a"
+            : va < vb
+              ? "b"
+              : "tie"
+          : va < vb
+            ? "a"
+            : va > vb
+              ? "b"
+              : "tie"
+        : "tie";
     return (
       <tr key={label} className="border-b hairline">
         <td className="py-2 text-xs uppercase tracking-widest text-abyss/60">{label}</td>
-        <td className={`py-2 text-right font-mono text-sm ${winner === "a" ? "text-emerald-700 font-bold" : ""}`}>
+        <td
+          className={`py-2 text-right font-mono text-sm ${winner === "a" ? "text-emerald-700 font-bold" : ""}`}
+        >
           {va !== undefined ? formatter(va) : "—"}
         </td>
-        <td className={`py-2 text-right font-mono text-sm pl-4 ${winner === "b" ? "text-emerald-700 font-bold" : ""}`}>
+        <td
+          className={`py-2 text-right font-mono text-sm pl-4 ${winner === "b" ? "text-emerald-700 font-bold" : ""}`}
+        >
           {vb !== undefined ? formatter(vb) : "—"}
         </td>
       </tr>
@@ -191,8 +235,18 @@ function MetricsCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
           {metric("R² (holdout)", (m) => m.holdout?.r2, pct, true)}
           {metric("MAPE (holdout)", (m) => m.holdout?.mape, pct, false)}
           {metric("RMSE (holdout)", (m) => m.holdout?.rmse, fmt, false)}
-          {metric("n períodos", (m) => m.n, (n) => String(n), true)}
-          {metric("p variáveis", (m) => m.p, (n) => String(n), false)}
+          {metric(
+            "n períodos",
+            (m) => m.n,
+            (n) => String(n),
+            true,
+          )}
+          {metric(
+            "p variáveis",
+            (m) => m.p,
+            (n) => String(n),
+            false,
+          )}
         </tbody>
       </table>
     </section>
@@ -228,10 +282,29 @@ function DecompChart({ run }: { run: RunReportData }) {
             <CartesianGrid stroke="#D7D4E2" />
             <XAxis dataKey="period" tick={{ fontSize: 9 }} />
             <YAxis tick={{ fontSize: 9 }} tickFormatter={fmt} />
-            <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 11, border: "1px solid #D7D4E2", borderRadius: 0 }} />
-            <Area type="monotone" dataKey="base" stackId="1" stroke={BASELINE} fill={BASELINE} name="Base" fillOpacity={0.5} />
+            <Tooltip
+              formatter={(v: number) => fmt(v)}
+              contentStyle={{ fontSize: 11, border: "1px solid #D7D4E2", borderRadius: 0 }}
+            />
+            <Area
+              type="monotone"
+              dataKey="base"
+              stackId="1"
+              stroke={BASELINE}
+              fill={BASELINE}
+              name="Base"
+              fillOpacity={0.5}
+            />
             {variableNames.map((name, i) => (
-              <Area key={name} type="monotone" dataKey={name} stackId="1" stroke={SERIES_COLORS[i % SERIES_COLORS.length]} fill={SERIES_COLORS[i % SERIES_COLORS.length]} fillOpacity={0.7} />
+              <Area
+                key={name}
+                type="monotone"
+                dataKey={name}
+                stackId="1"
+                stroke={SERIES_COLORS[i % SERIES_COLORS.length]}
+                fill={SERIES_COLORS[i % SERIES_COLORS.length]}
+                fillOpacity={0.7}
+              />
             ))}
           </AreaChart>
         </ResponsiveContainer>
@@ -271,10 +344,20 @@ function PredChart({ run }: { run: RunReportData }) {
             <CartesianGrid stroke="#D7D4E2" />
             <XAxis dataKey="period" tick={{ fontSize: 9 }} />
             <YAxis tick={{ fontSize: 9 }} tickFormatter={fmt} />
-            <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ fontSize: 11, border: "1px solid #D7D4E2", borderRadius: 0 }} />
+            <Tooltip
+              formatter={(v: number) => fmt(v)}
+              contentStyle={{ fontSize: 11, border: "1px solid #D7D4E2", borderRadius: 0 }}
+            />
             <Legend wrapperStyle={{ fontSize: 10 }} />
             <Line type="monotone" dataKey="Real" stroke="#6B4FE0" strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="Predito" stroke="#E0A21E" strokeWidth={2} strokeDasharray="4 3" dot={false} />
+            <Line
+              type="monotone"
+              dataKey="Predito"
+              stroke="#E0A21E"
+              strokeWidth={2}
+              strokeDasharray="4 3"
+              dot={false}
+            />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -294,7 +377,9 @@ function RoiCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
   return (
     <section className="mt-12">
       <p className="eyebrow">ROI por canal</p>
-      <h2 className="text-xl font-semibold text-abyss mt-2">Como a configuração mudou a leitura de cada canal?</h2>
+      <h2 className="text-xl font-semibold text-abyss mt-2">
+        Como a configuração mudou a leitura de cada canal?
+      </h2>
       <table className="mt-4 w-full text-sm border-collapse">
         <thead>
           <tr className="border-b hairline-strong">
@@ -320,7 +405,13 @@ function RoiCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
                 </td>
                 <td
                   className={`py-3 text-right font-mono text-xs pl-4 ${
-                    delta == null ? "" : delta > 0 ? "text-emerald-700" : delta < 0 ? "text-red-700" : ""
+                    delta == null
+                      ? ""
+                      : delta > 0
+                        ? "text-emerald-700"
+                        : delta < 0
+                          ? "text-red-700"
+                          : ""
                   }`}
                 >
                   {delta == null ? "—" : (delta > 0 ? "+" : "") + delta.toFixed(2) + "×"}
@@ -331,12 +422,10 @@ function RoiCompare({ a, b }: { a: RunReportData; b: RunReportData }) {
         </tbody>
       </table>
       <p className="mt-3 text-[11px] text-abyss/60 max-w-2xl">
-        Diferenças grandes de ROI para o mesmo canal entre runs indicam que a atribuição é
-        sensível à configuração (α, adstock, saturação) — sinal de que os dados sozinhos não
-        resolvem qual configuração é a “correta”. Use a validação out-of-sample para arbitrar.
+        Diferenças grandes de ROI para o mesmo canal entre runs indicam que a atribuição é sensível
+        à configuração (α, adstock, saturação) — sinal de que os dados sozinhos não resolvem qual
+        configuração é a “correta”. Use a validação out-of-sample para arbitrar.
       </p>
     </section>
   );
 }
-
-

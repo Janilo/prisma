@@ -61,7 +61,11 @@ export type RunReportData = {
   name: string;
   dep_variable: string;
   metrics_json: {
-    r2: number; mape: number; rmse: number; n: number; p: number;
+    r2: number;
+    mape: number;
+    rmse: number;
+    n: number;
+    p: number;
     holdoutPeriods?: number;
     train?: { r2: number; mape: number; rmse: number; n: number } | null;
     holdout?: { n: number; r2: number; mape: number; rmse: number } | null;
@@ -103,7 +107,7 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
     [totals],
   );
   const rois = useMemo(
-    () => (run.roi_json ?? []).filter((r) => r.roi !== null).sort((a, b) => (b.roi! - a.roi!)),
+    () => (run.roi_json ?? []).filter((r) => r.roi !== null).sort((a, b) => b.roi! - a.roi!),
     [run.roi_json],
   );
 
@@ -121,7 +125,8 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
     const { labels, actual, predicted } = run.predicted_json;
     const raw = actual.map((a, i) => a - predicted[i]);
     const mean = raw.reduce((s, v) => s + v, 0) / (raw.length || 1);
-    const variance = raw.reduce((s, v) => s + (v - mean) ** 2, 0) / (raw.length > 1 ? raw.length - 1 : 1);
+    const variance =
+      raw.reduce((s, v) => s + (v - mean) ** 2, 0) / (raw.length > 1 ? raw.length - 1 : 1);
     const sd = Math.sqrt(variance) || 1;
     return labels.map((l, i) => {
       const r = raw[i];
@@ -165,11 +170,16 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
             {run.name}
           </h1>
           <p className="mt-3 text-xs font-mono" style={{ color: "var(--prisma-mute)" }}>
-            Alvo: {run.dep_variable} · α={run.params_json.alpha} · saturação={run.params_json.saturationAlpha} · {new Date(run.created_at).toLocaleString("pt-BR")}
+            Alvo: {run.dep_variable} · α={run.params_json.alpha} · saturação=
+            {run.params_json.saturationAlpha} · {new Date(run.created_at).toLocaleString("pt-BR")}
           </p>
-          {run.params_json.adstockDecays && Object.keys(run.params_json.adstockDecays).length > 0 ? (
+          {run.params_json.adstockDecays &&
+          Object.keys(run.params_json.adstockDecays).length > 0 ? (
             <p className="mt-1 text-xs font-mono" style={{ color: "var(--prisma-mute)" }}>
-              Adstock por canal: {Object.entries(run.params_json.adstockDecays).map(([k, v]) => `${k}=${v}`).join(" · ")}
+              Adstock por canal:{" "}
+              {Object.entries(run.params_json.adstockDecays)
+                .map(([k, v]) => `${k}=${v}`)
+                .join(" · ")}
             </p>
           ) : (
             <p className="mt-1 text-xs font-mono" style={{ color: "var(--prisma-mute)" }}>
@@ -254,9 +264,25 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
               <YAxis tick={{ fontSize: 10, fontFamily: "Inter Tight" }} tickFormatter={fmt} />
               <Tooltip formatter={(v: number) => fmt(v)} contentStyle={tooltipStyle} />
               <Legend wrapperStyle={{ fontSize: 11, fontFamily: "Inter Tight" }} />
-              <Area type="monotone" dataKey="base" stackId="1" stroke={BASELINE} fill={BASELINE} name="Base" fillOpacity={0.5} />
+              <Area
+                type="monotone"
+                dataKey="base"
+                stackId="1"
+                stroke={BASELINE}
+                fill={BASELINE}
+                name="Base"
+                fillOpacity={0.5}
+              />
               {variableNames.map((name, i) => (
-                <Area key={name} type="monotone" dataKey={name} stackId="1" stroke={SERIES_COLORS[i % SERIES_COLORS.length]} fill={SERIES_COLORS[i % SERIES_COLORS.length]} fillOpacity={0.7} />
+                <Area
+                  key={name}
+                  type="monotone"
+                  dataKey={name}
+                  stackId="1"
+                  stroke={SERIES_COLORS[i % SERIES_COLORS.length]}
+                  fill={SERIES_COLORS[i % SERIES_COLORS.length]}
+                  fillOpacity={0.7}
+                />
               ))}
             </AreaChart>
           </ResponsiveContainer>
@@ -273,7 +299,14 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
               <Tooltip formatter={(v: number) => fmt(v)} contentStyle={tooltipStyle} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <Line type="monotone" dataKey="Real" stroke={C[0]} strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="Predito" stroke={SAT_AMBER} strokeWidth={2} strokeDasharray="4 3" dot={false} />
+              <Line
+                type="monotone"
+                dataKey="Predito"
+                stroke={SAT_AMBER}
+                strokeWidth={2}
+                strokeDasharray="4 3"
+                dot={false}
+              />
             </LineChart>
           </ResponsiveContainer>
         </PrismaCard>
@@ -291,7 +324,7 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
               <XAxis dataKey="period" tick={{ fontSize: 10 }} />
               <YAxis tick={{ fontSize: 10 }} tickFormatter={fmt} />
               <Tooltip
-                formatter={(v: number, name: string) => name === "z" ? v.toFixed(2) : fmt(v)}
+                formatter={(v: number, name: string) => (name === "z" ? v.toFixed(2) : fmt(v))}
                 contentStyle={tooltipStyle}
               />
               <Line
@@ -300,12 +333,26 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                 stroke={C[0]}
                 strokeWidth={1.5}
                 name="Resíduo"
-                dot={(props: { cx?: number; cy?: number; payload?: { outlier?: boolean; period?: string } }) => {
+                dot={(props: {
+                  cx?: number;
+                  cy?: number;
+                  payload?: { outlier?: boolean; period?: string };
+                }) => {
                   const { cx, cy, payload } = props;
                   if (!payload?.outlier || cx == null || cy == null) {
                     return <g key={payload?.period ?? `${cx}-${cy}`} />;
                   }
-                  return <circle key={payload.period} cx={cx} cy={cy} r={4} fill={SAT_AMBER} stroke={C[0]} strokeWidth={1} />;
+                  return (
+                    <circle
+                      key={payload.period}
+                      cx={cx}
+                      cy={cy}
+                      r={4}
+                      fill={SAT_AMBER}
+                      stroke={C[0]}
+                      strokeWidth={1}
+                    />
+                  );
                 }}
               />
             </LineChart>
@@ -319,7 +366,8 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
         ) : (
           <div className="mt-6">
             <p className="text-xs mb-3" style={{ color: "var(--prisma-slate)" }}>
-              <strong>{outliers.length}</strong> período{outliers.length > 1 ? "s" : ""} fora do esperado:
+              <strong>{outliers.length}</strong> período{outliers.length > 1 ? "s" : ""} fora do
+              esperado:
             </p>
             <PrismaTable>
               <thead>
@@ -341,9 +389,13 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                       <PrismaTd>{o.period}</PrismaTd>
                       <PrismaTd num>{fmt(o.actual)}</PrismaTd>
                       <PrismaTd num>{fmt(o.predicted)}</PrismaTd>
-                      <PrismaTd num tone={o.residual >= 0 ? "pos" : "neg"}>{fmt(o.residual)}</PrismaTd>
+                      <PrismaTd num tone={o.residual >= 0 ? "pos" : "neg"}>
+                        {fmt(o.residual)}
+                      </PrismaTd>
                       <PrismaTd num>{o.z.toFixed(2)}</PrismaTd>
-                      <PrismaTd>{o.z > 0 ? "Real acima do esperado" : "Real abaixo do esperado"}</PrismaTd>
+                      <PrismaTd>
+                        {o.z > 0 ? "Real acima do esperado" : "Real abaixo do esperado"}
+                      </PrismaTd>
                     </tr>
                   ))}
               </tbody>
@@ -375,16 +427,20 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                   <PrismaTd channelColor={channelColor}>
                     <span style={{ fontWeight: 500 }}>{t.variable}</span>
                     {t.isMedia && (
-                      <PrismaBadge tone="ai" className="ml-2">mídia</PrismaBadge>
+                      <PrismaBadge tone="ai" className="ml-2">
+                        mídia
+                      </PrismaBadge>
                     )}
                   </PrismaTd>
                   <PrismaTd num>
                     {fmt(t.contribution)}
-                    {t.contribLow != null && t.contribHigh != null && !t.variable.startsWith("Base") && (
-                      <div className="text-[10px] mt-0.5" style={{ color: "var(--prisma-mute)" }}>
-                        IC 90%: {fmt(t.contribLow)} — {fmt(t.contribHigh)}
-                      </div>
-                    )}
+                    {t.contribLow != null &&
+                      t.contribHigh != null &&
+                      !t.variable.startsWith("Base") && (
+                        <div className="text-[10px] mt-0.5" style={{ color: "var(--prisma-mute)" }}>
+                          IC 90%: {fmt(t.contribLow)} — {fmt(t.contribHigh)}
+                        </div>
+                      )}
                   </PrismaTd>
                   <PrismaTd num>
                     <div className="inline-flex items-center gap-2">
@@ -400,7 +456,9 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
                       <span className="text-xs">{(t.share * 100).toFixed(1)}%</span>
                     </div>
                   </PrismaTd>
-                  <PrismaTd num>{t.variable.startsWith("Base") ? "—" : t.pValue.toFixed(3)}</PrismaTd>
+                  <PrismaTd num>
+                    {t.variable.startsWith("Base") ? "—" : t.pValue.toFixed(3)}
+                  </PrismaTd>
                   <PrismaTd>{conf}</PrismaTd>
                 </tr>
               );
@@ -411,17 +469,17 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
           className="mt-4 text-[11px] leading-relaxed max-w-3xl"
           style={{ color: "var(--prisma-mute)" }}
         >
-          <strong style={{ color: "var(--prisma-slate)" }}>Nota metodológica.</strong> Os p-values acima
-          são <em>aproximações</em>. O Ridge encolhe coeficientes em direção a zero, o que
-          enviesa a inferência clássica: usamos a variância residual do ajuste com a matriz
-          (X′X + αI)⁻¹, prática comum mas que <em>subestima</em> a incerteza real. Trate as
-          estrelas como um <em>ranking de robustez</em>, não como teste de hipótese formal.
-          Para inferência rigorosa, rode o modelo novamente com <strong>α = 0</strong> (OLS
-          puro, sem regularização) — os p-values dessa rodada são válidos no sentido clássico.
-          Os <strong>intervalos de confiança a 90%</strong> vêm de <em>residual bootstrap</em>
-          com 200 reamostragens: reembaralhamos os resíduos do ajuste, refazemos a Ridge e
-          coletamos a distribuição de contribuição e ROI. Esses ICs <em>são</em> robustos à
-          regularização e capturam a incerteza real do modelo.
+          <strong style={{ color: "var(--prisma-slate)" }}>Nota metodológica.</strong> Os p-values
+          acima são <em>aproximações</em>. O Ridge encolhe coeficientes em direção a zero, o que
+          enviesa a inferência clássica: usamos a variância residual do ajuste com a matriz (X′X +
+          αI)⁻¹, prática comum mas que <em>subestima</em> a incerteza real. Trate as estrelas como
+          um <em>ranking de robustez</em>, não como teste de hipótese formal. Para inferência
+          rigorosa, rode o modelo novamente com <strong>α = 0</strong> (OLS puro, sem regularização)
+          — os p-values dessa rodada são válidos no sentido clássico. Os{" "}
+          <strong>intervalos de confiança a 90%</strong> vêm de <em>residual bootstrap</em>
+          com 200 reamostragens: reembaralhamos os resíduos do ajuste, refazemos a Ridge e coletamos
+          a distribuição de contribuição e ROI. Esses ICs <em>são</em> robustos à regularização e
+          capturam a incerteza real do modelo.
         </p>
       </PrismaSection>
 
@@ -464,7 +522,11 @@ export function RunReport({ run, header }: { run: RunReportData; header?: React.
         </PrismaSection>
       )}
 
-      <ResponseCurves channels={(run.contributions_json ?? []).filter((t) => t.isMedia && t.curve && t.curve.length > 0)} />
+      <ResponseCurves
+        channels={(run.contributions_json ?? []).filter(
+          (t) => t.isMedia && t.curve && t.curve.length > 0,
+        )}
+      />
 
       {rois.length >= 2 && <BudgetSimulator rois={rois} depVariable={run.dep_variable} />}
     </div>
@@ -495,7 +557,8 @@ function ResponseCurves({ channels }: { channels: RunTotals[] }) {
                 {c.variable}
               </p>
               <p className="text-xs font-mono" style={{ color: "var(--prisma-mute)" }}>
-                Hoje: {fmt(c.spend)} → {fmt(c.contribution)} · ROI {c.roi != null ? c.roi.toFixed(2) + "×" : "—"}
+                Hoje: {fmt(c.spend)} → {fmt(c.contribution)} · ROI{" "}
+                {c.roi != null ? c.roi.toFixed(2) + "×" : "—"}
               </p>
               <div className="h-56">
                 <ResponsiveContainer>
@@ -524,7 +587,17 @@ function ResponseCurves({ channels }: { channels: RunTotals[] }) {
                         if (cx == null || cy == null || !payload) return <g key={`${cx}-${cy}`} />;
                         const isCurrent = Math.abs(payload.spend - c.spend) < c.spend * 0.06;
                         if (!isCurrent) return <g key={payload.spend} />;
-                        return <circle key={payload.spend} cx={cx} cy={cy} r={5} fill={SAT_AMBER} stroke={INDIGO} strokeWidth={1.5} />;
+                        return (
+                          <circle
+                            key={payload.spend}
+                            cx={cx}
+                            cy={cy}
+                            r={5}
+                            fill={SAT_AMBER}
+                            stroke={INDIGO}
+                            strokeWidth={1.5}
+                          />
+                        );
                       }}
                     />
                   </LineChart>
@@ -534,10 +607,7 @@ function ResponseCurves({ channels }: { channels: RunTotals[] }) {
           );
         })}
       </div>
-      <p
-        className="mt-4 text-[11px] max-w-3xl"
-        style={{ color: "var(--prisma-mute)" }}
-      >
+      <p className="mt-4 text-[11px] max-w-3xl" style={{ color: "var(--prisma-mute)" }}>
         Eixo X até 1,5× o gasto histórico do canal. A curva é uma <em>extrapolação</em> da forma
         funcional do modelo (adstock geométrico + Hill); fora do intervalo observado a incerteza
         cresce muito. Use como guia direcional, não como previsão exata.
@@ -560,7 +630,13 @@ function BudgetSimulator({ rois, depVariable }: { rois: RunTotals[]; depVariable
       const nc = (r.roi ?? 0) * ns;
       newSpend += ns;
       newContribution += nc;
-      return { ...r, pct, newSpend: ns, newContribution: nc, deltaContribution: nc - r.contribution };
+      return {
+        ...r,
+        pct,
+        newSpend: ns,
+        newContribution: nc,
+        deltaContribution: nc - r.contribution,
+      };
     });
     return {
       rows,
@@ -594,7 +670,10 @@ function BudgetSimulator({ rois, depVariable }: { rois: RunTotals[]; depVariable
             <tr key={r.variable}>
               <PrismaTd channelColor={CHANNEL_COLORS[i % CHANNEL_COLORS.length]}>
                 <span style={{ fontWeight: 500 }}>{r.variable}</span>
-                <span className="ml-2 font-mono text-[10px]" style={{ color: "var(--prisma-mute)" }}>
+                <span
+                  className="ml-2 font-mono text-[10px]"
+                  style={{ color: "var(--prisma-mute)" }}
+                >
                   ROI {r.roi!.toFixed(2)}×
                 </span>
               </PrismaTd>
@@ -619,8 +698,8 @@ function BudgetSimulator({ rois, depVariable }: { rois: RunTotals[]; depVariable
                         r.pct > 0
                           ? "var(--prisma-indigo-deep)"
                           : r.pct < 0
-                          ? "var(--prisma-mute)"
-                          : "var(--prisma-slate)",
+                            ? "var(--prisma-mute)"
+                            : "var(--prisma-slate)",
                     }}
                   >
                     {r.pct > 0 ? "+" : ""}
@@ -642,7 +721,8 @@ function BudgetSimulator({ rois, depVariable }: { rois: RunTotals[]; depVariable
             <PrismaTd>Total</PrismaTd>
             <PrismaTd num>{fmt(totalSpend)}</PrismaTd>
             <PrismaTd num>
-              Δ gasto: {sim.deltaSpend > 0 ? "+" : ""}{fmt(sim.deltaSpend)}
+              Δ gasto: {sim.deltaSpend > 0 ? "+" : ""}
+              {fmt(sim.deltaSpend)}
             </PrismaTd>
             <PrismaTd num>{fmt(sim.newSpend)}</PrismaTd>
             <PrismaTd num>
@@ -657,16 +737,13 @@ function BudgetSimulator({ rois, depVariable }: { rois: RunTotals[]; depVariable
         <PrismaButton variant="ghost" size="sm" onClick={reset}>
           Zerar ajustes
         </PrismaButton>
-        <p
-          className="text-[11px] max-w-xl text-right"
-          style={{ color: "var(--prisma-mute)" }}
-        >
-          <strong style={{ color: "var(--prisma-slate)" }}>Aviso.</strong> O modelo aplicou saturação de Hill no ajuste,
-          então o ROI marginal cai conforme o canal cresce. Esta simulação usa ROI <em>médio</em> —
-          é confiável para realocações pequenas (±15–25%) e otimista para aumentos grandes em um único canal.
+        <p className="text-[11px] max-w-xl text-right" style={{ color: "var(--prisma-mute)" }}>
+          <strong style={{ color: "var(--prisma-slate)" }}>Aviso.</strong> O modelo aplicou
+          saturação de Hill no ajuste, então o ROI marginal cai conforme o canal cresce. Esta
+          simulação usa ROI <em>médio</em> — é confiável para realocações pequenas (±15–25%) e
+          otimista para aumentos grandes em um único canal.
         </p>
       </div>
     </PrismaSection>
   );
 }
-

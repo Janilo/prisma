@@ -88,12 +88,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Prisma · O que move suas vendas, por canal" },
-      { name: "description", content: "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI." },
+      {
+        name: "description",
+        content:
+          "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI.",
+      },
       { property: "og:title", content: "Prisma · O que move suas vendas, por canal" },
-      { property: "og:description", content: "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI." },
+      {
+        property: "og:description",
+        content:
+          "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:title", content: "Prisma · O que move suas vendas, por canal" },
-      { name: "twitter:description", content: "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI." },
+      {
+        name: "twitter:description",
+        content:
+          "Marketing Mix Modeling sem código. Suba uma planilha e veja quanto cada canal contribuiu para suas vendas — atribuição, elasticidade e ROI.",
+      },
       { property: "og:image", content: "https://prisma.pereirasaraiva.com/og-social.png" },
       { name: "twitter:image", content: "https://prisma.pereirasaraiva.com/og-social.png" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -103,8 +115,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       { rel: "canonical", href: "https://prisma.pereirasaraiva.com/" },
-      { rel: "preload", href: "/fonts/Fraunces-VariableFont_SOFT_WONK_opsz_wght.ttf", as: "font", type: "font/ttf", crossOrigin: "anonymous" },
-      { rel: "preload", href: "/fonts/InterTight-VariableFont_wght.ttf", as: "font", type: "font/ttf", crossOrigin: "anonymous" },
+      {
+        rel: "preload",
+        href: "/fonts/Fraunces-VariableFont_SOFT_WONK_opsz_wght.ttf",
+        as: "font",
+        type: "font/ttf",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        href: "/fonts/InterTight-VariableFont_wght.ttf",
+        as: "font",
+        type: "font/ttf",
+        crossOrigin: "anonymous",
+      },
     ],
     scripts: [
       {
@@ -141,7 +165,9 @@ function AuthListener() {
   const router = useRouter();
   const queryClient = useQueryClient();
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(() => {
       router.invalidate();
       queryClient.invalidateQueries();
     });

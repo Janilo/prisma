@@ -20,8 +20,21 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-type Profile = { id: string; display_name: string | null; email: string | null; created_at: string };
-type Dataset = { id: string; user_id: string; name: string; n_rows: number; n_cols: number; created_at: string; original_filename: string };
+type Profile = {
+  id: string;
+  display_name: string | null;
+  email: string | null;
+  created_at: string;
+};
+type Dataset = {
+  id: string;
+  user_id: string;
+  name: string;
+  n_rows: number;
+  n_cols: number;
+  created_at: string;
+  original_filename: string;
+};
 type Run = { id: string; dataset_id: string; created_at: string };
 
 function AdminPage() {
@@ -36,7 +49,9 @@ function AdminPage() {
 
   useEffect(() => {
     checkAdmin()
-      .then(r => { if (!r.isAdmin) navigate({ to: "/upload", replace: true }); })
+      .then((r) => {
+        if (!r.isAdmin) navigate({ to: "/upload", replace: true });
+      })
       .catch(() => navigate({ to: "/upload", replace: true }));
   }, [navigate, checkAdmin]);
 
@@ -62,7 +77,7 @@ function AdminPage() {
     datasetsByUser.set(d.user_id, list);
   }
 
-  const datasetIds = new Set(datasets.map(d => d.id));
+  const datasetIds = new Set(datasets.map((d) => d.id));
   const runsByDataset = new Map<string, Run[]>();
   for (const r of runs) {
     if (!datasetIds.has(r.dataset_id)) continue;
@@ -95,7 +110,7 @@ function AdminPage() {
           { label: "Usuários", value: profiles.length },
           { label: "Datasets", value: datasets.length },
           { label: "Rodadas", value: runs.length },
-        ].map(s => (
+        ].map((s) => (
           <div key={s.label} className="border border-abyss/20 bg-white p-5">
             <p className="text-xs uppercase tracking-widest text-mute">{s.label}</p>
             <p className="mt-1 font-display text-3xl text-abyss">{loading ? "—" : s.value}</p>
@@ -103,7 +118,9 @@ function AdminPage() {
         ))}
       </div>
 
-      {err && <p className="text-sm text-red-600 border border-red-200 bg-red-50 px-4 py-3">{err}</p>}
+      {err && (
+        <p className="text-sm text-red-600 border border-red-200 bg-red-50 px-4 py-3">{err}</p>
+      )}
 
       {/* Users table */}
       <div>
@@ -121,24 +138,33 @@ function AdminPage() {
             </thead>
             <tbody>
               {loading && (
-                <tr><td colSpan={5} className="px-5 py-10 text-center text-mute">Carregando…</td></tr>
+                <tr>
+                  <td colSpan={5} className="px-5 py-10 text-center text-mute">
+                    Carregando…
+                  </td>
+                </tr>
               )}
               {!loading && profiles.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-10 text-center text-mute">Nenhum usuário ainda.</td></tr>
+                <tr>
+                  <td colSpan={5} className="px-5 py-10 text-center text-mute">
+                    Nenhum usuário ainda.
+                  </td>
+                </tr>
               )}
-              {!loading && profiles.map(p => {
-                const userDatasets = datasetsByUser.get(p.id) ?? [];
-                const runCount = runCountByUser.get(p.id) ?? 0;
-                return (
-                  <tr key={p.id} className="border-t border-abyss/10">
-                    <td className="px-5 py-3 font-medium text-abyss">{p.display_name || "—"}</td>
-                    <td className="px-5 py-3 text-mute">{p.email || p.id.slice(0, 8) + "…"}</td>
-                    <td className="px-5 py-3 text-mute">{fmt(p.created_at)}</td>
-                    <td className="px-5 py-3 text-right tabular-nums">{userDatasets.length}</td>
-                    <td className="px-5 py-3 text-right tabular-nums">{runCount}</td>
-                  </tr>
-                );
-              })}
+              {!loading &&
+                profiles.map((p) => {
+                  const userDatasets = datasetsByUser.get(p.id) ?? [];
+                  const runCount = runCountByUser.get(p.id) ?? 0;
+                  return (
+                    <tr key={p.id} className="border-t border-abyss/10">
+                      <td className="px-5 py-3 font-medium text-abyss">{p.display_name || "—"}</td>
+                      <td className="px-5 py-3 text-mute">{p.email || p.id.slice(0, 8) + "…"}</td>
+                      <td className="px-5 py-3 text-mute">{fmt(p.created_at)}</td>
+                      <td className="px-5 py-3 text-right tabular-nums">{userDatasets.length}</td>
+                      <td className="px-5 py-3 text-right tabular-nums">{runCount}</td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
@@ -147,7 +173,9 @@ function AdminPage() {
       {/* Recent datasets */}
       {!loading && datasets.length > 0 && (
         <div>
-          <p className="eyebrow text-xs uppercase tracking-widest text-mute mb-3">Datasets recentes</p>
+          <p className="eyebrow text-xs uppercase tracking-widest text-mute mb-3">
+            Datasets recentes
+          </p>
           <div className="border border-abyss/20 bg-white overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-abyss/5 text-xs uppercase tracking-widest text-mute">
@@ -162,15 +190,21 @@ function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {datasets.slice(0, 50).map(d => {
-                  const owner = profiles.find(p => p.id === d.user_id);
+                {datasets.slice(0, 50).map((d) => {
+                  const owner = profiles.find((p) => p.id === d.user_id);
                   const rCount = (runsByDataset.get(d.id) ?? []).length;
                   return (
                     <tr key={d.id} className="border-t border-abyss/10">
                       <td className="px-5 py-3 font-medium text-abyss">{d.name}</td>
-                      <td className="px-5 py-3 text-mute text-xs font-mono">{d.original_filename}</td>
-                      <td className="px-5 py-3 text-mute">{owner?.email || owner?.display_name || d.user_id.slice(0, 8) + "…"}</td>
-                      <td className="px-5 py-3 text-right tabular-nums">{d.n_rows.toLocaleString("pt-BR")}</td>
+                      <td className="px-5 py-3 text-mute text-xs font-mono">
+                        {d.original_filename}
+                      </td>
+                      <td className="px-5 py-3 text-mute">
+                        {owner?.email || owner?.display_name || d.user_id.slice(0, 8) + "…"}
+                      </td>
+                      <td className="px-5 py-3 text-right tabular-nums">
+                        {d.n_rows.toLocaleString("pt-BR")}
+                      </td>
                       <td className="px-5 py-3 text-right tabular-nums">{d.n_cols}</td>
                       <td className="px-5 py-3 text-right tabular-nums">{rCount}</td>
                       <td className="px-5 py-3 text-right text-mute">{fmt(d.created_at)}</td>

@@ -32,7 +32,9 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
-    checkAdmin().then(r => setIsAdmin(r.isAdmin)).catch(() => setIsAdmin(false));
+    checkAdmin()
+      .then((r) => setIsAdmin(r.isAdmin))
+      .catch(() => setIsAdmin(false));
   }, [checkAdmin]);
 
   const isActive = (to: string) =>
@@ -52,8 +54,17 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
 
       <aside className="prisma-sidebar">
         <div className="brand">
-          <svg viewBox="0 0 210 44" style={{ height: 18, width: "auto", color: "var(--prisma-white)" }}>
-            <g fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round">
+          <svg
+            viewBox="0 0 210 44"
+            style={{ height: 18, width: "auto", color: "var(--prisma-white)" }}
+          >
+            <g
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            >
               <path d="M3 22 H17" />
               <path d="M26 7 L44 38 H8 Z" />
             </g>
@@ -64,29 +75,29 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
               <path d="M35.5 22 L66 28" stroke="#4FA23E" /> {/* ch-4 */}
               <path d="M35 22 L64 34" stroke="#E0A21E" /> {/* ch-5 */}
             </g>
-            <text x="78" y="31" fontFamily="Inter Tight, sans-serif" fontWeight="700" fontSize="25" letterSpacing="-0.02em" fill="currentColor">
+            <text
+              x="78"
+              y="31"
+              fontFamily="Inter Tight, sans-serif"
+              fontWeight="700"
+              fontSize="25"
+              letterSpacing="-0.02em"
+              fill="currentColor"
+            >
               prisma
             </text>
           </svg>
         </div>
         <nav>
           {VIEWS.map((v) => (
-            <Link
-              key={v.to}
-              to={v.to}
-              aria-current={isActive(v.to) ? "page" : undefined}
-            >
+            <Link key={v.to} to={v.to} aria-current={isActive(v.to) ? "page" : undefined}>
               <Ico id={v.icon} />
               {v.label}
             </Link>
           ))}
           <div className="group-label">Modelo</div>
           {MODEL.map((v) => (
-            <Link
-              key={v.to}
-              to={v.to}
-              aria-current={isActive(v.to) ? "page" : undefined}
-            >
+            <Link key={v.to} to={v.to} aria-current={isActive(v.to) ? "page" : undefined}>
               <Ico id={v.icon} />
               {v.label}
             </Link>
@@ -104,13 +115,22 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
         <div className="footer">
           <div className="who">{initials}</div>
           <div style={{ display: "grid", lineHeight: 1.2, minWidth: 0, flex: 1 }}>
-            <span className="name" style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+            <span
+              className="name"
+              style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}
+            >
               {email ?? "—"}
             </span>
             <button
               onClick={handleSignOut}
               className="role"
-              style={{ background: "transparent", border: 0, padding: 0, textAlign: "left", cursor: "pointer" }}
+              style={{
+                background: "transparent",
+                border: 0,
+                padding: 0,
+                textAlign: "left",
+                cursor: "pointer",
+              }}
             >
               Sair
             </button>
@@ -126,17 +146,22 @@ export function PrismaShell({ children }: { children: React.ReactNode }) {
             <strong>MMM Brasil</strong>
             {crumb && (
               <>
-                <Ico id="i-chevron-r" style={{ width: 13, height: 13, color: "var(--prisma-mute)" }} />
+                <Ico
+                  id="i-chevron-r"
+                  style={{ width: 13, height: 13, color: "var(--prisma-mute)" }}
+                />
                 <span style={{ color: "var(--prisma-mute)" }}>{crumb}</span>
               </>
             )}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <button className="prisma-btn" data-variant="secondary" data-size="sm">
-              <Ico id="i-download" />Exportar
+              <Ico id="i-download" />
+              Exportar
             </button>
             <button className="prisma-btn" data-variant="primary" data-size="sm">
-              <Ico id="i-model" />Rodar modelo
+              <Ico id="i-model" />
+              Rodar modelo
             </button>
           </div>
         </div>

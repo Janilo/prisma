@@ -40,11 +40,13 @@ export const adminFetchData = createServerFn({ method: "GET" })
       try {
         const { data: u } = await supabaseAdmin.auth.admin.getUserById(p.id);
         if (u?.user?.email) emailMap[p.id] = u.user.email;
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
 
     return {
-      profiles: (profilesRes.data ?? []).map(p => ({ ...p, email: emailMap[p.id] ?? null })),
+      profiles: (profilesRes.data ?? []).map((p) => ({ ...p, email: emailMap[p.id] ?? null })),
       datasets: datasetsRes.data ?? [],
       runs: runsRes.data ?? [],
     };

@@ -73,83 +73,91 @@ export type DatasetInsights = z.infer<typeof InsightSchema>;
 export const interpretDataset = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
-    z.object({
-      datasetId: z.string().uuid(),
-      focusVariable: z.string().nullable().optional(),
-      force: z.boolean().optional(),
-    }).parse(input),
-  )
-  .handler(async ({ data, context }): Promise<{ insights: DatasetInsights; summary: DatasetSummary }> => {
-    const { userId } = context;
-    const ds = await loadDatasetForUser(data.datasetId, userId);
-
-    // Reuse cached insights when available and not forced
-    if (!data.force && ds.insights_json && ds.summary_json) {
-      return {
-        insights: ds.insights_json as unknown as DatasetInsights,
-        summary: ds.summary_json as unknown as DatasetSummary,
-      };
-    }
-
-    const cols = (ds.columns_json as Array<{ name: string; kind: string }>) ?? [];
-    const dateCol = cols.find((c) => c.kind === "date")?.name ?? null;
-    const numericNames = cols.filter((c) => c.kind === "number").map((c) => c.name);
-    const focus = data.focusVariable ?? numericNames[0] ?? null;
-
-    const { rows, columns } = await loadRows(ds.storage_path);
-    const summary = summarizeDataset(rows, columns, {
-      dateColumn: dateCol,
-      focusVariable: focus,
-      granularity: ds.granularity ?? null,
-    });
-    const compact = compactForLlm(summary);
-
-    const apiKey = process.env.AI_API_KEY;
-    if (!apiKey) throw new Error("AI_API_KEY não configurada.");
-    const gateway = createAiGatewayProvider(apiKey);
-    const model = gateway("gemini-2.5-flash");
-
-    const system =
-      "Você é um analista sênior de Marketing Mix Modeling. Escreva sempre em português do Brasil, com tom direto, executivo e específico. Cite NÚMEROS reais (médias, % de variação, correlações) ao tirar conclusões. Nunca invente colunas ou números que não estão no JSON. Quando sugerir variáveis de mídia, escolha colunas cujo nome remeta a gasto, investimento, impressões ou canais (TV, Google, Meta, etc.).";
-
-    const prompt = `Aqui está o resumo estatístico de um dataset que o usuário acabou de subir para rodar um MMM. A variável de foco atual é "${focus}".\n\nJSON do resumo:\n\n${JSON.stringify(compact)}\n\nDevolva: headline (uma frase de impacto sobre o que os dados mostram), keyFindings (3 a 5 bullets baseados nos números — tendência, sazonalidade, correlações fortes, anomalias), dataQualityWarnings (problemas como missings altos, baixa variância, série curta, outliers), suggestedDependent (qual coluna parece ser vendas/receita), suggestedDrivers (variáveis explicativas relevantes), suggestedMedia (subconjunto dos drivers que parecem ser gasto de mídia), nextStep (próxima ação concreta no Prisma).`;
-
-    const { experimental_output: output } = await generateText({
-      model,
-      system,
-      prompt,
-      experimental_output: Output.object({ schema: InsightSchema }),
-    });
-
-    const insights = output;
-
-    await supabaseAdmin
-      .from("datasets")
-      .update({
-        summary_json: summary as unknown as never,
-        insights_json: insights as unknown as never,
+    z
+      .object({
+        datasetId: z.string().uuid(),
+        focusVariable: z.string().nullable().optional(),
+        force: z.boolean().optional(),
       })
-      .eq("id", ds.id);
+      .parse(input),
+  )
+  .handler(
+    async ({ data, context }): Promise<{ insights: DatasetInsights; summary: DatasetSummary }> => {
+      const { userId } = context;
+      const ds = await loadDatasetForUser(data.datasetId, userId);
 
-    return { insights, summary };
-  });
+      // Reuse cached insights when available and not forced
+      if (!data.force && ds.insights_json && ds.summary_json) {
+        return {
+          insights: ds.insights_json as unknown as DatasetInsights,
+          summary: ds.summary_json as unknown as DatasetSummary,
+        };
+      }
+
+      const cols = (ds.columns_json as Array<{ name: string; kind: string }>) ?? [];
+      const dateCol = cols.find((c) => c.kind === "date")?.name ?? null;
+      const numericNames = cols.filter((c) => c.kind === "number").map((c) => c.name);
+      const focus = data.focusVariable ?? numericNames[0] ?? null;
+
+      const { rows, columns } = await loadRows(ds.storage_path);
+      const summary = summarizeDataset(rows, columns, {
+        dateColumn: dateCol,
+        focusVariable: focus,
+        granularity: ds.granularity ?? null,
+      });
+      const compact = compactForLlm(summary);
+
+      const apiKey = process.env.AI_API_KEY;
+      if (!apiKey) throw new Error("AI_API_KEY não configurada.");
+      const gateway = createAiGatewayProvider(apiKey);
+      const model = gateway("gemini-2.5-flash");
+
+      const system =
+        "Você é um analista sênior de Marketing Mix Modeling. Escreva sempre em português do Brasil, com tom direto, executivo e específico. Cite NÚMEROS reais (médias, % de variação, correlações) ao tirar conclusões. Nunca invente colunas ou números que não estão no JSON. Quando sugerir variáveis de mídia, escolha colunas cujo nome remeta a gasto, investimento, impressões ou canais (TV, Google, Meta, etc.).";
+
+      const prompt = `Aqui está o resumo estatístico de um dataset que o usuário acabou de subir para rodar um MMM. A variável de foco atual é "${focus}".\n\nJSON do resumo:\n\n${JSON.stringify(compact)}\n\nDevolva: headline (uma frase de impacto sobre o que os dados mostram), keyFindings (3 a 5 bullets baseados nos números — tendência, sazonalidade, correlações fortes, anomalias), dataQualityWarnings (problemas como missings altos, baixa variância, série curta, outliers), suggestedDependent (qual coluna parece ser vendas/receita), suggestedDrivers (variáveis explicativas relevantes), suggestedMedia (subconjunto dos drivers que parecem ser gasto de mídia), nextStep (próxima ação concreta no Prisma).`;
+
+      const { experimental_output: output } = await generateText({
+        model,
+        system,
+        prompt,
+        experimental_output: Output.object({ schema: InsightSchema }),
+      });
+
+      const insights = output;
+
+      await supabaseAdmin
+        .from("datasets")
+        .update({
+          summary_json: summary as unknown as never,
+          insights_json: insights as unknown as never,
+        })
+        .eq("id", ds.id);
+
+      return { insights, summary };
+    },
+  );
 
 // Compute cost-per-execution-unit (CPP) time series for each saved mapping
 // { executionUnitColumn -> investmentColumn } on the dataset.
 export const computeUnitCosts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) =>
-    z.object({ datasetId: z.string().uuid() }).parse(input),
-  )
+  .inputValidator((input: unknown) => z.object({ datasetId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const ds = await loadDatasetForUser(data.datasetId, context.userId);
     const mappings = (ds.unit_costs_json ?? {}) as Record<string, string>;
     const entries = Object.entries(mappings);
-    if (entries.length === 0) return { series: [] as Array<{
-      unitColumn: string; costColumn: string;
-      points: { period: string; cpp: number; units: number; cost: number }[];
-      mean: number; min: number; max: number;
-    }> };
+    if (entries.length === 0)
+      return {
+        series: [] as Array<{
+          unitColumn: string;
+          costColumn: string;
+          points: { period: string; cpp: number; units: number; cost: number }[];
+          mean: number;
+          min: number;
+          max: number;
+        }>,
+      };
 
     const { rows } = await loadRows(ds.storage_path);
     const cols = (ds.columns_json ?? []) as Array<{ name: string; kind: string }>;
@@ -185,4 +193,3 @@ export const computeUnitCosts = createServerFn({ method: "POST" })
     });
     return { series };
   });
-

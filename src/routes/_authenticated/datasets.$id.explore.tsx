@@ -19,11 +19,7 @@ import {
 import { getDataset, updateUnitCosts } from "@/lib/mmm.functions";
 import { computeUnitCosts } from "@/lib/describe.functions";
 
-import {
-  describeDataset,
-  interpretDataset,
-  type DatasetInsights,
-} from "@/lib/describe.functions";
+import { describeDataset, interpretDataset, type DatasetInsights } from "@/lib/describe.functions";
 import type { DatasetSummary } from "@/lib/describe.server";
 import type { ColumnInfo } from "@/lib/parse";
 
@@ -31,10 +27,21 @@ export const Route = createFileRoute("/_authenticated/datasets/$id/explore")({
   head: ({ params }) => ({
     meta: [
       { title: "Análise descritiva · Prisma" },
-      { name: "description", content: "Diagnóstico do dataset: série temporal, correlações, sazonalidade e qualidade de dados antes de rodar o modelo MMM." },
+      {
+        name: "description",
+        content:
+          "Diagnóstico do dataset: série temporal, correlações, sazonalidade e qualidade de dados antes de rodar o modelo MMM.",
+      },
       { property: "og:title", content: "Análise descritiva no Prisma" },
-      { property: "og:description", content: "Veja diagnóstico das colunas, série temporal, correlações e sazonalidade do seu dataset." },
-      { property: "og:url", content: `https://prisma.pereirasaraiva.com/datasets/${params.id}/explore` },
+      {
+        property: "og:description",
+        content:
+          "Veja diagnóstico das colunas, série temporal, correlações e sazonalidade do seu dataset.",
+      },
+      {
+        property: "og:url",
+        content: `https://prisma.pereirasaraiva.com/datasets/${params.id}/explore`,
+      },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -42,13 +49,18 @@ export const Route = createFileRoute("/_authenticated/datasets/$id/explore")({
 });
 
 const fmt = (n: number | undefined, d = 2) =>
-  n === undefined || !Number.isFinite(n) ? "—" : new Intl.NumberFormat("pt-BR", { maximumFractionDigits: d }).format(n);
+  n === undefined || !Number.isFinite(n)
+    ? "—"
+    : new Intl.NumberFormat("pt-BR", { maximumFractionDigits: d }).format(n);
 const pct = (n: number | undefined, d = 1) =>
   n === undefined || !Number.isFinite(n) ? "—" : `${(n * 100).toFixed(d)}%`;
 
 function inferUnit(name: string): string {
   const n = name.toLowerCase();
-  if (/(r\$|brl|reais|gasto|spend|invest|revenue|receita|faturamento|preco|preço|cpm|cpc|cpa)/.test(n)) return "R$";
+  if (
+    /(r\$|brl|reais|gasto|spend|invest|revenue|receita|faturamento|preco|preço|cpm|cpc|cpa)/.test(n)
+  )
+    return "R$";
   if (/grp/.test(n)) return "GRP";
   if (/(impress|impressões|impressao)/.test(n)) return "impressões";
   if (/(click|clique)/.test(n)) return "cliques";
@@ -71,7 +83,6 @@ function ExplorePage() {
   const cppFn = useServerFn(computeUnitCosts);
   const updateCostsFn = useServerFn(updateUnitCosts);
 
-
   const dsQuery = useQuery({
     queryKey: ["dataset", id],
     queryFn: () => getFn({ data: { id } }),
@@ -91,7 +102,6 @@ function ExplorePage() {
         unit_costs_json?: Record<string, string> | null;
       }
     | undefined;
-
 
   const numericCols = useMemo(
     () => (ds?.columns_json ?? []).filter((c) => c.kind === "number").map((c) => c.name),
@@ -113,7 +123,8 @@ function ExplorePage() {
   });
 
   const regen = useMutation({
-    mutationFn: () => interpretFn({ data: { datasetId: id, focusVariable: activeFocus || null, force: true } }),
+    mutationFn: () =>
+      interpretFn({ data: { datasetId: id, focusVariable: activeFocus || null, force: true } }),
     onSuccess: (r) => {
       qc.setQueryData(["dataset-insights", id], r);
       toast.success("Análise atualizada.");
@@ -133,8 +144,7 @@ function ExplorePage() {
   const [newUnit, setNewUnit] = useState("");
   const [newCost, setNewCost] = useState("");
   const saveMappings = useMutation({
-    mutationFn: (mappings: Record<string, string>) =>
-      updateCostsFn({ data: { id, mappings } }),
+    mutationFn: (mappings: Record<string, string>) => updateCostsFn({ data: { id, mappings } }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["dataset", id] });
       qc.invalidateQueries({ queryKey: ["dataset-cpp", id] });
@@ -151,9 +161,9 @@ function ExplorePage() {
   const addMapping = () => {
     if (!newUnit || !newCost || newUnit === newCost) return;
     saveMappings.mutate({ ...currentMappings, [newUnit]: newCost });
-    setNewUnit(""); setNewCost("");
+    setNewUnit("");
+    setNewCost("");
   };
-
 
   if (dsQuery.isLoading || !ds) {
     return <div className="mt-12 text-sm text-abyss/60">Carregando dataset...</div>;
@@ -198,19 +208,33 @@ function ExplorePage() {
                 <tr key={c.name} className="border-b hairline last:border-0">
                   <td className="p-3 font-medium text-abyss">{c.name}</td>
                   <td className="p-3">
-                    <span className={
-                      "text-[10px] uppercase tracking-widest px-2 py-0.5 border hairline-strong " +
-                      (c.kind === "number" ? "text-success" : c.kind === "date" ? "text-indigo" : "text-mute")
-                    }>{c.kind}</span>
+                    <span
+                      className={
+                        "text-[10px] uppercase tracking-widest px-2 py-0.5 border hairline-strong " +
+                        (c.kind === "number"
+                          ? "text-success"
+                          : c.kind === "date"
+                            ? "text-indigo"
+                            : "text-mute")
+                      }
+                    >
+                      {c.kind}
+                    </span>
                   </td>
                   <td className="p-3 text-abyss/70 font-mono text-xs">
                     {c.kind === "date" ? "data" : c.kind === "number" ? inferUnit(c.name) : "—"}
                   </td>
                   <td className="p-3 text-right font-mono text-xs">{c.missing}</td>
                   <td className="p-3 text-right font-mono text-xs">{c.unique}</td>
-                  <td className="p-3 text-right font-mono text-xs">{c.min !== undefined ? fmt(c.min) : "—"}</td>
-                  <td className="p-3 text-right font-mono text-xs">{c.mean !== undefined ? fmt(c.mean) : "—"}</td>
-                  <td className="p-3 text-right font-mono text-xs">{c.max !== undefined ? fmt(c.max) : "—"}</td>
+                  <td className="p-3 text-right font-mono text-xs">
+                    {c.min !== undefined ? fmt(c.min) : "—"}
+                  </td>
+                  <td className="p-3 text-right font-mono text-xs">
+                    {c.mean !== undefined ? fmt(c.mean) : "—"}
+                  </td>
+                  <td className="p-3 text-right font-mono text-xs">
+                    {c.max !== undefined ? fmt(c.max) : "—"}
+                  </td>
                   <td className="p-3 text-right font-mono text-xs">{c.outliers ?? "—"}</td>
                 </tr>
               ))}
@@ -251,7 +275,8 @@ function ExplorePage() {
           <>
             {summary.trend && (
               <p className="mt-4 text-sm text-abyss/70">
-                Variação no período: <strong>{pct(summary.trend.pctChangeOverWindow)}</strong> · inclinação por período: {fmt(summary.trend.slopePerPeriod)}
+                Variação no período: <strong>{pct(summary.trend.pctChangeOverWindow)}</strong> ·
+                inclinação por período: {fmt(summary.trend.slopePerPeriod)}
               </p>
             )}
             <div className="mt-6 border hairline bg-white p-6 h-80">
@@ -260,9 +285,29 @@ function ExplorePage() {
                   <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
                   <XAxis dataKey="period" tick={{ fontSize: 10, fill: "#6B4FE0" }} />
                   <YAxis tick={{ fontSize: 10, fill: "#6B4FE0" }} />
-                  <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }} />
-                  <Line type="monotone" dataKey="value" stroke="#6B4FE0" strokeWidth={1.5} dot={false} name={activeFocus} />
-                  <Line type="monotone" dataKey="movingAvg" stroke="#E0A21E" strokeWidth={1.5} dot={false} name="Média móvel 4p" />
+                  <Tooltip
+                    contentStyle={{
+                      background: "#FFFFFF",
+                      border: "1px solid #D7D4E2",
+                      fontSize: 12,
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#6B4FE0"
+                    strokeWidth={1.5}
+                    dot={false}
+                    name={activeFocus}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="movingAvg"
+                    stroke="#E0A21E"
+                    strokeWidth={1.5}
+                    dot={false}
+                    name="Média móvel 4p"
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -296,7 +341,9 @@ function ExplorePage() {
             <ul className="mt-8 space-y-3">
               {insights.keyFindings.map((f, i) => (
                 <li key={i} className="flex gap-4 text-sm text-abyss leading-relaxed">
-                  <span className="font-mono font-bold text-violet">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="font-mono font-bold text-violet">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <span>{f}</span>
                 </li>
               ))}
@@ -318,7 +365,9 @@ function ExplorePage() {
           </>
         ) : (
           <p className="mt-6 text-sm text-abyss/60">
-            {insightsQuery.error instanceof Error ? insightsQuery.error.message : "Não foi possível gerar a leitura."}
+            {insightsQuery.error instanceof Error
+              ? insightsQuery.error.message
+              : "Não foi possível gerar a leitura."}
           </p>
         )}
       </section>
@@ -327,9 +376,9 @@ function ExplorePage() {
       <section>
         <p className="eyebrow">Custo por unidade de execução</p>
         <p className="mt-2 text-sm text-abyss/70 max-w-2xl">
-          Quando um canal está em unidades de execução (GRP, impressões, cliques), aponte qual coluna
-          carrega o investimento (R$). O custo por unidade (CPP) entra na análise exploratória e o
-          ROI dos modelos passa a usar o investimento real.
+          Quando um canal está em unidades de execução (GRP, impressões, cliques), aponte qual
+          coluna carrega o investimento (R$). O custo por unidade (CPP) entra na análise
+          exploratória e o ROI dos modelos passa a usar o investimento real.
         </p>
 
         <div className="mt-6 border hairline bg-white p-4 space-y-3">
@@ -356,9 +405,13 @@ function ExplorePage() {
               className="flex-1 border border-abyss/20 bg-white px-2 py-1 text-xs"
             >
               <option value="">— coluna em unidades de execução —</option>
-              {numericCols.filter((n) => !currentMappings[n]).map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
+              {numericCols
+                .filter((n) => !currentMappings[n])
+                .map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
             </select>
             <span className="text-mute text-xs">→</span>
             <select
@@ -367,9 +420,13 @@ function ExplorePage() {
               className="flex-1 border border-abyss/20 bg-white px-2 py-1 text-xs"
             >
               <option value="">— coluna de investimento (R$) —</option>
-              {numericCols.filter((n) => n !== newUnit).map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
+              {numericCols
+                .filter((n) => n !== newUnit)
+                .map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
             </select>
             <button
               onClick={addMapping}
@@ -395,8 +452,22 @@ function ExplorePage() {
                       <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
                       <XAxis dataKey="period" tick={{ fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 10 }} />
-                      <Tooltip contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }} formatter={(v: number) => fmt(v)} />
-                      <Line type="monotone" dataKey="cpp" stroke="#6B4FE0" strokeWidth={1.5} dot={false} name="CPP" />
+                      <Tooltip
+                        contentStyle={{
+                          background: "#FFFFFF",
+                          border: "1px solid #D7D4E2",
+                          fontSize: 12,
+                        }}
+                        formatter={(v: number) => fmt(v)}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="cpp"
+                        stroke="#6B4FE0"
+                        strokeWidth={1.5}
+                        dot={false}
+                        name="CPP"
+                      />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -416,12 +487,25 @@ function ExplorePage() {
           </p>
           <div className="mt-6 border hairline bg-white p-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={summary.correlations.slice(0, 10)} layout="vertical" margin={{ left: 80 }}>
+              <BarChart
+                data={summary.correlations.slice(0, 10)}
+                layout="vertical"
+                margin={{ left: 80 }}
+              >
                 <CartesianGrid strokeDasharray="2 4" stroke="#D7D4E2" />
                 <XAxis type="number" domain={[-1, 1]} tick={{ fontSize: 10, fill: "#6B4FE0" }} />
-                <YAxis type="category" dataKey="variable" width={140} tick={{ fontSize: 11, fill: "#6B4FE0" }} />
+                <YAxis
+                  type="category"
+                  dataKey="variable"
+                  width={140}
+                  tick={{ fontSize: 11, fill: "#6B4FE0" }}
+                />
                 <Tooltip
-                  contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }}
+                  contentStyle={{
+                    background: "#FFFFFF",
+                    border: "1px solid #D7D4E2",
+                    fontSize: 12,
+                  }}
                   formatter={(v: number) => fmt(v, 3)}
                 />
                 <Bar dataKey="r">
@@ -440,12 +524,13 @@ function ExplorePage() {
         <section>
           <p className="eyebrow">Colinearidade entre variáveis (VIF)</p>
           <p className="mt-2 text-sm text-abyss/70 max-w-3xl">
-            VIF mede o quanto cada variável é explicada pelas <em>outras</em> variáveis independentes.
-            Quando duas variáveis se movem juntas (ex.: Google e Meta crescem na mesma campanha),
-            o modelo tem dificuldade de atribuir crédito separadamente e os coeficientes individuais
-            ficam instáveis. <strong>VIF &lt; 5</strong> é saudável, <strong>5–10</strong> pede atenção,
-            <strong> &gt; 10</strong> indica colinearidade severa — considere remover uma das variáveis,
-            combiná-las, ou aumentar a regularização (α) no modelo.
+            VIF mede o quanto cada variável é explicada pelas <em>outras</em> variáveis
+            independentes. Quando duas variáveis se movem juntas (ex.: Google e Meta crescem na
+            mesma campanha), o modelo tem dificuldade de atribuir crédito separadamente e os
+            coeficientes individuais ficam instáveis. <strong>VIF &lt; 5</strong> é saudável,{" "}
+            <strong>5–10</strong> pede atenção,
+            <strong> &gt; 10</strong> indica colinearidade severa — considere remover uma das
+            variáveis, combiná-las, ou aumentar a regularização (α) no modelo.
           </p>
           <div className="mt-6 border hairline bg-white overflow-x-auto">
             <table className="w-full text-sm">
@@ -457,35 +542,36 @@ function ExplorePage() {
                 </tr>
               </thead>
               <tbody>
-                {[...summary.vif].sort((a, b) => b.vif - a.vif).map((v) => {
-                  const color =
-                    v.severity === "high"
-                      ? "text-violet"
-                      : v.severity === "moderate"
-                        ? "text-indigo"
-                        : "text-success";
-                  const label =
-                    v.severity === "high"
-                      ? "Colinearidade severa · atribuição instável"
-                      : v.severity === "moderate"
-                        ? "Colinearidade moderada · interpretar com cautela"
-                        : "Independente o suficiente";
-                  return (
-                    <tr key={v.variable} className="border-b hairline last:border-0">
-                      <td className="p-3 font-medium text-abyss">{v.variable}</td>
-                      <td className="p-3 text-right font-mono text-xs">
-                        {v.vif >= 999 ? "∞" : v.vif.toFixed(2)}
-                      </td>
-                      <td className={"p-3 pl-6 text-xs " + color}>{label}</td>
-                    </tr>
-                  );
-                })}
+                {[...summary.vif]
+                  .sort((a, b) => b.vif - a.vif)
+                  .map((v) => {
+                    const color =
+                      v.severity === "high"
+                        ? "text-violet"
+                        : v.severity === "moderate"
+                          ? "text-indigo"
+                          : "text-success";
+                    const label =
+                      v.severity === "high"
+                        ? "Colinearidade severa · atribuição instável"
+                        : v.severity === "moderate"
+                          ? "Colinearidade moderada · interpretar com cautela"
+                          : "Independente o suficiente";
+                    return (
+                      <tr key={v.variable} className="border-b hairline last:border-0">
+                        <td className="p-3 font-medium text-abyss">{v.variable}</td>
+                        <td className="p-3 text-right font-mono text-xs">
+                          {v.vif >= 999 ? "∞" : v.vif.toFixed(2)}
+                        </td>
+                        <td className={"p-3 pl-6 text-xs " + color}>{label}</td>
+                      </tr>
+                    );
+                  })}
               </tbody>
             </table>
           </div>
         </section>
       )}
-
 
       {/* Seasonality */}
       {summary && summary.seasonality.buckets.length > 1 && (
@@ -500,7 +586,11 @@ function ExplorePage() {
                 <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#6B4FE0" }} />
                 <YAxis tick={{ fontSize: 10, fill: "#6B4FE0" }} />
                 <Tooltip
-                  contentStyle={{ background: "#FFFFFF", border: "1px solid #D7D4E2", fontSize: 12 }}
+                  contentStyle={{
+                    background: "#FFFFFF",
+                    border: "1px solid #D7D4E2",
+                    fontSize: 12,
+                  }}
                   formatter={(v: number) => fmt(v)}
                 />
                 <Bar dataKey="mean" fill="#6B4FE0" />

@@ -1,16 +1,7 @@
 // Public demo: builds a synthetic dataset, runs the real MMM math, and returns
 // a "run"-shaped payload. No auth — safe to expose, no DB writes.
 import { createServerFn } from "@tanstack/react-start";
-import {
-  adstock,
-  hill,
-  mape,
-  median,
-  r2,
-  ridgeFit,
-  rmse,
-  type Matrix,
-} from "./mmm.server";
+import { adstock, hill, mape, median, r2, ridgeFit, rmse, type Matrix } from "./mmm.server";
 
 function seededRand(seed: number) {
   let s = seed >>> 0;
@@ -59,8 +50,7 @@ function buildSampleDataset() {
     const base = 180000;
     const trend = i * 400;
     const season = 20000 * Math.sin((i / N) * Math.PI * 4);
-    const mediaY =
-      120000 * satGoogle[i] + 80000 * satMeta[i] + 200000 * satTv[i];
+    const mediaY = 120000 * satGoogle[i] + 80000 * satMeta[i] + 200000 * satTv[i];
     const noise = (rand() - 0.5) * 12000;
     revenue.push(Math.max(0, Math.round(base + trend + season + mediaY + noise)));
   }
@@ -91,9 +81,7 @@ export const getDemoRun = createServerFn({ method: "GET" }).handler(async () => 
 
   const n = ds.revenue.length;
   const p = transformed.length;
-  const X: Matrix = Array.from({ length: n }, (_, i) =>
-    transformed.map((col) => col[i]),
-  );
+  const X: Matrix = Array.from({ length: n }, (_, i) => transformed.map((col) => col[i]));
   const fit = ridgeFit({ X, y: ds.revenue, alpha: 1, featureNames });
 
   const decomposition = ds.labels.map((label, i) => {

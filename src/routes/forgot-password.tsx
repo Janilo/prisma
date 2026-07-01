@@ -5,7 +5,9 @@ import { SiteHeader } from "@/components/marketing/SiteHeader";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/forgot-password")({
-  head: () => ({ meta: [{ title: "Esqueci a senha · Prisma" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({
+    meta: [{ title: "Esqueci a senha · Prisma" }, { name: "robots", content: "noindex" }],
+  }),
   component: ForgotPasswordPage,
 });
 
@@ -21,7 +23,10 @@ function ForgotPasswordPage() {
       redirectTo: `${window.location.origin}/reset-password`,
     });
     setBusy(false);
-    if (error) { toast.error(error.message); return; }
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setSent(true);
   };
 
@@ -38,7 +43,8 @@ function ForgotPasswordPage() {
 
           {sent ? (
             <div className="mt-8 border border-abyss/20 bg-white p-4 text-sm text-abyss">
-              Se existir uma conta com <strong>{email}</strong>, você receberá em instantes um link para redefinir sua senha. Verifique também a caixa de spam.
+              Se existir uma conta com <strong>{email}</strong>, você receberá em instantes um link
+              para redefinir sua senha. Verifique também a caixa de spam.
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="mt-8 space-y-4">
@@ -64,7 +70,9 @@ function ForgotPasswordPage() {
           )}
 
           <p className="mt-6 text-xs text-mute">
-            <Link to="/login" className="text-abyss underline underline-offset-4">Voltar para o login</Link>
+            <Link to="/login" className="text-abyss underline underline-offset-4">
+              Voltar para o login
+            </Link>
           </p>
         </div>
       </main>
