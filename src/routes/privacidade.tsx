@@ -10,6 +10,7 @@ export const Route = createFileRoute("/privacidade")({
       },
       { property: "og:title", content: "Política de Privacidade · Prisma" },
       { name: "robots", content: "noindex" },
+      { property: "og:url", content: "https://prisma.pereirasaraiva.com/privacidade" },
     ],
     links: [{ rel: "canonical", href: "https://prisma.pereirasaraiva.com/privacidade" }],
   }),

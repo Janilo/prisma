@@ -16,6 +16,7 @@ export const Route = createFileRoute("/methodology")({
         property: "og:description",
         content: "Ridge vs OLS, adstock geométrico, saturação Hill e os limites do MMM.",
       },
+      { property: "og:url", content: "https://prisma.pereirasaraiva.com/methodology" },
     ],
     links: [{ rel: "canonical", href: "https://prisma.pereirasaraiva.com/methodology" }],
   }),

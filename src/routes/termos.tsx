@@ -7,6 +7,7 @@ export const Route = createFileRoute("/termos")({
       { name: "description", content: "Termos e condições de uso do Prisma." },
       { property: "og:title", content: "Termos de Uso · Prisma" },
       { name: "robots", content: "noindex" },
+      { property: "og:url", content: "https://prisma.pereirasaraiva.com/termos" },
     ],
     links: [{ rel: "canonical", href: "https://prisma.pereirasaraiva.com/termos" }],
   }),
