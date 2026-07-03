@@ -3,28 +3,13 @@ import { generateText, Output } from "ai";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+// Cache writes below update datasets by an id already resolved through
+// loadDatasetForUser (ownership verified) — no inline user_id filtering here.
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { createAiGatewayProvider } from "./ai-gateway.server";
 import { compactForLlm, summarizeDataset, type DatasetSummary } from "./describe.server";
-import { parseCSV } from "./csv.server";
-
-async function loadDatasetForUser(datasetId: string, userId: string) {
-  const { data: ds, error } = await supabaseAdmin
-    .from("datasets")
-    .select("*")
-    .eq("id", datasetId)
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (error || !ds) throw new Error("Dataset não encontrado.");
-  return ds;
-}
-
-async function loadRows(storagePath: string) {
-  const { data: blob, error } = await supabaseAdmin.storage.from("datasets").download(storagePath);
-  if (error || !blob) throw new Error("Não consegui ler o arquivo do dataset.");
-  const text = await blob.text();
-  return parseCSV(text);
-}
+import { loadDatasetForUser, loadDatasetRows } from "./data.server";
+import { AppError } from "./errors";
 
 const DescribeInput = z.object({
   datasetId: z.string().uuid(),
@@ -44,7 +29,7 @@ export const describeDataset = createServerFn({ method: "POST" })
     const numericNames = cols.filter((c) => c.kind === "number").map((c) => c.name);
     const focus = data.focusVariable ?? numericNames[0] ?? null;
 
-    const { rows, columns } = await loadRows(ds.storage_path);
+    const { rows, columns } = await loadDatasetRows(ds.storage_path);
     const summary = summarizeDataset(rows, columns, {
       dateColumn: dateCol,
       focusVariable: focus,
@@ -99,7 +84,7 @@ export const interpretDataset = createServerFn({ method: "POST" })
       const numericNames = cols.filter((c) => c.kind === "number").map((c) => c.name);
       const focus = data.focusVariable ?? numericNames[0] ?? null;
 
-      const { rows, columns } = await loadRows(ds.storage_path);
+      const { rows, columns } = await loadDatasetRows(ds.storage_path);
       const summary = summarizeDataset(rows, columns, {
         dateColumn: dateCol,
         focusVariable: focus,
@@ -108,7 +93,10 @@ export const interpretDataset = createServerFn({ method: "POST" })
       const compact = compactForLlm(summary);
 
       const apiKey = process.env.AI_API_KEY;
-      if (!apiKey) throw new Error("AI_API_KEY não configurada.");
+      if (!apiKey) {
+        console.error("interpretDataset: AI_API_KEY não configurada.");
+        throw new AppError("Análise por IA indisponível no momento.", 503);
+      }
       const gateway = createAiGatewayProvider(apiKey);
       const model = gateway("gemini-2.5-flash");
 
@@ -159,7 +147,7 @@ export const computeUnitCosts = createServerFn({ method: "POST" })
         }>,
       };
 
-    const { rows } = await loadRows(ds.storage_path);
+    const { rows } = await loadDatasetRows(ds.storage_path);
     const cols = (ds.columns_json ?? []) as Array<{ name: string; kind: string }>;
     const dateCol = cols.find((c) => c.kind === "date")?.name ?? null;
 

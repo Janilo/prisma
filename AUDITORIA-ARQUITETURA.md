@@ -279,7 +279,7 @@ Ou seja: as sub-views do `RunReport` (`ResponseCurves`, `BudgetSimulator`, `Deco
 - [ ] `grep -rn "function fmt" src/` → **1**; `DecompChart`/`PredChart` importados de `components/report/`, não copiados.
 - [ ] Cor da série "Base" idêntica em RunReport, compare, demo e results (uma constante só).
 - [ ] `pnpm test` existe e roda verde: `ridgeFit` recupera coeficientes; `base + Σ contrib ≈ predicted`; `roi` com `spendBasis`; `parseCSV` RFC-4180.
-- [ ] Nenhum serverFn monta `supabaseAdmin.from(...).eq("user_id", …)` inline — acesso por dono via helper central.
-- [ ] Erros de negócio são `instanceof AppError`; `ErrorComponent` nunca renderiza mensagem de erro interno cru.
+- [x] Nenhum serverFn monta `supabaseAdmin.from(...).eq("user_id", …)` inline — acesso por dono via `data.server.ts` (`getRunOwned`/`loadDatasetForUser`/`listDatasetVersionsOwned`).
+- [x] Erros de negócio são `instanceof AppError` (`errors.ts`; client usa `userMessageFrom`, que atravessa o boundary); `ErrorComponent` nunca renderiza mensagem de erro interno cru.
 - [ ] Glossário de `spend`/`spendBasis`/`unit_costs_json`/`CPP` existe em 1 lugar canônico.
 - [ ] `runs.status`/`error_message`: ou removidos, ou realmente escritos no ciclo de vida.

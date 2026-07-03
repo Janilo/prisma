@@ -5,7 +5,13 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { adstock, hill, mape, median, r2, ridgeFit, rmse, type Matrix } from "./mmm.server";
-import { parseCSV } from "./csv.server";
+import {
+  getRunOwned,
+  listDatasetVersionsOwned,
+  loadDatasetForUser,
+  loadDatasetRows,
+} from "./data.server";
+import { AppError, NotFoundError, ValidationError } from "./errors";
 
 const RunInput = z.object({
   datasetId: z.string().uuid(),
@@ -44,11 +50,8 @@ async function findLatestVersionId(
   datasetId: string,
   userId: string,
 ): Promise<{ id: string; version: number }> {
-  const { data: allDs } = await supabaseAdmin
-    .from("datasets")
-    .select("id, version, parent_dataset_id")
-    .eq("user_id", userId);
-  if (!allDs || allDs.length === 0) return { id: datasetId, version: 1 };
+  const allDs = await listDatasetVersionsOwned(userId);
+  if (allDs.length === 0) return { id: datasetId, version: 1 };
   const childOf = new Map<string, { id: string; version: number }>();
   for (const ds of allDs) {
     if (!ds.parent_dataset_id) continue;
@@ -69,27 +72,14 @@ async function findLatestVersionId(
 
 // Core MMM execution — shared between runMmm and rerunOnLatestVersion.
 async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: string }> {
-  // Fetch dataset (verify ownership)
-  const { data: ds, error: dsErr } = await supabaseAdmin
-    .from("datasets")
-    .select("*")
-    .eq("id", data.datasetId)
-    .eq("user_id", userId)
-    .maybeSingle();
-  if (dsErr || !ds) throw new Error("Dataset não encontrado.");
+  const ds = await loadDatasetForUser(data.datasetId, userId);
+  const { rows } = await loadDatasetRows(ds.storage_path);
 
-  const { data: blob, error: dlErr } = await supabaseAdmin.storage
-    .from("datasets")
-    .download(ds.storage_path);
-  if (dlErr || !blob) throw new Error("Não consegui ler o arquivo do dataset.");
-  const text = await blob.text();
-  const { rows } = parseCSV(text);
-
-  if (rows.length < 8) throw new Error("Poucas linhas para rodar o modelo (mínimo 8).");
+  if (rows.length < 8) throw new ValidationError("Poucas linhas para rodar o modelo (mínimo 8).");
 
   if (rows.length > 0 && !(data.depVariable in rows[0])) {
     const available = Object.keys(rows[0]).join(", ");
-    throw new Error(
+    throw new ValidationError(
       `Coluna dependente "${data.depVariable}" não encontrada. Colunas disponíveis: ${available}.`,
     );
   }
@@ -372,7 +362,7 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
     .single();
   if (insErr || !runRow) {
     console.error("runMmm insert failed:", insErr);
-    throw new Error("Falha ao salvar run. Tente novamente.");
+    throw new AppError("Falha ao salvar run. Tente novamente.");
   }
   return { runId: runRow.id as string };
 }
@@ -389,16 +379,10 @@ export const rerunOnLatestVersion = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ runId: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     const { userId } = context;
-    const { data: run, error: runErr } = await supabaseAdmin
-      .from("runs")
-      .select("*")
-      .eq("id", data.runId)
-      .eq("user_id", userId)
-      .maybeSingle();
-    if (runErr || !run) throw new Error("Run não encontrado.");
+    const run = await getRunOwned(data.runId, userId);
     const latest = await findLatestVersionId(run.dataset_id, userId);
     if (latest.id === run.dataset_id) {
-      throw new Error("Este run já está na versão mais nova do dataset.");
+      throw new ValidationError("Este run já está na versão mais nova do dataset.");
     }
     const params = (run.params_json ?? {}) as {
       alpha?: number;
@@ -450,7 +434,7 @@ export const listDatasets = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false });
     if (error) {
       console.error("listDatasets failed:", error);
-      throw new Error("Falha ao carregar datasets.");
+      throw new AppError("Falha ao carregar datasets.");
     }
     return { datasets: data ?? [] };
   });
@@ -466,7 +450,7 @@ export const listRuns = createServerFn({ method: "GET" })
       .order("created_at", { ascending: false });
     if (error) {
       console.error("listRuns failed:", error);
-      throw new Error("Falha ao carregar rodadas.");
+      throw new AppError("Falha ao carregar rodadas.");
     }
     return { runs: data ?? [] };
   });
@@ -482,7 +466,7 @@ export const getRun = createServerFn({ method: "POST" })
       .select("*")
       .eq("id", data.id)
       .maybeSingle();
-    if (error || !run) throw new Error("Run não encontrado.");
+    if (error || !run) throw new NotFoundError("Run não encontrado.");
     return { run };
   });
 
@@ -501,7 +485,7 @@ export const getLatestRun = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) {
       console.error("getLatestRun failed:", error);
-      throw new Error("Falha ao carregar a última rodada.");
+      throw new AppError("Falha ao carregar a última rodada.");
     }
     return { run: run ?? null };
   });
@@ -519,7 +503,7 @@ export const getPublicRun = createServerFn({ method: "POST" })
       )
       .eq("id", data.id)
       .maybeSingle();
-    if (error || !run) throw new Error("Run não encontrado.");
+    if (error || !run) throw new NotFoundError("Run não encontrado.");
     return { run };
   });
 
@@ -534,7 +518,7 @@ export const getDataset = createServerFn({ method: "POST" })
       .select("*")
       .eq("id", data.id)
       .maybeSingle();
-    if (error || !ds) throw new Error("Dataset não encontrado.");
+    if (error || !ds) throw new NotFoundError("Dataset não encontrado.");
     return { dataset: ds };
   });
 
@@ -558,7 +542,7 @@ export const updateUnitCosts = createServerFn({ method: "POST" })
       .eq("id", data.id);
     if (error) {
       console.error("updateUnitCosts failed:", error);
-      throw new Error("Falha ao salvar. Tente novamente.");
+      throw new AppError("Falha ao salvar. Tente novamente.");
     }
     return { ok: true };
   });
