@@ -31,7 +31,7 @@ const RunInput = z.object({
   holdoutPeriods: z.number().int().min(0).max(200).default(0),
   // For channels measured in execution units (e.g. GRPs), map the channel column to the
   // column that holds the actual investment. When provided, ROI uses the investment sum
-  // instead of summing the execution-unit values.
+  // instead of summing the execution-unit values. Term defined in GLOSSARIO.md.
   spendBasis: z.record(z.string(), z.string()).optional(),
 });
 
