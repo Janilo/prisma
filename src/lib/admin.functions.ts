@@ -3,9 +3,10 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
 import { isAdminEmail } from "./admin.server";
+import { AuthError } from "./errors";
 
 function assertAdmin(claims: { email?: string } | undefined) {
-  if (!isAdminEmail(claims?.email)) throw new Error("Acesso negado.");
+  if (!isAdminEmail(claims?.email)) throw new AuthError("Acesso negado.", 403);
 }
 
 export const getIsAdmin = createServerFn({ method: "GET" })

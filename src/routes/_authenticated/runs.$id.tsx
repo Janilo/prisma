@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
+import { userMessageFrom } from "@/lib/errors";
 
 import { getRun, getLatestDatasetVersion, rerunOnLatestVersion } from "@/lib/mmm.functions";
 import { RunReport, type RunReportData } from "@/components/RunReport";
@@ -58,7 +59,7 @@ function RerunOnLatest({ runId, datasetId }: { runId: string; datasetId: string 
       void qc.invalidateQueries({ queryKey: ["runs"] });
       navigate({ to: "/runs/$id", params: { id: res.runId } });
     },
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Falha ao re-executar."),
+    onError: (err) => toast.error(userMessageFrom(err) ?? "Falha ao re-executar."),
   });
 
   if (!latest || latest.id === datasetId) return null;

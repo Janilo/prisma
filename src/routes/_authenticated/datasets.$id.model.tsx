@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useSuspenseQuery, queryOptions, useMutation } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { userMessageFrom } from "@/lib/errors";
 import { z } from "zod";
 
 import { getDataset, runMmm } from "@/lib/mmm.functions";
@@ -106,7 +107,7 @@ function ModelPage() {
       toast.success("Modelo rodado.");
       navigate({ to: "/runs/$id", params: { id: r.runId } });
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha ao rodar."),
+    onError: (e) => toast.error(userMessageFrom(e) ?? "Falha ao rodar."),
   });
 
   return (

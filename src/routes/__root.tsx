@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+import { userMessageFrom } from "@/lib/errors";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -54,12 +55,15 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
+  // Only AppError messages are written for users; anything else (infra,
+  // Supabase, bug) stays in the console and renders as a generic line.
+  const message = userMessageFrom(error) ?? "Algo deu errado do nosso lado. Tente novamente.";
   return (
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="max-w-md text-center">
         <p className="eyebrow">Erro</p>
         <h1 className="mt-3 font-display text-2xl text-abyss">Essa página falhou ao carregar</h1>
-        <p className="mt-3 text-sm text-abyss/70">{error.message}</p>
+        <p className="mt-3 text-sm text-abyss/70">{message}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
             onClick={() => {

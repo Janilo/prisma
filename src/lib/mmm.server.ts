@@ -1,5 +1,6 @@
 // Pure helpers for MMM. Server-only via ".server.ts" extension.
 // Implements: matrix ops, Cholesky solve, ridge regression, adstock, Hill saturation, metrics.
+import { ValidationError } from "./errors";
 
 export type Matrix = number[][];
 
@@ -47,7 +48,7 @@ export function choleskySolve(A: Matrix, b: number[]): number[] {
       let s = A[i][j];
       for (let k = 0; k < j; k++) s -= L[i][k] * L[j][k];
       if (i === j) {
-        if (s <= 0) throw new Error("Matriz não positiva definida; aumente alpha.");
+        if (s <= 0) throw new ValidationError("Matriz não positiva definida; aumente alpha.");
         L[i][j] = Math.sqrt(s);
       } else {
         L[i][j] = s / L[j][j];
@@ -80,7 +81,7 @@ export function choleskyInverse(A: Matrix): Matrix {
       let s = A[i][j];
       for (let k = 0; k < j; k++) s -= L[i][k] * L[j][k];
       if (i === j) {
-        if (s <= 0) throw new Error("Matriz não positiva definida; aumente alpha.");
+        if (s <= 0) throw new ValidationError("Matriz não positiva definida; aumente alpha.");
         L[i][j] = Math.sqrt(s);
       } else {
         L[i][j] = s / L[j][j];

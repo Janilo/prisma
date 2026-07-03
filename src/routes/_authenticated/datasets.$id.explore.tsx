@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { userMessageFrom } from "@/lib/errors";
 import {
   Bar,
   BarChart,
@@ -129,7 +130,7 @@ function ExplorePage() {
       qc.setQueryData(["dataset-insights", id], r);
       toast.success("Análise atualizada.");
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha ao reanalisar."),
+    onError: (e) => toast.error(userMessageFrom(e) ?? "Falha ao reanalisar."),
   });
 
   const summary = summaryQuery.data?.summary;
@@ -150,7 +151,7 @@ function ExplorePage() {
       qc.invalidateQueries({ queryKey: ["dataset-cpp", id] });
       toast.success("Mapeamento salvo.");
     },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Falha ao salvar."),
+    onError: (e) => toast.error(userMessageFrom(e) ?? "Falha ao salvar."),
   });
   const currentMappings = ds?.unit_costs_json ?? {};
   const removeMapping = (unit: string) => {
@@ -365,9 +366,7 @@ function ExplorePage() {
           </>
         ) : (
           <p className="mt-6 text-sm text-abyss/60">
-            {insightsQuery.error instanceof Error
-              ? insightsQuery.error.message
-              : "Não foi possível gerar a leitura."}
+            {userMessageFrom(insightsQuery.error) ?? "Não foi possível gerar a leitura."}
           </p>
         )}
       </section>
