@@ -127,7 +127,8 @@ export const interpretDataset = createServerFn({ method: "POST" })
   );
 
 // Compute cost-per-execution-unit (CPP) time series for each saved mapping
-// { executionUnitColumn -> investmentColumn } on the dataset.
+// { executionUnitColumn -> investmentColumn } on the dataset (unit_costs_json).
+// CPP / unit_costs_json / spendBasis are defined in GLOSSARIO.md.
 export const computeUnitCosts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ datasetId: z.string().uuid() }).parse(input))
