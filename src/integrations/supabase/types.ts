@@ -93,7 +93,6 @@ export type Database = {
           dataset_id: string;
           decomposition_json: Json;
           dep_variable: string | null;
-          error_message: string | null;
           finished_at: string | null;
           id: string;
           indep_variables_json: Json;
@@ -102,7 +101,6 @@ export type Database = {
           params_json: Json;
           predicted_json: Json;
           roi_json: Json;
-          status: string;
           user_id: string;
         };
         Insert: {
@@ -111,7 +109,6 @@ export type Database = {
           dataset_id: string;
           decomposition_json?: Json;
           dep_variable?: string | null;
-          error_message?: string | null;
           finished_at?: string | null;
           id?: string;
           indep_variables_json?: Json;
@@ -120,7 +117,6 @@ export type Database = {
           params_json?: Json;
           predicted_json?: Json;
           roi_json?: Json;
-          status?: string;
           user_id: string;
         };
         Update: {
@@ -129,7 +125,6 @@ export type Database = {
           dataset_id?: string;
           decomposition_json?: Json;
           dep_variable?: string | null;
-          error_message?: string | null;
           finished_at?: string | null;
           id?: string;
           indep_variables_json?: Json;
@@ -138,7 +133,6 @@ export type Database = {
           params_json?: Json;
           predicted_json?: Json;
           roi_json?: Json;
-          status?: string;
           user_id?: string;
         };
         Relationships: [
