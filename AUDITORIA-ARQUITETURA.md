@@ -282,4 +282,4 @@ Ou seja: as sub-views do `RunReport` (`ResponseCurves`, `BudgetSimulator`, `Deco
 - [x] Nenhum serverFn monta `supabaseAdmin.from(...).eq("user_id", …)` inline — acesso por dono via `data.server.ts` (`getRunOwned`/`loadDatasetForUser`/`listDatasetVersionsOwned`).
 - [x] Erros de negócio são `instanceof AppError` (`errors.ts`; client usa `userMessageFrom`, que atravessa o boundary); `ErrorComponent` nunca renderiza mensagem de erro interno cru.
 - [x] Glossário de `spend`/`spendBasis`/`unit_costs_json`/`CPP` existe em 1 lugar canônico (`GLOSSARIO.md`; pontos de definição no código apontam para ele).
-- [ ] `runs.status`/`error_message`: ou removidos, ou realmente escritos no ciclo de vida.
+- [x] `runs.status`/`error_message`: **removidos** (decisão: runs são síncronos — a linha só existe completa; migration `20260704020000_runs_drop_phantom_lifecycle.sql` documenta a escolha e o caminho de volta se um dia houver execução em background). `finished_at` fica: é gravado no insert.

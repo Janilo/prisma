@@ -324,13 +324,14 @@ async function executeMmm(data: RunInputType, userId: string): Promise<{ runId: 
       : null,
   };
 
+  // Runs são síncronos: a linha só existe completa (P-07, opção "a") —
+  // não há status/error_message; falha = throw, nenhum run gravado.
   const { data: runRow, error: insErr } = await supabaseAdmin
     .from("runs")
     .insert({
       user_id: userId,
       dataset_id: data.datasetId,
       name: data.name,
-      status: "done",
       dep_variable: data.depVariable,
       indep_variables_json: data.indepVariables,
       params_json: {
@@ -446,7 +447,7 @@ export const listRuns = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("runs")
-      .select("id, name, status, dep_variable, metrics_json, created_at, dataset_id")
+      .select("id, name, dep_variable, metrics_json, created_at, dataset_id")
       .order("created_at", { ascending: false });
     if (error) {
       console.error("listRuns failed:", error);
@@ -499,7 +500,7 @@ export const getPublicRun = createServerFn({ method: "POST" })
     const { data: run, error } = await supabaseAdmin
       .from("runs")
       .select(
-        "id, name, status, dep_variable, indep_variables_json, params_json, metrics_json, contributions_json, roi_json, decomposition_json, predicted_json, created_at, finished_at",
+        "id, name, dep_variable, indep_variables_json, params_json, metrics_json, contributions_json, roi_json, decomposition_json, predicted_json, created_at, finished_at",
       )
       .eq("id", data.id)
       .maybeSingle();
