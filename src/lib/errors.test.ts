@@ -1,53 +1,82 @@
-import { describe, expect, it } from "vitest";
+import { describe, it, expect } from "vitest";
+
 import {
   AppError,
-  AuthError,
+  UnauthorizedError,
+  ForbiddenError,
   NotFoundError,
   ValidationError,
+  ConfigError,
   isAppError,
   userMessageFrom,
+  appErrorCode,
+  toErrorResponse,
 } from "./errors";
 
-describe("AppError e subtipos", () => {
-  it("carrega userMessage como message e o httpStatus do subtipo", () => {
-    expect(new AppError("Falha ao salvar.").httpStatus).toBe(500);
-    expect(new NotFoundError("Run não encontrado.").httpStatus).toBe(404);
-    expect(new ValidationError("Poucas linhas.").httpStatus).toBe(422);
-    expect(new AuthError().httpStatus).toBe(401);
-    expect(new AuthError("Acesso negado.", 403).httpStatus).toBe(403);
-    expect(new NotFoundError("Run não encontrado.").message).toBe("Run não encontrado.");
+describe("AppError", () => {
+  it("carries a status, defaulting to 500", () => {
+    expect(new AppError("x").status).toBe(500);
+    expect(new AppError("x", 418).status).toBe(418);
   });
 
-  it("subtipos são instanceof AppError (lado servidor)", () => {
-    expect(new NotFoundError()).toBeInstanceOf(AppError);
-    expect(new ValidationError("x")).toBeInstanceOf(AppError);
-    expect(new AuthError()).toBeInstanceOf(AppError);
+  it("subclasses carry their canonical status", () => {
+    expect(new UnauthorizedError().status).toBe(401);
+    expect(new ForbiddenError().status).toBe(403);
+    expect(new NotFoundError().status).toBe(404);
+    expect(new ValidationError("bad").status).toBe(422);
+    expect(new ConfigError("missing").status).toBe(500);
+  });
+
+  it("names itself after the concrete subclass", () => {
+    expect(new ForbiddenError().name).toBe("ForbiddenError");
+    expect(new AppError("x").name).toBe("AppError");
+  });
+
+  it("carries an optional domain code", () => {
+    expect(new NotFoundError("no", "LINK_INVALID").code).toBe("LINK_INVALID");
+    expect(new AppError("x").code).toBeUndefined();
   });
 });
 
-describe("userMessageFrom — dos dois lados do boundary", () => {
-  it("retorna a mensagem de um AppError vivo", () => {
-    expect(userMessageFrom(new ValidationError("Poucas linhas."))).toBe("Poucas linhas.");
+describe("boundary helpers work on both a live error and its serialized shape", () => {
+  it("isAppError recognizes a live AppError, rejects plain errors", () => {
+    expect(isAppError(new ForbiddenError())).toBe(true);
+    expect(isAppError(new Error("plain"))).toBe(false);
+    expect(isAppError(null)).toBe(false);
+    expect(isAppError("nope")).toBe(false);
   });
 
-  it("retorna a mensagem da forma deserializada (Error puro + marker)", () => {
-    // A serialização do serverFn preserva own props mas não o prototype: no
-    // client chega um Error com appError=true. É por isso que a UI usa
-    // userMessageFrom, nunca instanceof.
-    const wire = Object.assign(new Error("Run não encontrado."), {
-      name: "NotFoundError",
-      appError: true,
-      httpStatus: 404,
-    });
-    expect(wire).not.toBeInstanceOf(AppError);
+  it("isAppError recognizes the deserialized shape (plain object + marker)", () => {
+    const wire = { appError: true, status: 403, code: "X", message: "no" };
     expect(isAppError(wire)).toBe(true);
-    expect(userMessageFrom(wire)).toBe("Run não encontrado.");
+    expect(userMessageFrom(wire)).toBe("no");
+    expect(appErrorCode(wire)).toBe("X");
   });
 
-  it("retorna undefined para erros de infra — a UI mostra o genérico", () => {
-    expect(userMessageFrom(new Error("connect ECONNREFUSED 127.0.0.1:5432"))).toBeUndefined();
-    expect(userMessageFrom("string")).toBeUndefined();
-    expect(userMessageFrom(null)).toBeUndefined();
-    expect(userMessageFrom({ appError: "true" })).toBeUndefined();
+  it("userMessageFrom returns undefined for non-domain errors", () => {
+    expect(userMessageFrom(new Error("secret internal detail"))).toBeUndefined();
+    expect(userMessageFrom(new ForbiddenError("Acesso negado."))).toBe("Acesso negado.");
+  });
+
+  it("appErrorCode returns undefined when there is no code", () => {
+    expect(appErrorCode(new ForbiddenError())).toBeUndefined();
+  });
+});
+
+describe("toErrorResponse", () => {
+  it("returns null for non-AppErrors so the caller can rethrow", () => {
+    expect(toErrorResponse(new Error("x"))).toBeNull();
+  });
+
+  it("passes 4xx messages through to the body", async () => {
+    const res = toErrorResponse(new ForbiddenError("nope"))!;
+    expect(res.status).toBe(403);
+    expect(await res.json()).toEqual({ error: "nope" });
+  });
+
+  it("masks 5xx messages behind a generic body", async () => {
+    const res = toErrorResponse(new ConfigError("SUPABASE_URL missing"))!;
+    expect(res.status).toBe(500);
+    expect(await res.json()).toEqual({ error: "Internal server error" });
   });
 });
