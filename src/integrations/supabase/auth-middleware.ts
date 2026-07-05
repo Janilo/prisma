@@ -1,14 +1,14 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { createClient } from "@supabase/supabase-js";
-import { AppError, AuthError } from "@/lib/errors";
+import { AppError, UnauthorizedError } from "@/lib/errors";
 import type { Database } from "./types";
 
 // The specific auth failure goes to console.error (server log); the thrown
-// AuthError carries only the user-safe message.
-function unauthorized(internalDetail: string): AuthError {
+// UnauthorizedError carries only the user-safe message.
+function unauthorized(internalDetail: string): UnauthorizedError {
   console.error(`[auth] ${internalDetail}`);
-  return new AuthError();
+  return new UnauthorizedError();
 }
 
 export const requireSupabaseAuth = createMiddleware({ type: "function" }).server(
