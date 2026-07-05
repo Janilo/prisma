@@ -4,6 +4,12 @@
 > Referência: Matt Pocock, "Software Fundamentals Matter More Than Ever" (https://www.youtube.com/watch?v=v4F1gFy-hqg).
 > Escopo: arquitetura (módulos, fatias, interfaces, testes) — não design visual.
 
+> **⚠️ Status (jul/2026) — este doc é um snapshot e alguns achados já foram resolvidos.** Verificados como resolvidos:
+> - **P-04** (authz à mão sobre `supabaseAdmin`) — a leitura owner-scoped vive em `src/lib/data.server.ts` (força `.eq("user_id", userId)`); o dashboard admin está atrás de `assertAdmin`.
+> - **P-05** (erros tipados) — `errors.ts` agora é o módulo canônico, idêntico aos repos irmãos.
+>
+> Padronização cross-repo (P1): `errors.ts` canônico + `client.server.ts` lançando `ConfigError`. Config: `ADMIN_EMAIL` movido p/ `config.ts` e o stub `config.server.ts` + `api/example.functions.ts` removidos. Os demais achados abaixo **não foram re-auditados** nesta passada.
+
 ## Sumário executivo
 
 | Princípio | Nota | Veredito (1 linha) |
