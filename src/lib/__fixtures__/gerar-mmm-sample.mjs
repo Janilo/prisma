@@ -30,15 +30,27 @@ const d = (mes, dia) => new Date(2024, mes, dia);
 //   paid_search_r$ -> buraco na linha 5, para defval/missing/mean
 //   regiao         -> coluna de texto, para a classificação de kind
 const linhas = [
-  { data_semana: d(0, 1), "vendas_r$": 100000, tv_grps: 120, "paid_search_r$": 5000, regiao: "sudeste" },
-  { data_semana: d(0, 8), "vendas_r$": 112000, tv_grps: 140, "paid_search_r$": 5400, regiao: "sudeste" },
-  { data_semana: d(0, 15), "vendas_r$": 98000, tv_grps: 0, "paid_search_r$": 4800, regiao: "sudeste" },
-  { data_semana: d(0, 22), "vendas_r$": 121000, tv_grps: 180, "paid_search_r$": 6100, regiao: "norte" },
-  { data_semana: d(0, 29), "vendas_r$": 105000, tv_grps: 90, "paid_search_r$": null, regiao: "norte" },
-  { data_semana: d(1, 5), "vendas_r$": 133000, tv_grps: 210, "paid_search_r$": 7000, regiao: "norte" },
-  { data_semana: d(1, 12), "vendas_r$": 118000, tv_grps: 150, "paid_search_r$": 5900, regiao: "sul" },
+  {
+    data_semana: d(0, 1),
+    vendas_r$: 100000,
+    tv_grps: 120,
+    paid_search_r$: 5000,
+    regiao: "sudeste",
+  },
+  {
+    data_semana: d(0, 8),
+    vendas_r$: 112000,
+    tv_grps: 140,
+    paid_search_r$: 5400,
+    regiao: "sudeste",
+  },
+  { data_semana: d(0, 15), vendas_r$: 98000, tv_grps: 0, paid_search_r$: 4800, regiao: "sudeste" },
+  { data_semana: d(0, 22), vendas_r$: 121000, tv_grps: 180, paid_search_r$: 6100, regiao: "norte" },
+  { data_semana: d(0, 29), vendas_r$: 105000, tv_grps: 90, paid_search_r$: null, regiao: "norte" },
+  { data_semana: d(1, 5), vendas_r$: 133000, tv_grps: 210, paid_search_r$: 7000, regiao: "norte" },
+  { data_semana: d(1, 12), vendas_r$: 118000, tv_grps: 150, paid_search_r$: 5900, regiao: "sul" },
   // 990000 é outlier de propósito, para o teste de IQR
-  { data_semana: d(1, 19), "vendas_r$": 990000, tv_grps: 160, "paid_search_r$": 6200, regiao: "sul" },
+  { data_semana: d(1, 19), vendas_r$: 990000, tv_grps: 160, paid_search_r$: 6200, regiao: "sul" },
 ];
 
 const wb = XLSX.utils.book_new();
